@@ -21,9 +21,26 @@ REPORTS_DIR = ROOT / "reports"
 
 # ---- dataset ----
 UCI_ID = 560
-DATE_COL = "Date"
-TARGET_COL = "Rented Bike Count"
-# TODO: ยืนยันหลังดาวน์โหลดจริง — ไฟล์ต้นฉบับจาก UCI ตรวจพบว่าไม่ใช่ UTF-8
-#       (° เป็น byte 0xB0 → Latin-1/cp1252) และวันที่เป็นรูปแบบ dd/mm/yyyy
-RAW_ENCODING = None        # TODO: ใส่ encoding ที่ตรวจแล้วว่าอ่านถูก
-DATE_FORMAT = None         # TODO: ใส่รูปแบบวันที่ที่ตรวจแล้ว เช่น "%d/%m/%Y"
+# ตรวจแล้วใน notebooks/01_eda.ipynb ขั้น 2: ไฟล์ไม่ใช่ UTF-8 (° = byte 0xB0) และวันที่เป็น dd/mm/yyyy
+RAW_ENCODING = "cp1252"
+DATE_FORMAT = "%d/%m/%Y"
+
+# ชื่อคอลัมน์ดิบ → snake_case (ไม่มีหน่วย/อักขระพิเศษ) — ใช้ชื่อฝั่งขวาทุกที่หลังโหลด
+COLUMN_MAP = {
+    "Date": "date",
+    "Rented Bike Count": "rented_bike_count",
+    "Hour": "hour",
+    "Temperature(°C)": "temp_c",
+    "Humidity(%)": "humidity_pct",
+    "Wind speed (m/s)": "wind_speed_ms",
+    "Visibility (10m)": "visibility_10m",
+    "Dew point temperature(°C)": "dew_point_c",
+    "Solar Radiation (MJ/m2)": "solar_radiation_mj",
+    "Rainfall(mm)": "rainfall_mm",
+    "Snowfall (cm)": "snowfall_cm",
+    "Seasons": "seasons",
+    "Holiday": "holiday",
+    "Functioning Day": "functioning_day",
+}
+DATE_COL = "date"
+TARGET_COL = "rented_bike_count"

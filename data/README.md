@@ -4,14 +4,16 @@
 |---|---|
 | แหล่งที่มา | UCI ML Repository id 560 — https://archive.ics.uci.edu/dataset/560/seoul+bike+sharing+demand |
 | License | CC BY 4.0 |
-| วันที่ดาวน์โหลด | TODO |
-| วิธีดาวน์โหลด | TODO (`ucimlrepo` หรือ zip) |
-| Encoding ของไฟล์ต้นฉบับ | TODO (ตรวจพบเบื้องต้น: ไม่ใช่ UTF-8, `°` = byte 0xB0) |
-| จำนวนแถว / คอลัมน์ | TODO |
-| ช่วงวันที่ / จำนวนวัน | TODO |
-| split | TODO: จำนวนวัน/แถว train, test |
+| วันที่ดาวน์โหลด | 2026-09-24 (commit "Add Dataset") |
+| วิธีดาวน์โหลด | zip จากหน้า UCI → `raw/seoul+bike+sharing+demand.zip` แตกเป็น `raw/seoul+bike+sharing+demand/SeoulBikeData.csv` |
+| Encoding ของไฟล์ต้นฉบับ | `cp1252` (`°` = byte 0xB0, อ่านด้วย UTF-8 ไม่ได้) — ตรวจใน `notebooks/01_eda.ipynb` ขั้น 2.1 |
+| รูปแบบวันที่ | `dd/mm/yyyy` (`%d/%m/%Y`) |
+| จำนวนแถว / คอลัมน์ | 8,760 × 14 · ไม่มี missing · ไม่มีแถวซ้ำ |
+| ช่วงวันที่ / จำนวนวัน | 2017-12-01 ถึง 2018-11-30 · 365 วัน × 24 ชม. ครบทุกวัน |
+| ชั่วโมงที่ระบบปิด (`Functioning Day = No`) | 295 แถว (12 วันเต็ม + 7 ชม. ของ 2018-10-06) ยอดเช่า = 0 ทุกแถว |
+| split | TODO (ขั้น 3) |
 
 ## ไฟล์
 
-- `raw/SeoulBikeData.csv` — ไฟล์ต้นฉบับ (สร้างโดย `scripts/download_data.py`)
-- `splits/train_dates.csv`, `splits/test_dates.csv` — รายการวัน (สร้างโดย `scripts/make_split.py`)
+- `raw/seoul+bike+sharing+demand/SeoulBikeData.csv` — ไฟล์ต้นฉบับ (แตกจาก zip ของ UCI)
+- `splits/train_dates.csv`, `splits/test_dates.csv` — รายการวัน (สร้างโดย `notebooks/01_eda.ipynb` ขั้น 3)
