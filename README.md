@@ -40,10 +40,11 @@ Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
 py -3.13 -m venv .venv
 .venv\Scripts\activate          # Windows
 pip install -r requirements.txt
-python scripts/download_data.py
-python scripts/make_split.py
 jupyter notebook notebooks/
 ```
+
+รัน notebook ตามลำดับ `00_setup` → `01_eda` → `02_modeling`
+(`01_eda` ขั้น 3 สร้าง `data/splits/*.csv` — ไฟล์นี้ commit ไว้แล้ว `02_modeling` จึงรันได้ทันที)
 
 ## โครงสร้าง
 
@@ -51,10 +52,11 @@ jupyter notebook notebooks/
 config.py            ค่าคงที่ทั้งหมด (RANDOM_STATE, path, TASK)
 data/raw/            ไฟล์ CSV ต้นฉบับ
 data/splits/         รายการวัน train/test
-scripts/             ดาวน์โหลด + แบ่งข้อมูล
+scripts/             (stub — งานจริงทำใน notebook)
 src/data.py          ฟังก์ชันโหลดข้อมูล
-notebooks/01_eda     สำรวจข้อมูล (ใช้ train เท่านั้น)
-notebooks/02_modeling  feature selection, PCA, เทียบโมเดล
+notebooks/00_setup   ตรวจ environment + กติกากลุ่ม (ขั้น 0)
+notebooks/01_eda     โหลด/ตรวจข้อมูล, split ตามวัน, EDA บน train (ขั้น 2–4)
+notebooks/02_modeling  นิยามปัญหา, feature engineering, Pipeline, (ต่อ) FS, PCA, เทียบโมเดล
 figures/             รูปที่ใช้ในรายงาน
 reports/             รายงาน + สไลด์
 ```
