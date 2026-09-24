@@ -12,7 +12,7 @@ TASK = "classification"    # หรือ "regression"
 
 # ---- paths ----
 DATA_DIR = ROOT / "data"
-RAW_CSV = DATA_DIR / "raw" / "SeoulBikeData.csv"
+RAW_CSV = DATA_DIR / "raw" / "seoul+bike+sharing+demand" / "SeoulBikeData.csv"   # แตกมาจาก zip ของ UCI
 SPLIT_DIR = DATA_DIR / "splits"
 TRAIN_DATES = SPLIT_DIR / "train_dates.csv"
 TEST_DATES = SPLIT_DIR / "test_dates.csv"
