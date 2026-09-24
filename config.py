@@ -9,6 +9,7 @@ TEST_FRAC = 0.2            # สัดส่วน "วัน" ที่เป�
 
 # ---- ชนิดงาน: รอยืนยันจากอาจารย์ ----
 TASK = "classification"    # หรือ "regression"
+HIGH_DEMAND_QUANTILE = 0.75  # classification: "สูง" = ยอดเช่า ≥ quantile นี้ของ y_train (เหตุผลใน 02_modeling ขั้น 5)
 
 # ---- paths ----
 DATA_DIR = ROOT / "data"
