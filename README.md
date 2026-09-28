@@ -59,15 +59,33 @@ scripts/             (stub — งานจริงทำใน notebook)
 src/data.py          (stub — ยังไม่ใช้ notebook โหลดข้อมูลเอง)
 notebooks/00_setup   ตรวจ environment + กติกากลุ่ม (ขั้น 0)
 notebooks/01_eda     โหลด/ตรวจข้อมูล, split ตามวัน, EDA บน train (ขั้น 2–4)
-notebooks/02_modeling  นิยามปัญหา, feature engineering, Pipeline, (ต่อ) FS, PCA, เทียบโมเดล
+notebooks/02_modeling  นิยามปัญหา, feature engineering, Pipeline, FS, PCA, baseline, เทียบ/tune โมเดล, test (ขั้น 1, 5–13)
+models/model.joblib  โมเดลสุดท้าย (สร้างโดย 02_modeling ขั้น 12 · อยู่ใน .gitignore → รัน notebook เพื่อสร้าง)
 figures/             รูปที่ใช้ในรายงาน
 reports/             รายงาน + สไลด์
 ```
 
 ## ผลหลัก
 
-TODO: ตารางเทียบโมเดล (CV บน train + test ครั้งเดียว), feature ที่เลือก, ผล PCA, ตาราง resource
+CV = 5-fold `GroupKFold` (group = วัน) บน train · test ประเมินครั้งเดียวหลังเลือกโมเดล · หน่วย MAE = คัน/ชม.
+
+| โมเดล (หลัง tune) | CV MAE | ไฟล์ joblib |
+|---|---|---|
+| Baseline: เวลาอย่างเดียว (hour × วันทำงาน/วันหยุด) | 401.0 | – |
+| Linear Regression + log1p(y) | 211.0 ± 6.9 | ~0.01 MB |
+| kNN (k=5, distance, PCA 15) | 183.7 ± 7.8 | ~1.8 MB |
+| Random Forest | 121.8 ± 9.1 | ~122 MB (เกิน 100 MB) |
+| **HistGradientBoosting** ✅ | **109.0 ± 8.1** | ~5.8 MB |
+
+- **test (HistGradientBoosting):** MAE **97.4** · RMSE 170.1 · R² **0.919**
+- Feature selection (f_regression, mutual_info, RFE, Lasso): ไม่มีวิธีไหนลด MAE เกิน noise → ใช้ทุก feature · RFE ใช้ 30/58 feature ได้ MAE เท่าเดิม
+- PCA: 14 PC อธิบาย variance 90% · ช่วย kNN เล็กน้อย ไม่ช่วย Linear
+- รายละเอียดและตาราง resource (CLO4): `notebooks/02_modeling.ipynb` ขั้น 7–13
 
 ## ข้อจำกัด
 
-TODO
+- **ชั่วโมงที่ฝนตก** ทายคลาดมาก (MAE ≈ 89% ของยอดเฉลี่ย ใน test) — ชั่วโมงฝนตกมีแค่ ~6% ของ train
+- **เหตุการณ์พิเศษที่ไม่มีใน feature** เช่น พายุไต้ฝุ่น Soulik (23 ส.ค. 2018), เทศกาลชูซอก → error ก้อนใหญ่ที่สุดใน test
+- ความคลาดเป็นคันโตตามระดับยอด (พีคเย็นคลาดมากสุด) และโดยรวมทายสูงกว่าจริงเล็กน้อย (bias บวก)
+- ข้อมูลมีแค่ 1 ปี และเป็นยอดรวมทั้งเมือง (ไม่ใช่รายสถานี) · ใช้ได้เฉพาะชั่วโมงที่ระบบเปิดให้บริการ
+- split แบบสุ่มวัน (ไม่ใช่ตัดตามเวลา) → วัดความสามารถ "อากาศ + เวลา → ยอดเช่า" ไม่ใช่การพยากรณ์อนาคตล่วงหน้าหลายเดือน
