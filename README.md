@@ -16,7 +16,7 @@
 จากสภาพอากาศและเวลา (ข้อมูลที่รู้ล่วงหน้าได้จากพยากรณ์อากาศ + ปฏิทิน)
 
 - ประโยชน์: ผู้ให้บริการวางแผนจำนวนจักรยานที่ต้องพร้อมใช้ และจัดคนกระจายจักรยานล่วงหน้าในชั่วโมงที่ความต้องการสูง
-- เมตริกหลัก: **MAE** (คัน/ชม.) · รอง: RMSE, R² — เหตุผลใน `notebooks/02_modeling.ipynb` ขั้น 1
+- เมตริกหลัก: **MAE** (คัน/ชม.) · รอง: MSE, RMSE, R² — เหตุผลใน `notebooks/02_modeling.ipynb` ขั้น 1
 - ขอบเขต: เฉพาะชั่วโมงที่ระบบเปิดให้บริการ, ระดับทั้งเมือง (ไม่ใช่รายสถานี)
 - ชนิดงาน: ตัดสินใจใช้ **regression** (`config.TASK = "regression"`) เพราะ target ของ dataset เป็นจำนวนนับต่อเนื่อง ทำนายได้ตรงๆ โดยไม่ต้องตั้ง threshold เอง
 
@@ -77,7 +77,7 @@ CV = 5-fold `GroupKFold` (group = วัน) บน train · test ประเ�
 | Random Forest | 121.8 ± 9.1 | ~122 MB (เกิน 100 MB) |
 | **HistGradientBoosting** ✅ | **109.0 ± 8.1** | ~5.8 MB |
 
-- **test (HistGradientBoosting):** MAE **97.4** · RMSE 170.1 · R² **0.919**
+- **test (HistGradientBoosting):** MAE **97.4** · MSE 28,947.7 · RMSE 170.1 · R² **0.919** (MSE รายงานตามเกณฑ์โจทย์ แต่อธิบายผลด้วย RMSE เพราะหน่วยเป็นคัน/ชม.)
 - Feature selection (f_regression, mutual_info, RFE, Lasso): ไม่มีวิธีไหนลด MAE เกิน noise → ใช้ทุก feature · RFE ใช้ 30/58 feature ได้ MAE เท่าเดิม
 - PCA: 14 PC อธิบาย variance 90% · ช่วย kNN เล็กน้อย ไม่ช่วย Linear
 - รายละเอียดและตาราง resource (CLO4): `notebooks/02_modeling.ipynb` ขั้น 7–13
