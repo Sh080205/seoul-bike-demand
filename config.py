@@ -7,9 +7,8 @@ ROOT = Path(__file__).resolve().parent
 RANDOM_STATE = 42          # ใช้ทุกจุดที่มีการสุ่ม (split, CV, model)
 TEST_FRAC = 0.2            # สัดส่วน "วัน" ที่เป็น test (ไม่ใช่สัดส่วนแถว)
 
-# ---- ชนิดงาน: รอยืนยันจากอาจารย์ ----
-TASK = "classification"    # หรือ "regression"
-HIGH_DEMAND_QUANTILE = 0.75  # classification: "สูง" = ยอดเช่า ≥ quantile นี้ของ y_train (เหตุผลใน 02_modeling ขั้น 5)
+# ---- ชนิดงาน ----
+TASK = "regression"        # ทำนาย rented_bike_count (คัน/ชั่วโมง) — เหตุผลใน 02_modeling ขั้น 1
 
 # ---- paths ----
 DATA_DIR = ROOT / "data"
@@ -18,6 +17,8 @@ SPLIT_DIR = DATA_DIR / "splits"
 TRAIN_DATES = SPLIT_DIR / "train_dates.csv"
 TEST_DATES = SPLIT_DIR / "test_dates.csv"
 FIGURES_DIR = ROOT / "figures"
+MODEL_DIR = ROOT / "models"
+MODEL_PATH = MODEL_DIR / "model.joblib"   # Pipeline ที่เลือกใน 02_modeling ขั้น 12 (preprocess + model)
 REPORTS_DIR = ROOT / "reports"
 
 # ---- dataset ----

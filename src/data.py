@@ -19,8 +19,7 @@ def load_split():
     """คืน X_train, X_test, y_train, y_test ตามรายการวันใน data/splits/
 
     TODO: join แถวกับ train_dates / test_dates
-    ⚠️ y = config.TARGET_COL ดิบ (การทำ high_demand label ทำใน notebook เพราะ
-       threshold ต้องคำนวณจาก y_train เท่านั้น)
+    ⚠️ y = config.TARGET_COL ดิบ (คัน/ชั่วโมง) — การตัดแถวระบบปิดทำใน notebook
     ⚠️ เก็บคอลัมน์วันที่ไว้ใน X (หรือคืนแยก) เพื่อใช้เป็น groups ใน GroupKFold
        แต่ต้องไม่ถูกใช้เป็น feature ตรงๆ
     """
