@@ -7,9 +7,8 @@ ROOT = Path(__file__).resolve().parent
 RANDOM_STATE = 42          # ใช้ทุกจุดที่มีการสุ่ม (split, CV, model)
 TEST_FRAC = 0.2            # สัดส่วน "วัน" ที่เป็น test (ไม่ใช่สัดส่วนแถว)
 
-# ---- ชนิดงาน: รอยืนยันจากอาจารย์ ----
-TASK = "classification"    # หรือ "regression"
-HIGH_DEMAND_QUANTILE = 0.75  # classification: "สูง" = ยอดเช่า ≥ quantile นี้ของ y_train (เหตุผลใน 02_modeling ขั้น 5)
+# ---- ชนิดงาน ----
+TASK = "regression"        # ทำนาย rented_bike_count (คัน/ชั่วโมง) — เหตุผลใน 02_modeling ขั้น 1
 
 # ---- paths ----
 DATA_DIR = ROOT / "data"
