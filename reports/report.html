@@ -78,6 +78,7 @@
 <section class="toc">
   <h2>สารบัญ</h2>
   <ol>
+    <li>ตารางเทียบกับข้อกำหนดของโครงงาน</li>
     <li>บทคัดย่อ</li>
     <li>1. นิยามปัญหา</li>
     <li>2. ข้อมูล</li>
@@ -98,6 +99,29 @@
     <li>เอกสารอ้างอิง</li>
   </ol>
 </section>
+
+<!-- ============================ ตารางเทียบข้อกำหนด ============================ -->
+<h2>ตารางเทียบกับข้อกำหนดของโครงงาน</h2>
+<table>
+  <tr><th style="width:36%">ข้อกำหนด</th><th>สิ่งที่ทำ</th><th style="width:12%">หัวข้อ</th></tr>
+  <tr><td>1. เลือก dataset และกำหนดเป้าหมาย</td><td>Seoul Bike Sharing Demand (UCI) · regression ทำนายยอดเช่าคัน/ชม.</td><td>1, 2</td></tr>
+  <tr><td>1. EDA: สถิติเชิงพรรณนา, visualization, ความสัมพันธ์, outlier</td><td><code>describe()</code>, 7 กราฟ, Pearson correlation, กฎ IQR — ทำบน train เท่านั้น</td><td>4</td></tr>
+  <tr><td>2. จัดการ missing value</td><td>ความชื้น 0% (ค่าผิดของเซนเซอร์) → NaN → เติมด้วย median ใน Pipeline</td><td>4.4, 5</td></tr>
+  <tr><td>2. จัดการ outlier</td><td>ตรวจด้วย IQR แล้วเก็บไว้ เพราะเป็นเหตุการณ์จริง</td><td>4.4</td></tr>
+  <tr><td>2. Encoding</td><td>One-hot สำหรับฤดู เดือน วัน · ชั่วโมงเลือก encoding ตามชนิดโมเดล</td><td>5</td></tr>
+  <tr><td>2. Feature scaling</td><td>StandardScaler (Z-score) พร้อมเหตุผลที่ไม่ใช้ Min-Max</td><td>5</td></tr>
+  <tr><td>3. Filter method</td><td><code>f_regression</code> (correlation) และ <code>mutual_info_regression</code> · อธิบายว่าทำไมใช้ chi² ไม่ได้</td><td>6</td></tr>
+  <tr><td>3. Wrapper method</td><td>RFE</td><td>6</td></tr>
+  <tr><td>3. Embedded method</td><td>Lasso (L1)</td><td>6</td></tr>
+  <tr><td>3. Feature extraction</td><td>PCA</td><td>7</td></tr>
+  <tr><td>4. แบ่ง train/test 70–80 / 20–30</td><td>80 / 20 ตามวัน (292 / 73 วัน) + 5-fold GroupKFold บน train</td><td>3</td></tr>
+  <tr><td>4. อัลกอริทึมอย่างน้อย 3–4 แบบ</td><td>Linear Regression, kNN, Random Forest, HistGradientBoosting + baseline 3 แบบ</td><td>8, 9</td></tr>
+  <tr><td>4. เมตริก MAE, MSE, RMSE, R²</td><td>ครบทั้ง 4 ค่าใน CV และ test (MAE เป็นเมตริกหลัก)</td><td>1, 8, 11</td></tr>
+  <tr><td>4. Model selection</td><td>เลือกด้วย CV MAE + ทรัพยากรที่ใช้</td><td>10</td></tr>
+  <tr><td>5. สรุปโมเดลที่ดีที่สุดและประสิทธิภาพ</td><td>HistGradientBoosting · ผล test และ error analysis</td><td>10, 11, 15</td></tr>
+  <tr><td>5. ทำนายข้อมูลใหม่</td><td>4 สถานการณ์สมมติ</td><td>12</td></tr>
+  <tr><td>ความท้าทายที่พบ</td><td>ตารางปัญหาและวิธีแก้</td><td>13</td></tr>
+</table>
 
 <!-- ============================ บทคัดย่อ ============================ -->
 <h2>บทคัดย่อ</h2>
