@@ -103,7 +103,7 @@
   <p>โครงงานนี้สร้างโมเดล regression ทำนาย <b>จำนวนจักรยานที่ถูกเช่าในแต่ละชั่วโมง</b> ของระบบ Seoul Bike ทั้งเมือง จากข้อมูลที่รู้ล่วงหน้าได้ คือพยากรณ์อากาศและปฏิทิน โดยใช้ชุดข้อมูล Seoul Bike Sharing Demand จาก UCI (8,760 ชั่วโมง ธ.ค. 2017 – พ.ย. 2018)
   ข้อมูลถูกแบ่ง train/test <b>ตามวัน</b> เพื่อไม่ให้ชั่วโมงของวันเดียวกันรั่วข้ามสองฝั่ง และทุกการตัดสินใจใช้ 5-fold <code>GroupKFold</code> บน train เท่านั้น
   เราเทียบ 4 ตระกูลโมเดล (Linear Regression, kNN, Random Forest, HistGradientBoosting) กับ baseline 3 แบบ พร้อมทำ feature selection 3 แนวทางและ PCA
-  โมเดลที่เลือกคือ <b>HistGradientBoostingRegressor</b> ได้ CV MAE 109.0 ± 8.1 คัน/ชม. และเมื่อประเมินชุดทดสอบครั้งเดียวได้ MAE 97.4 คัน/ชม. และ R² 0.919
+  โมเดลที่เลือกคือ <b>HistGradientBoostingRegressor</b> ได้ CV MAE 109.0 ± 8.1 คัน/ชม. และเมื่อประเมินชุดทดสอบครั้งเดียวได้ MAE 97.4 คัน/ชม., MSE 28,947.7 (RMSE 170.1 คัน/ชม.) และ R² 0.919
   จุดอ่อนหลักคือชั่วโมงที่ฝนตกและเหตุการณ์พิเศษที่ไม่มีใน feature เช่น พายุไต้ฝุ่นและเทศกาล</p>
   <div class="kpi">
     <div><b>109.0</b><span>CV MAE (คัน/ชม.)<br>5-fold GroupKFold</span></div>
@@ -122,7 +122,7 @@
   <tr><td>ใช้ทำอะไร</td><td>ให้ผู้ให้บริการวางแผนจำนวนจักรยานที่ต้องพร้อมใช้ และจัดคนกระจายจักรยานล่วงหน้าในชั่วโมงที่คาดว่ามีคนเช่ามาก</td></tr>
   <tr><td>input</td><td>สภาพอากาศ (อุณหภูมิ, ความชื้น, ลม, ทัศนวิสัย, dew point, แสงแดด, ฝน, หิมะ) + เวลา (ชั่วโมง, วันในสัปดาห์, เดือน) + ฤดู + วันหยุด</td></tr>
   <tr><td>เมตริกหลัก</td><td><b>MAE</b> (คัน/ชม.) — ตีความตรงว่า "ทายคลาดเฉลี่ยกี่คัน" และไม่ถูกชั่วโมงพีคไม่กี่ชั่วโมงครอบงำเหมือน RMSE (target เบ้ขวา: mean 756.8 &gt; median 582.5)</td></tr>
-  <tr><td>เมตริกรอง</td><td>RMSE (ดูว่ามี error ก้อนใหญ่ไหม) และ R² (สัดส่วนความแปรปรวนที่อธิบายได้)</td></tr>
+  <tr><td>เมตริกรอง</td><td>MSE และ RMSE (ดูว่ามี error ก้อนใหญ่ไหม) และ R² (สัดส่วนความแปรปรวนที่อธิบายได้) · รายงาน MSE ตามเกณฑ์ แต่อธิบายผลด้วย RMSE เพราะ MSE = RMSE² มีหน่วยเป็น "คัน²" ซึ่งตีความไม่ได้โดยตรง</td></tr>
 </table>
 <p><b>ขอบเขต:</b> ทำนายเฉพาะชั่วโมงที่ระบบเปิดให้บริการ (<code>Functioning Day = Yes</code>) · ระดับทั้งเมือง ไม่ใช่รายสถานี · ไม่ใช้ยอดเช่าของชั่วโมงก่อนหน้า (lag) เพราะเป็นการใช้ target ทำนาย target · โจทย์คือ "อากาศ + เวลาแบบนี้ → จะมีคนเช่ากี่คัน" ไม่ใช่การพยากรณ์อนุกรมเวลา</p>
 <p><b>ทำไมเลือก regression:</b> target ของชุดข้อมูลเป็นจำนวนนับต่อเนื่อง ทำนายได้ตรงๆ โดยไม่ต้องตั้ง threshold เอง และตัวเลข "กี่คัน" นำไปวางแผนได้ทันที</p>
@@ -258,15 +258,15 @@
 <!-- ============================ 8 ============================ -->
 <h2>8. Baseline และการเทียบโมเดล</h2>
 <table>
-  <caption>ตารางที่ 8.1 baseline และ 4 โมเดลด้วยค่า default (5-fold GroupKFold บน train, หน่วยคัน/ชม.)</caption>
-  <tr><th>โมเดล</th><th class="r">CV MAE</th><th class="r">± std</th><th class="r">RMSE</th><th class="r">R²</th><th class="r">MAE บน train</th><th class="r">gap</th></tr>
-  <tr><td>Dummy (mean)</td><td class="r">527.5</td><td class="r">12.9</td><td class="r">650.4</td><td class="r">−0.003</td><td class="r">527.1</td><td class="r">—</td></tr>
-  <tr><td>Dummy (median)</td><td class="r">512.2</td><td class="r">16.6</td><td class="r">673.6</td><td class="r">−0.075</td><td class="r">511.8</td><td class="r">—</td></tr>
-  <tr><td>เวลาอย่างเดียว (hour × ประเภทวัน)</td><td class="r">401.0</td><td class="r">10.5</td><td class="r">520.2</td><td class="r">0.358</td><td class="r">396.0</td><td class="r">—</td></tr>
-  <tr><td>Linear Regression (hour one-hot)</td><td class="r">266.2</td><td class="r">4.8</td><td class="r">347.7</td><td class="r">0.713</td><td class="r">259.8</td><td class="r">6.4</td></tr>
-  <tr><td>kNN (k = 10, sin/cos)</td><td class="r">194.4</td><td class="r">8.6</td><td class="r">289.9</td><td class="r">0.800</td><td class="r">151.9</td><td class="r">42.5</td></tr>
-  <tr><td>Random Forest (200 ต้น)</td><td class="r">122.4</td><td class="r">9.4</td><td class="r">199.4</td><td class="r">0.904</td><td class="r">36.8</td><td class="r">85.6</td></tr>
-  <tr class="best"><td>HistGradientBoosting</td><td class="r">114.1</td><td class="r">10.0</td><td class="r">184.6</td><td class="r">0.918</td><td class="r">69.0</td><td class="r">45.1</td></tr>
+  <caption>ตารางที่ 8.1 baseline และ 4 โมเดลด้วยค่า default (5-fold GroupKFold บน train, หน่วยคัน/ชม. ยกเว้น MSE เป็นคัน²)</caption>
+  <tr><th>โมเดล</th><th class="r">CV MAE</th><th class="r">± std</th><th class="r">MSE</th><th class="r">RMSE</th><th class="r">R²</th><th class="r">MAE บน train</th><th class="r">gap</th></tr>
+  <tr><td>Dummy (mean)</td><td class="r">527.5</td><td class="r">12.9</td><td class="r">423,381</td><td class="r">650.4</td><td class="r">−0.003</td><td class="r">527.1</td><td class="r">—</td></tr>
+  <tr><td>Dummy (median)</td><td class="r">512.2</td><td class="r">16.6</td><td class="r">454,336</td><td class="r">673.6</td><td class="r">−0.075</td><td class="r">511.8</td><td class="r">—</td></tr>
+  <tr><td>เวลาอย่างเดียว (hour × ประเภทวัน)</td><td class="r">401.0</td><td class="r">10.5</td><td class="r">270,794</td><td class="r">520.2</td><td class="r">0.358</td><td class="r">396.0</td><td class="r">—</td></tr>
+  <tr><td>Linear Regression (hour one-hot)</td><td class="r">266.2</td><td class="r">4.8</td><td class="r">120,964</td><td class="r">347.7</td><td class="r">0.713</td><td class="r">259.8</td><td class="r">6.4</td></tr>
+  <tr><td>kNN (k = 10, sin/cos)</td><td class="r">194.4</td><td class="r">8.6</td><td class="r">84,316</td><td class="r">289.9</td><td class="r">0.800</td><td class="r">151.9</td><td class="r">42.5</td></tr>
+  <tr><td>Random Forest (200 ต้น)</td><td class="r">122.4</td><td class="r">9.4</td><td class="r">40,192</td><td class="r">199.4</td><td class="r">0.904</td><td class="r">36.8</td><td class="r">85.6</td></tr>
+  <tr class="best"><td>HistGradientBoosting</td><td class="r">114.1</td><td class="r">10.0</td><td class="r">34,462</td><td class="r">184.6</td><td class="r">0.918</td><td class="r">69.0</td><td class="r">45.1</td></tr>
 </table>
 <figure class="half"><img src="../figures/10_model_comparison.png" alt=""><figcaption>รูปที่ 8.1 CV MAE ± std (สีเทา = baseline)</figcaption></figure>
 <ul>
@@ -314,6 +314,7 @@
   <caption>ตารางที่ 11.1 CV เทียบ test</caption>
   <tr><th>เมตริก</th><th class="r">CV บน train</th><th class="r">test</th></tr>
   <tr><td>MAE (คัน/ชม.)</td><td class="r">109.0</td><td class="r"><b>97.4</b></td></tr>
+  <tr><td>MSE (คัน²)</td><td class="r">—</td><td class="r">28,947.7</td></tr>
   <tr><td>RMSE (คัน/ชม.)</td><td class="r">—</td><td class="r">170.1</td></tr>
   <tr><td>R²</td><td class="r">—</td><td class="r"><b>0.919</b></td></tr>
 </table>
