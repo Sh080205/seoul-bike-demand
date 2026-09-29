@@ -185,10 +185,28 @@
 <p class="lbl">วิธีดำเนินการ</p>
 <p>สำรวจเฉพาะ train (7,008 แถว, 292 วัน) เพื่อไม่ให้ข้อมูล test มีผลต่อการตัดสินใจใดๆ โดยใช้สถิติเชิงพรรณนา (<code>describe()</code>, skewness), กราฟ (histogram, boxplot, line plot รายชั่วโมง, กราฟตามฤดู อุณหภูมิ และฝน), Pearson correlation และกฎ IQR สำหรับค่าผิดปกติ ทุกหัวข้อจบด้วยการตัดสินใจที่ส่งต่อไปยังขั้นเตรียมข้อมูล (หัวข้อ 5)</p>
 
-<h3>4.1 ชั่วโมงที่ระบบปิด และ distribution ของ target</h3>
+<h3>4.1 สถิติเชิงพรรณนา ชั่วโมงที่ระบบปิด และ distribution ของ target</h3>
 <p class="lbl">ผลลัพธ์</p>
+<table>
+  <caption>ตารางที่ 4.1 สถิติเชิงพรรณนาของตัวแปรตัวเลข (train 7,008 แถว ก่อนตัดชั่วโมงที่ระบบปิด)</caption>
+  <tr><th>ตัวแปร</th><th class="r">mean</th><th class="r">std</th><th class="r">min</th><th class="r">Q1</th><th class="r">median</th><th class="r">Q3</th><th class="r">max</th></tr>
+  <tr><td><code>rented_bike_count</code></td><td class="r">730.86</td><td class="r">653.78</td><td class="r">0</td><td class="r">206</td><td class="r">547</td><td class="r">1,101</td><td class="r">3,556</td></tr>
+  <tr><td><code>temp_c</code></td><td class="r">13.46</td><td class="r">11.72</td><td class="r">−16.2</td><td class="r">4.10</td><td class="r">14.80</td><td class="r">22.80</td><td class="r">39.4</td></tr>
+  <tr><td><code>humidity_pct</code></td><td class="r">58.56</td><td class="r">20.35</td><td class="r"><b>0</b></td><td class="r">43</td><td class="r">58</td><td class="r">74.25</td><td class="r">98</td></tr>
+  <tr><td><code>wind_speed_ms</code></td><td class="r">1.70</td><td class="r">1.02</td><td class="r">0</td><td class="r">0.90</td><td class="r">1.50</td><td class="r">2.30</td><td class="r">7.4</td></tr>
+  <tr><td><code>visibility_10m</code></td><td class="r">1,430.96</td><td class="r">601.10</td><td class="r">27</td><td class="r">943.75</td><td class="r">1,662</td><td class="r">1,998</td><td class="r">2,000</td></tr>
+  <tr><td><code>dew_point_c</code></td><td class="r">4.71</td><td class="r">12.85</td><td class="r">−30.6</td><td class="r">−4.20</td><td class="r">5.95</td><td class="r">15.40</td><td class="r">27.2</td></tr>
+  <tr><td><code>solar_radiation_mj</code></td><td class="r">0.58</td><td class="r">0.88</td><td class="r">0</td><td class="r">0</td><td class="r">0.01</td><td class="r">0.95</td><td class="r">3.52</td></tr>
+  <tr><td><code>rainfall_mm</code></td><td class="r">0.15</td><td class="r">1.16</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">35.0</td></tr>
+  <tr><td><code>snowfall_cm</code></td><td class="r">0.07</td><td class="r">0.45</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">8.8</td></tr>
+</table>
+<ul>
+  <li>ยอดเช่าเบ้ขวา (mean 730.9 &gt; median 547) และมีค่า 0 · <code>visibility_10m</code> มีสเกลใหญ่กว่าตัวแปรอื่นมาก · ฝน หิมะ และแสงแดดส่วนใหญ่เป็น 0 (zero-inflated) · ความชื้นต่ำสุด <b>0%</b> ซึ่งเป็นไปไม่ได้ทางกายภาพ (ตรวจต่อในหัวข้อ 4.4)</li>
+</ul>
+<figure><img src="../figures/04_target_distribution.png" alt="" style="max-width:88%"><figcaption>รูปที่ 4.1 histogram และ boxplot ของยอดเช่ารายชั่วโมง (train ทั้งหมด ก่อนตัดชั่วโมงที่ระบบปิด)</figcaption></figure>
+<p>histogram เบ้ขวาชัดเจน (skewness 1.08) แท่งแรกใกล้ 0 สูงที่สุด ส่วนหนึ่งมาจาก 240 แถว (3.4%) ที่ยอดเป็น 0 พอดี และ boxplot มีจุดเกินหนวดขวา (&gt; 2,443.5 คัน) 102 แถว</p>
 <p>ใน train มี 240 แถวที่ <code>functioning_day = No</code> (ระบบปิดทั้งวัน 10 วัน) ยอดเช่าเป็น 0 ทุกแถว และแถวที่ยอดเป็น 0 ทั้งหมดคือแถวเหล่านี้ หลังตัดออกเหลือ <b>6,768 แถว (282 วัน)</b> ยอดต่ำสุด 2 คัน mean 756.8 median 582.5 skewness 1.07 (เบ้ขวา)</p>
-<figure class="half"><img src="../figures/04_target_operating_hours.png" alt=""><figcaption>รูปที่ 4.1 distribution ของยอดเช่ารายชั่วโมง (train, เฉพาะชั่วโมงที่ระบบเปิด)</figcaption></figure>
+<figure class="half"><img src="../figures/04_target_operating_hours.png" alt=""><figcaption>รูปที่ 4.2 distribution ของยอดเช่าหลังตัดชั่วโมงที่ระบบปิด พร้อมเส้น mean และ median</figcaption></figure>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li>ถ้าเก็บชั่วโมงที่ระบบปิดไว้ โมเดลจะได้คะแนนฟรีจากกฎ "ปิด → 0" ที่ผู้ให้บริการรู้อยู่แล้ว จึง <b>ตัดออกทั้ง train และ test</b> (เป็นกฎนิยามขอบเขต ไม่ได้เรียนค่าจากข้อมูล จึงไม่รั่ว)</li>
@@ -197,24 +215,27 @@
 
 <h3>4.2 รูปแบบรายชั่วโมงและประเภทวัน</h3>
 <p class="lbl">ผลลัพธ์</p>
-<figure class="half"><img src="../figures/04_hourly_by_daytype.png" alt=""><figcaption>รูปที่ 4.2 ยอดเช่าเฉลี่ยรายชั่วโมง แยกวันทำงาน / เสาร์-อาทิตย์ / วันหยุดนักขัตฤกษ์</figcaption></figure>
+<figure class="half"><img src="../figures/04_hourly_by_daytype.png" alt=""><figcaption>รูปที่ 4.3 ยอดเช่าเฉลี่ยรายชั่วโมง แยกวันทำงาน / เสาร์-อาทิตย์ / วันหยุดนักขัตฤกษ์</figcaption></figure>
 <p>วันทำงานมีพีคแหลม 2 ครั้งที่ <b>8:00</b> (~1,380 คัน) และ <b>18:00</b> (~1,810 คัน) ซึ่งเป็นการเดินทางไป-กลับที่ทำงาน ส่วนเสาร์-อาทิตย์และวันหยุดนักขัตฤกษ์มีรูปร่างเดียวกัน คือไม่มีพีคเช้าและสูงสุดราว 17:00 ทุกประเภทวันต่ำสุดตอน 4:00–5:00</p>
+<figure class="half"><img src="../figures/04_day_of_week.png" alt=""><figcaption>รูปที่ 4.4 ยอดเช่าเฉลี่ยต่อชั่วโมงแยกตามวันในสัปดาห์</figcaption></figure>
+<p>เมื่อเฉลี่ยทั้งวัน แต่ละวันในสัปดาห์ต่างกันไม่มาก (~680–820 คัน/ชม.) อาทิตย์ต่ำสุด (682) พุธและศุกร์สูงสุด (811, 816)</p>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li>ชั่วโมงสัมพันธ์กับยอดเช่าแบบ <b>ไม่เป็นเส้นตรงและเป็นวงรอบ</b> (23:00 อยู่ติดกับ 0:00) → สร้าง <code>hour_sin</code>, <code>hour_cos</code></li>
   <li>รูปร่างเส้นขึ้นกับประเภทวัน (interaction ชั่วโมง × วันหยุด) → สร้าง <code>is_weekend</code>, <code>is_holiday</code> · โมเดลเชิงเส้นจับ interaction เองไม่ได้ ส่วนโมเดลต้นไม้จับได้ จึงคาดว่าโมเดลต้นไม้จะได้เปรียบ</li>
   <li>sin/cos คู่เดียวเป็นคลื่นลูกเดียวต่อวัน จับ 2 พีคไม่ได้ → สำหรับโมเดลเชิงเส้นต้องลอง one-hot ของชั่วโมงด้วย</li>
+  <li>รูปที่ 4.3 กับ 4.4 รวมกันบอกว่าความต่างของวันหยุดกับวันทำงานอยู่ที่ <b>"รูปร่าง"</b> ของเส้นรายชั่วโมง ไม่ใช่ "ระดับ" ของทั้งวัน → สร้างทั้ง <code>day_of_week</code> และ <code>is_weekend</code> แล้วให้ feature selection ตัดสินว่าตัวไหนมีประโยชน์</li>
 </ul>
 
 <h3>4.3 ฤดู อุณหภูมิ และฝน</h3>
 <p class="lbl">ผลลัพธ์</p>
-<figure><img src="../figures/04_season_temperature.png" alt="" style="max-width:88%"><figcaption>รูปที่ 4.3 ยอดเช่าตามฤดู (ซ้าย) และตามอุณหภูมิพร้อมค่าเฉลี่ยทุกช่วง 5 °C (ขวา)</figcaption></figure>
+<figure><img src="../figures/04_season_temperature.png" alt="" style="max-width:88%"><figcaption>รูปที่ 4.5 ยอดเช่าตามฤดู (ซ้าย) และตามอุณหภูมิพร้อมค่าเฉลี่ยทุกช่วง 5 °C (ขวา)</figcaption></figure>
 <ul>
   <li>ฤดูหนาวเฉลี่ยเพียง ~230 คัน/ชม. เทียบกับ 774–1,037 ในฤดูอื่น</li>
   <li>ยอดเพิ่มตามอุณหภูมิจนสูงสุดที่ 25–30 °C (~1,258) แล้ว <b>ลดลง</b> เมื่อร้อนเกิน 30 °C</li>
   <li>ฝนเป็น 0 ใน 93.9% ของชั่วโมง แต่ชั่วโมงที่ฝนตกยอดตกจาก ~795 เหลือ ~164 คัน และแม้ฝนแค่ ≤ 1 มม. ยอดก็เหลือ ~223</li>
 </ul>
-<figure class="third"><img src="../figures/04_rainfall.png" alt=""><figcaption>รูปที่ 4.4 ยอดเช่าเฉลี่ยตามปริมาณฝน</figcaption></figure>
+<figure class="third"><img src="../figures/04_rainfall.png" alt=""><figcaption>รูปที่ 4.6 ยอดเช่าเฉลี่ยตามปริมาณฝน</figcaption></figure>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li>อุณหภูมิกับยอดเช่าเป็นความสัมพันธ์ <b>โค้งคว่ำ</b> ซึ่งโมเดลเชิงเส้นจับไม่ได้ เป็นอีกเหตุผลที่คาดว่าโมเดลต้นไม้จะแม่นกว่า</li>
@@ -224,8 +245,9 @@
 
 <h3>4.4 Correlation และ outlier</h3>
 <p class="lbl">ผลลัพธ์</p>
+<figure><img src="../figures/04_correlation.png" alt="" style="max-width:70%"><figcaption>รูปที่ 4.7 Pearson correlation ของตัวแปรตัวเลข (train, เฉพาะชั่วโมงที่ระบบเปิด)</figcaption></figure>
 <ul>
-  <li>มีคู่ตัวแปรเดียวที่ |r| &gt; 0.8 คือ <code>temp_c</code> กับ <code>dew_point_c</code> (r = 0.91) · กับ target: <code>temp_c</code> r = 0.55, <code>hour</code> r = 0.44 · ฝน/หิมะมี r ต่ำ (−0.13, −0.15) ทั้งที่หัวข้อ 4.3 แสดงว่ามีผลแรง</li>
+  <li>มีคู่ตัวแปรเดียวที่ |r| &gt; 0.8 คือ <code>temp_c</code> กับ <code>dew_point_c</code> (r = 0.91) · กับ target: <code>temp_c</code> r = 0.55, <code>hour</code> r = 0.44 · ฝน/หิมะมี r ต่ำ (−0.13, −0.15) ทั้งที่หัวข้อ 4.3 แสดงว่ามีผลแรง · คู่ที่สัมพันธ์ปานกลาง เช่น ความชื้นกับทัศนวิสัย (−0.55) และความชื้นกับ dew point (0.54)</li>
   <li>กฎ IQR นับทุกชั่วโมงที่ฝนหรือหิมะตกเป็น "outlier" (เพราะ IQR = 0) และพบค่าเกินขอบใน <code>solar_radiation_mj</code> (~7%), <code>wind_speed_ms</code> (~1.6%) และยอดเช่า (~1.4%) ซึ่งล้วนอยู่ในช่วงที่เกิดขึ้นได้จริง</li>
   <li><b>ความชื้น = 0%</b> มี 17 แถว (19–28 พ.ค. 2018) เมื่อคำนวณย้อนจากอุณหภูมิและ dew point ด้วยสูตร Magnus ได้ 33–72%</li>
 </ul>
@@ -255,10 +277,12 @@
 </table>
 <p class="lbl">ผลลัพธ์</p>
 <ul>
+  <li>การ encode ชั่วโมงบนวงกลม: 23:00 กับ 0:00 ห่างกัน 0.261 เท่ากับ 0:00–1:00 ส่วน 0:00 กับ 12:00 ห่างกันมากที่สุด (2.0) ตรงกับธรรมชาติของเวลา (รูปที่ 5.1)</li>
   <li>กฎขอบเขต: train 7,008 → <b>6,768 แถว</b> (ตัด 240), test 1,752 → <b>1,697 แถว</b> (ตัด 55) · ความชื้นกลายเป็น NaN ใน train 17 แถว</li>
   <li>X_train มี 17 คอลัมน์ · หลัง preprocess (hour แบบ sin/cos) ได้ 36 คอลัมน์ ไม่มี NaN เหลือ ค่าที่ใช้เติมความชื้น = 57.0 (มัธยฐานของ train) ตัวแปรตัวเลขทุกตัวมี mean 0 และ std 1 และ one-hot ของแต่ละกลุ่มรวมกันได้ 1 ทุกแถว</li>
   <li>ตรวจการรั่วของ Pipeline ใน GroupKFold: ทุก fold มีวันซ้ำระหว่าง train กับ validation 0 วัน และ scaler / imputer เรียนค่าจาก training fold ของตัวเอง (mean ของ <code>temp_c</code> 13.35–13.40, median ความชื้น 57–58 ต่างกันเล็กน้อยในแต่ละ fold)</li>
 </ul>
+<figure class="third"><img src="../figures/05_hour_cyclic.png" alt=""><figcaption>รูปที่ 5.1 ชั่วโมงหลังแปลงเป็น (hour_sin, hour_cos) เรียงเป็นวงกลม</figcaption></figure>
 <table>
   <caption>ตารางที่ 5.2 การ encode ชั่วโมงตามชนิดโมเดล</caption>
   <tr><th>โมเดล</th><th>encoding</th><th class="r">คอลัมน์หลัง preprocess</th><th>เหตุผล</th></tr>
