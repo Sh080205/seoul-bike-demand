@@ -20,6 +20,13 @@
   p { margin: 4pt 0 6pt; }
   ul, ol { margin: 4pt 0 6pt; padding-left: 18pt; }
   li { margin: 1pt 0; }
+
+  /* การตัดหน้าตอนพิมพ์ (Chrome 108+ รองรับ avoid): ห้ามตัดกลาง bullet, เหลืออย่างน้อย 3 บรรทัดต่อฝั่ง,
+     ไม่ให้ bullet ข้อแรก/ข้อสุดท้ายของรายการค้างอยู่ข้อเดียวคนละหน้ากับข้ออื่น */
+  p, li { orphans: 3; widows: 3; }
+  li { break-inside: avoid; }
+  li:first-child:not(:last-child) { break-after: avoid; }
+  li:last-child:not(:first-child) { break-before: avoid; }
   code { font-family: Consolas, "Courier New", monospace; font-size: 9pt; background: #f3f3f3; padding: 0 2pt; border-radius: 2pt; }
 
   table { width: 100%; border-collapse: collapse; margin: 6pt 0 10pt; font-size: 9.5pt; break-inside: avoid; }
