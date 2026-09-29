@@ -55,8 +55,6 @@ jupyter notebook notebooks/
 config.py            ค่าคงที่ทั้งหมด (RANDOM_STATE, path, TASK)
 data/raw/            ไฟล์ CSV ต้นฉบับ
 data/splits/         รายการวัน train/test
-scripts/             (stub — งานจริงทำใน notebook)
-src/data.py          (stub — ยังไม่ใช้ notebook โหลดข้อมูลเอง)
 notebooks/00_setup   ตรวจ environment + กติกากลุ่ม (ขั้น 0)
 notebooks/01_eda     โหลด/ตรวจข้อมูล, split ตามวัน, EDA บน train (ขั้น 2–4)
 notebooks/02_modeling  นิยามปัญหา, feature engineering, Pipeline, FS, PCA, baseline, เทียบ/tune โมเดล, test (ขั้น 1, 5–13)
