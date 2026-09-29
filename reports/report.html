@@ -54,6 +54,8 @@
   .kpi b { display: block; font-size: 15pt; color: var(--accent); }
   .kpi span { font-size: 8.5pt; color: var(--muted); }
   .refs li { margin-bottom: 4pt; font-size: 9.5pt; }
+  .lbl { font-weight: 700; color: var(--accent); font-size: 10pt; margin: 9pt 0 2pt; break-after: avoid; }
+  .lbl::before { content: "▸ "; }
 </style>
 </head>
 <body>
@@ -65,9 +67,9 @@
   <div class="sub">Seoul Bike Sharing Demand — Regression</div>
   <table>
     <tr><th style="width:35%">รหัสนิสิต</th><th>ชื่อ-นามสกุล</th></tr>
-    <tr><td class="fill">(กรอกรหัสนิสิต)</td><td class="fill">(กรอกชื่อ-นามสกุล)</td></tr>
-    <tr><td class="fill">(กรอกรหัสนิสิต)</td><td class="fill">(กรอกชื่อ-นามสกุล)</td></tr>
-    <tr><td class="fill">(กรอกรหัสนิสิต)</td><td class="fill">(กรอกชื่อ-นามสกุล)</td></tr>
+    <tr><td>6330300160</td><td>นาย ชญานิน ตลับเงิน</td></tr>
+    <tr><td>6730300591</td><td>นาย ศุภวิชญ์ ไชยานุศักดิ์</td></tr>
+    <tr><td>6730300850</td><td>นาย พัฒนเดช มะหิเมือง</td></tr>
   </table>
   <div class="date">ตุลาคม 2569<br>github.com/Sh080205/seoul-bike-demand</div>
 </section>
@@ -76,6 +78,7 @@
 <section class="toc">
   <h2>สารบัญ</h2>
   <ol>
+    <li>ตารางเทียบกับข้อกำหนดของโครงงาน</li>
     <li>บทคัดย่อ</li>
     <li>1. นิยามปัญหา</li>
     <li>2. ข้อมูล</li>
@@ -97,13 +100,37 @@
   </ol>
 </section>
 
+<!-- ============================ ตารางเทียบข้อกำหนด ============================ -->
+<h2>ตารางเทียบกับข้อกำหนดของโครงงาน</h2>
+<table>
+  <tr><th style="width:36%">ข้อกำหนด</th><th>สิ่งที่ทำ</th><th style="width:12%">หัวข้อ</th></tr>
+  <tr><td>1. เลือก dataset และกำหนดเป้าหมาย</td><td>Seoul Bike Sharing Demand (UCI) · regression ทำนายยอดเช่าคัน/ชม.</td><td>1, 2</td></tr>
+  <tr><td>1. EDA: สถิติเชิงพรรณนา, visualization, ความสัมพันธ์, outlier</td><td><code>describe()</code>, 7 กราฟ, Pearson correlation, กฎ IQR — ทำบน train เท่านั้น</td><td>4</td></tr>
+  <tr><td>2. จัดการ missing value</td><td>ความชื้น 0% (ค่าผิดของเซนเซอร์) → NaN → เติมด้วย median ใน Pipeline</td><td>4.4, 5</td></tr>
+  <tr><td>2. จัดการ outlier</td><td>ตรวจด้วย IQR แล้วเก็บไว้ เพราะเป็นเหตุการณ์จริง</td><td>4.4</td></tr>
+  <tr><td>2. Encoding</td><td>One-hot สำหรับฤดู เดือน วัน · ชั่วโมงเลือก encoding ตามชนิดโมเดล</td><td>5</td></tr>
+  <tr><td>2. Feature scaling</td><td>StandardScaler (Z-score) พร้อมเหตุผลที่ไม่ใช้ Min-Max</td><td>5</td></tr>
+  <tr><td>3. Filter method</td><td><code>f_regression</code> (correlation) และ <code>mutual_info_regression</code> · อธิบายว่าทำไมใช้ chi² ไม่ได้</td><td>6</td></tr>
+  <tr><td>3. Wrapper method</td><td>RFE</td><td>6</td></tr>
+  <tr><td>3. Embedded method</td><td>Lasso (L1)</td><td>6</td></tr>
+  <tr><td>3. Feature extraction</td><td>PCA</td><td>7</td></tr>
+  <tr><td>4. แบ่ง train/test 70–80 / 20–30</td><td>80 / 20 ตามวัน (292 / 73 วัน) + 5-fold GroupKFold บน train</td><td>3</td></tr>
+  <tr><td>4. อัลกอริทึมอย่างน้อย 3–4 แบบ</td><td>Linear Regression, kNN, Random Forest, HistGradientBoosting + baseline 3 แบบ</td><td>8, 9</td></tr>
+  <tr><td>4. เมตริก MAE, MSE, RMSE, R²</td><td>ครบทั้ง 4 ค่าใน CV และ test (MAE เป็นเมตริกหลัก)</td><td>1, 8, 11</td></tr>
+  <tr><td>4. Model selection</td><td>เลือกด้วย CV MAE + ทรัพยากรที่ใช้</td><td>10</td></tr>
+  <tr><td>5. สรุปโมเดลที่ดีที่สุดและประสิทธิภาพ</td><td>HistGradientBoosting · ผล test และ error analysis</td><td>10, 11, 15</td></tr>
+  <tr><td>5. ทำนายข้อมูลใหม่</td><td>4 สถานการณ์สมมติ</td><td>12</td></tr>
+  <tr><td>ความท้าทายที่พบ</td><td>ตารางปัญหาและวิธีแก้</td><td>13</td></tr>
+</table>
+<div style="break-after: page"></div>
+
 <!-- ============================ บทคัดย่อ ============================ -->
 <h2>บทคัดย่อ</h2>
 <div class="abstract">
   <p>โครงงานนี้สร้างโมเดล regression ทำนาย <b>จำนวนจักรยานที่ถูกเช่าในแต่ละชั่วโมง</b> ของระบบ Seoul Bike ทั้งเมือง จากข้อมูลที่รู้ล่วงหน้าได้ คือพยากรณ์อากาศและปฏิทิน โดยใช้ชุดข้อมูล Seoul Bike Sharing Demand จาก UCI (8,760 ชั่วโมง ธ.ค. 2017 – พ.ย. 2018)
   ข้อมูลถูกแบ่ง train/test <b>ตามวัน</b> เพื่อไม่ให้ชั่วโมงของวันเดียวกันรั่วข้ามสองฝั่ง และทุกการตัดสินใจใช้ 5-fold <code>GroupKFold</code> บน train เท่านั้น
   เราเทียบ 4 ตระกูลโมเดล (Linear Regression, kNN, Random Forest, HistGradientBoosting) กับ baseline 3 แบบ พร้อมทำ feature selection 3 แนวทางและ PCA
-  โมเดลที่เลือกคือ <b>HistGradientBoostingRegressor</b> ได้ CV MAE 109.0 ± 8.1 คัน/ชม. และเมื่อประเมินชุดทดสอบครั้งเดียวได้ MAE 97.4 คัน/ชม. และ R² 0.919
+  โมเดลที่เลือกคือ <b>HistGradientBoostingRegressor</b> ได้ CV MAE 109.0 ± 8.1 คัน/ชม. และเมื่อประเมินชุดทดสอบครั้งเดียวได้ MAE 97.4 คัน/ชม., MSE 28,947.7 (RMSE 170.1 คัน/ชม.) และ R² 0.919
   จุดอ่อนหลักคือชั่วโมงที่ฝนตกและเหตุการณ์พิเศษที่ไม่มีใน feature เช่น พายุไต้ฝุ่นและเทศกาล</p>
   <div class="kpi">
     <div><b>109.0</b><span>CV MAE (คัน/ชม.)<br>5-fold GroupKFold</span></div>
@@ -122,14 +149,16 @@
   <tr><td>ใช้ทำอะไร</td><td>ให้ผู้ให้บริการวางแผนจำนวนจักรยานที่ต้องพร้อมใช้ และจัดคนกระจายจักรยานล่วงหน้าในชั่วโมงที่คาดว่ามีคนเช่ามาก</td></tr>
   <tr><td>input</td><td>สภาพอากาศ (อุณหภูมิ, ความชื้น, ลม, ทัศนวิสัย, dew point, แสงแดด, ฝน, หิมะ) + เวลา (ชั่วโมง, วันในสัปดาห์, เดือน) + ฤดู + วันหยุด</td></tr>
   <tr><td>เมตริกหลัก</td><td><b>MAE</b> (คัน/ชม.) — ตีความตรงว่า "ทายคลาดเฉลี่ยกี่คัน" และไม่ถูกชั่วโมงพีคไม่กี่ชั่วโมงครอบงำเหมือน RMSE (target เบ้ขวา: mean 756.8 &gt; median 582.5)</td></tr>
-  <tr><td>เมตริกรอง</td><td>RMSE (ดูว่ามี error ก้อนใหญ่ไหม) และ R² (สัดส่วนความแปรปรวนที่อธิบายได้)</td></tr>
+  <tr><td>เมตริกรอง</td><td>MSE และ RMSE (ดูว่ามี error ก้อนใหญ่ไหม) และ R² (สัดส่วนความแปรปรวนที่อธิบายได้) · รายงาน MSE ตามเกณฑ์ แต่อธิบายผลด้วย RMSE เพราะ MSE = RMSE² มีหน่วยเป็น "คัน²" ซึ่งตีความไม่ได้โดยตรง</td></tr>
 </table>
 <p><b>ขอบเขต:</b> ทำนายเฉพาะชั่วโมงที่ระบบเปิดให้บริการ (<code>Functioning Day = Yes</code>) · ระดับทั้งเมือง ไม่ใช่รายสถานี · ไม่ใช้ยอดเช่าของชั่วโมงก่อนหน้า (lag) เพราะเป็นการใช้ target ทำนาย target · โจทย์คือ "อากาศ + เวลาแบบนี้ → จะมีคนเช่ากี่คัน" ไม่ใช่การพยากรณ์อนุกรมเวลา</p>
 <p><b>ทำไมเลือก regression:</b> target ของชุดข้อมูลเป็นจำนวนนับต่อเนื่อง ทำนายได้ตรงๆ โดยไม่ต้องตั้ง threshold เอง และตัวเลข "กี่คัน" นำไปวางแผนได้ทันที</p>
 
 <!-- ============================ 2 ============================ -->
 <h2>2. ข้อมูล</h2>
-<p>ชุดข้อมูล <b>Seoul Bike Sharing Demand</b> (UCI Machine Learning Repository, id 560, สัญญาอนุญาต CC BY 4.0) บันทึกยอดเช่ารายชั่วโมงของระบบจักรยานสาธารณะกรุงโซล ตั้งแต่ 1 ธ.ค. 2017 ถึง 30 พ.ย. 2018</p>
+<p class="lbl">วิธีดำเนินการ</p>
+<p>เลือกชุดข้อมูล <b>Seoul Bike Sharing Demand</b> (UCI Machine Learning Repository, id 560, สัญญาอนุญาต CC BY 4.0) ซึ่งบันทึกยอดเช่ารายชั่วโมงของระบบจักรยานสาธารณะกรุงโซล ตั้งแต่ 1 ธ.ค. 2017 ถึง 30 พ.ย. 2018 จากนั้นตรวจ byte ดิบของไฟล์เพื่อเลือก encoding ตรวจรูปแบบวันที่ เปลี่ยนชื่อคอลัมน์เป็น snake_case แล้วตรวจความครบถ้วน แถวซ้ำ และค่าที่เป็นไปได้ของคอลัมน์หมวดหมู่</p>
+<p class="lbl">ผลลัพธ์</p>
 <table>
   <caption>ตารางที่ 2.1 ตัวแปรในชุดข้อมูล (เปลี่ยนชื่อเป็น snake_case)</caption>
   <tr><th>คอลัมน์ดิบ</th><th>ชื่อที่ใช้</th><th>ชนิด / หน่วย</th></tr>
@@ -148,55 +177,120 @@
   <tr><td>Holiday</td><td><code>holiday</code></td><td>Holiday / No Holiday</td></tr>
   <tr><td>Functioning Day</td><td><code>functioning_day</code></td><td>Yes / No (ระบบเปิด/ปิด)</td></tr>
 </table>
-<p><b>การตรวจโครงสร้าง:</b> ไฟล์ไม่ใช่ UTF-8 (สัญลักษณ์ ° เก็บเป็น byte 0xB0) จึงอ่านด้วย <code>cp1252</code> และระบุรูปแบบวันที่ <code>%d/%m/%Y</code> เอง (ตรวจจากค่าส่วนแรกที่ขึ้นถึง 31) ได้ <b>8,760 แถว × 14 คอลัมน์</b> ครบ 365 วัน × 24 ชั่วโมง ไม่มี missing value และไม่มีแถวซ้ำ</p>
+<p>ไฟล์ไม่ใช่ UTF-8 (สัญลักษณ์ ° เก็บเป็น byte 0xB0) จึงอ่านด้วย <code>cp1252</code> และระบุรูปแบบวันที่ <code>%d/%m/%Y</code> เอง (ตรวจจากค่าส่วนแรกที่ขึ้นถึง 31) ได้ <b>8,760 แถว × 14 คอลัมน์</b> ครบ 365 วัน × 24 ชั่วโมง ไม่มี missing value และไม่มีแถวซ้ำ</p>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
+<ul>
+  <li>target เป็นจำนวนนับต่อเนื่อง และ feature ทั้งหมดเป็นข้อมูลที่รู้ล่วงหน้าได้จากพยากรณ์อากาศและปฏิทิน จึงเหมาะกับโจทย์ regression ที่นำไปใช้วางแผนได้จริง</li>
+  <li>การที่ไม่มี missing value ในไฟล์ไม่ได้แปลว่าข้อมูลถูกทุกค่า ขั้น EDA จึงตรวจค่าที่เป็นไปไม่ได้ทางกายภาพต่อ (พบความชื้น 0% ในหัวข้อ 4.4)</li>
+  <li><code>date</code> ไม่ใช้เป็น feature โดยตรง แต่ใช้เป็นกลุ่มของการแบ่งข้อมูล (หัวข้อ 3) และใช้สร้าง feature ปฏิทิน (หัวข้อ 5)</li>
+</ul>
 
 <!-- ============================ 3 ============================ -->
 <h2>3. การแบ่งข้อมูลและการป้องกัน leakage</h2>
-<p>ชั่วโมงติดกันในวันเดียวกันมีอากาศและยอดเช่าใกล้กันมาก ถ้าสุ่มแบ่งทีละแถว ชั่วโมง 14:00 อาจอยู่ใน train ส่วน 15:00 อยู่ใน test โมเดลจะแค่ "จำวันนั้น" ได้ ทำให้คะแนนสูงเกินจริง จึงใช้ <b>วันที่เป็นกลุ่ม (group)</b> ให้ทั้ง 24 ชั่วโมงของวันหนึ่งอยู่ฝั่งเดียวกันเสมอ</p>
+<p class="lbl">วิธีดำเนินการ</p>
+<p>ชั่วโมงติดกันในวันเดียวกันมีอากาศและยอดเช่าใกล้กันมาก ถ้าสุ่มแบ่งทีละแถว ชั่วโมง 14:00 อาจอยู่ใน train ส่วน 15:00 อยู่ใน test โมเดลจะแค่ "จำวันนั้น" ได้ ทำให้คะแนนสูงเกินจริง จึงใช้ <b>วันที่เป็นกลุ่ม (group)</b> ให้ทั้ง 24 ชั่วโมงของวันหนึ่งอยู่ฝั่งเดียวกันเสมอ โดยแบ่งด้วย <code>GroupShuffleSplit</code> เป็น train 80% / test 20% ของจำนวนวัน <b>ก่อน</b> ทำ EDA และบันทึกรายการวันเป็นไฟล์ จากนั้นทุกขั้นที่ต้องประเมินโมเดลบน train ใช้ 5-fold <code>GroupKFold</code></p>
+<p class="lbl">ผลลัพธ์</p>
 <table>
   <caption>ตารางที่ 3.1 ผลการแบ่งด้วย GroupShuffleSplit (test_size = 0.2 ของจำนวนวัน, random_state = 42)</caption>
   <tr><th></th><th class="r">วัน</th><th class="r">แถว</th><th class="r">ชั่วโมงที่ระบบปิด</th><th class="r">วันหยุดนักขัตฤกษ์</th><th class="r">สัดส่วนฤดูหนาว</th></tr>
   <tr><td>train</td><td class="r">292</td><td class="r">7,008</td><td class="r">240</td><td class="r">12</td><td class="r">22.9%</td></tr>
   <tr><td>test</td><td class="r">73</td><td class="r">1,752</td><td class="r">55</td><td class="r">6</td><td class="r">31.5%</td></tr>
 </table>
+<p>เมื่อทดลองกับ <code>KFold</code> แบบสุ่มแถว validation fold มีแถวจาก 281 วัน และ <b>ทุกวันมีชั่วโมงอื่นของวันเดียวกันอยู่ใน train</b> ส่วน GroupKFold มีวันซ้ำระหว่าง train กับ validation 0 วันในทุก fold</p>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li>เลือกสุ่มวันจากทั้งปี (แทนการตัดตามเวลา) เพราะข้อมูลมีแค่ 1 ปี ถ้าตัดตามเวลา test จะมีแค่ 1–2 ฤดูที่โมเดลไม่เคยเห็น</li>
   <li>test มีสัดส่วนฤดูหนาวสูงกว่า train จากความแปรปรวนของการสุ่มเพียง 73 วัน <b>เราไม่สุ่มใหม่จนกว่าตัวเลขจะ "สวย"</b> เพราะนั่นคือการเลือก test ด้วยมือ แต่บันทึกไว้เพื่อใช้ตีความผล test (หัวข้อ 11)</li>
   <li>รายการวันถูกบันทึกเป็นไฟล์ <code>data/splits/train_dates.csv</code>, <code>test_dates.csv</code> และ commit ไว้ ทุก notebook ใช้วัน test ชุดเดียวกัน</li>
-  <li>ทุกขั้นที่มี cross-validation ใช้ <b>5-fold <code>GroupKFold</code></b> และส่ง <code>groups</code> = วันที่ทุกครั้ง เมื่อทดลองกับ <code>KFold</code> แบบสุ่มแถว พบว่า validation fold มีแถวจาก 281 วัน และ <b>ทุกวันมีชั่วโมงอื่นของวันเดียวกันอยู่ใน train</b> ส่วน GroupKFold มีวันซ้ำ 0 วันในทุก fold</li>
+  <li>ผลทดลอง KFold ยืนยันว่าการสุ่มทีละแถวทำให้ข้อมูลของวันเดียวกันรั่วข้าม fold จริง จึงกำหนดให้ทุกขั้นที่มี cross-validation ใช้ <b>5-fold <code>GroupKFold</code></b> และส่ง <code>groups</code> = วันที่ทุกครั้ง</li>
 </ul>
 
 <!-- ============================ 4 ============================ -->
 <h2>4. การสำรวจข้อมูล (EDA) — ใช้ train เท่านั้น</h2>
+<p class="lbl">วิธีดำเนินการ</p>
+<p>สำรวจเฉพาะ train (7,008 แถว, 292 วัน) เพื่อไม่ให้ข้อมูล test มีผลต่อการตัดสินใจใดๆ โดยใช้สถิติเชิงพรรณนา (<code>describe()</code>, skewness), กราฟ (histogram, boxplot, line plot รายชั่วโมง, กราฟตามฤดู อุณหภูมิ และฝน), Pearson correlation และกฎ IQR สำหรับค่าผิดปกติ ทุกหัวข้อจบด้วยการตัดสินใจที่ส่งต่อไปยังขั้นเตรียมข้อมูล (หัวข้อ 5)</p>
 
-<h3>4.1 ชั่วโมงที่ระบบปิด และ distribution ของ target</h3>
-<p>ใน train มี 240 แถวที่ <code>functioning_day = No</code> (ระบบปิดทั้งวัน 10 วัน) ยอดเช่าเป็น 0 ทุกแถว และแถวที่ยอดเป็น 0 ทั้งหมดคือแถวเหล่านี้ ถ้าเก็บไว้ โมเดลจะได้คะแนนฟรีจากกฎ "ปิด → 0" ที่ผู้ให้บริการรู้อยู่แล้ว จึง <b>ตัดออกทั้ง train และ test</b> (เป็นกฎนิยามขอบเขต ไม่ได้เรียนค่าจากข้อมูล)
-หลังตัดเหลือ <b>6,768 แถว (282 วัน)</b> ยอดต่ำสุด 2 คัน mean 756.8 median 582.5 skewness 1.07 (เบ้ขวา)</p>
-<figure class="half"><img src="../figures/04_target_operating_hours.png" alt=""><figcaption>รูปที่ 4.1 distribution ของยอดเช่ารายชั่วโมง (train, เฉพาะชั่วโมงที่ระบบเปิด)</figcaption></figure>
+<h3>4.1 สถิติเชิงพรรณนา ชั่วโมงที่ระบบปิด และ distribution ของ target</h3>
+<p class="lbl">ผลลัพธ์</p>
+<table>
+  <caption>ตารางที่ 4.1 สถิติเชิงพรรณนาของตัวแปรตัวเลข (train 7,008 แถว ก่อนตัดชั่วโมงที่ระบบปิด)</caption>
+  <tr><th>ตัวแปร</th><th class="r">mean</th><th class="r">std</th><th class="r">min</th><th class="r">Q1</th><th class="r">median</th><th class="r">Q3</th><th class="r">max</th></tr>
+  <tr><td><code>rented_bike_count</code></td><td class="r">730.86</td><td class="r">653.78</td><td class="r">0</td><td class="r">206</td><td class="r">547</td><td class="r">1,101</td><td class="r">3,556</td></tr>
+  <tr><td><code>temp_c</code></td><td class="r">13.46</td><td class="r">11.72</td><td class="r">−16.2</td><td class="r">4.10</td><td class="r">14.80</td><td class="r">22.80</td><td class="r">39.4</td></tr>
+  <tr><td><code>humidity_pct</code></td><td class="r">58.56</td><td class="r">20.35</td><td class="r"><b>0</b></td><td class="r">43</td><td class="r">58</td><td class="r">74.25</td><td class="r">98</td></tr>
+  <tr><td><code>wind_speed_ms</code></td><td class="r">1.70</td><td class="r">1.02</td><td class="r">0</td><td class="r">0.90</td><td class="r">1.50</td><td class="r">2.30</td><td class="r">7.4</td></tr>
+  <tr><td><code>visibility_10m</code></td><td class="r">1,430.96</td><td class="r">601.10</td><td class="r">27</td><td class="r">943.75</td><td class="r">1,662</td><td class="r">1,998</td><td class="r">2,000</td></tr>
+  <tr><td><code>dew_point_c</code></td><td class="r">4.71</td><td class="r">12.85</td><td class="r">−30.6</td><td class="r">−4.20</td><td class="r">5.95</td><td class="r">15.40</td><td class="r">27.2</td></tr>
+  <tr><td><code>solar_radiation_mj</code></td><td class="r">0.58</td><td class="r">0.88</td><td class="r">0</td><td class="r">0</td><td class="r">0.01</td><td class="r">0.95</td><td class="r">3.52</td></tr>
+  <tr><td><code>rainfall_mm</code></td><td class="r">0.15</td><td class="r">1.16</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">35.0</td></tr>
+  <tr><td><code>snowfall_cm</code></td><td class="r">0.07</td><td class="r">0.45</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">0</td><td class="r">8.8</td></tr>
+</table>
+<ul>
+  <li>ยอดเช่าเบ้ขวา (mean 730.9 &gt; median 547) และมีค่า 0 · <code>visibility_10m</code> มีสเกลใหญ่กว่าตัวแปรอื่นมาก · ฝน หิมะ และแสงแดดส่วนใหญ่เป็น 0 (zero-inflated) · ความชื้นต่ำสุด <b>0%</b> ซึ่งเป็นไปไม่ได้ทางกายภาพ (ตรวจต่อในหัวข้อ 4.4)</li>
+</ul>
+<figure><img src="../figures/04_target_distribution.png" alt="" style="max-width:88%"><figcaption>รูปที่ 4.1 histogram และ boxplot ของยอดเช่ารายชั่วโมง (train ทั้งหมด ก่อนตัดชั่วโมงที่ระบบปิด)</figcaption></figure>
+<p>histogram เบ้ขวาชัดเจน (skewness 1.08) แท่งแรกใกล้ 0 สูงที่สุด ส่วนหนึ่งมาจาก 240 แถว (3.4%) ที่ยอดเป็น 0 พอดี และ boxplot มีจุดเกินหนวดขวา (&gt; 2,443.5 คัน) 102 แถว</p>
+<p>ใน train มี 240 แถวที่ <code>functioning_day = No</code> (ระบบปิดทั้งวัน 10 วัน) ยอดเช่าเป็น 0 ทุกแถว และแถวที่ยอดเป็น 0 ทั้งหมดคือแถวเหล่านี้ หลังตัดออกเหลือ <b>6,768 แถว (282 วัน)</b> ยอดต่ำสุด 2 คัน mean 756.8 median 582.5 skewness 1.07 (เบ้ขวา)</p>
+<figure class="half"><img src="../figures/04_target_operating_hours.png" alt=""><figcaption>รูปที่ 4.2 distribution ของยอดเช่าหลังตัดชั่วโมงที่ระบบปิด พร้อมเส้น mean และ median</figcaption></figure>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
+<ul>
+  <li>ถ้าเก็บชั่วโมงที่ระบบปิดไว้ โมเดลจะได้คะแนนฟรีจากกฎ "ปิด → 0" ที่ผู้ให้บริการรู้อยู่แล้ว จึง <b>ตัดออกทั้ง train และ test</b> (เป็นกฎนิยามขอบเขต ไม่ได้เรียนค่าจากข้อมูล จึงไม่รั่ว)</li>
+  <li>target เบ้ขวา (mean สูงกว่า median ~30%) ชั่วโมงพีคไม่กี่ชั่วโมงจะครอบงำ RMSE จึงใช้ <b>MAE เป็นเมตริกหลัก</b> และจะลองแปลง <code>log1p(y)</code> กับโมเดลเชิงเส้นในขั้น tuning</li>
+</ul>
 
 <h3>4.2 รูปแบบรายชั่วโมงและประเภทวัน</h3>
-<figure class="half"><img src="../figures/04_hourly_by_daytype.png" alt=""><figcaption>รูปที่ 4.2 ยอดเช่าเฉลี่ยรายชั่วโมง แยกวันทำงาน / เสาร์-อาทิตย์ / วันหยุดนักขัตฤกษ์</figcaption></figure>
-<p>วันทำงานมีพีคแหลม 2 ครั้งที่ <b>8:00</b> (~1,380 คัน) และ <b>18:00</b> (~1,810 คัน) ซึ่งเป็นการเดินทางไป-กลับที่ทำงาน ส่วนเสาร์-อาทิตย์และวันหยุดนักขัตฤกษ์มีรูปร่างเดียวกัน คือไม่มีพีคเช้าและสูงสุดราว 17:00 ทุกประเภทวันต่ำสุดตอน 4:00–5:00
-→ ชั่วโมงสัมพันธ์กับยอดเช่าแบบ <b>ไม่เป็นเส้นตรงและเป็นวงรอบ</b> และรูปร่างขึ้นกับประเภทวัน (interaction)</p>
+<p class="lbl">ผลลัพธ์</p>
+<figure class="half"><img src="../figures/04_hourly_by_daytype.png" alt=""><figcaption>รูปที่ 4.3 ยอดเช่าเฉลี่ยรายชั่วโมง แยกวันทำงาน / เสาร์-อาทิตย์ / วันหยุดนักขัตฤกษ์</figcaption></figure>
+<p>วันทำงานมีพีคแหลม 2 ครั้งที่ <b>8:00</b> (~1,380 คัน) และ <b>18:00</b> (~1,810 คัน) ซึ่งเป็นการเดินทางไป-กลับที่ทำงาน ส่วนเสาร์-อาทิตย์และวันหยุดนักขัตฤกษ์มีรูปร่างเดียวกัน คือไม่มีพีคเช้าและสูงสุดราว 17:00 ทุกประเภทวันต่ำสุดตอน 4:00–5:00</p>
+<figure class="half"><img src="../figures/04_day_of_week.png" alt=""><figcaption>รูปที่ 4.4 ยอดเช่าเฉลี่ยต่อชั่วโมงแยกตามวันในสัปดาห์</figcaption></figure>
+<p>เมื่อเฉลี่ยทั้งวัน แต่ละวันในสัปดาห์ต่างกันไม่มาก (~680–820 คัน/ชม.) อาทิตย์ต่ำสุด (682) พุธและศุกร์สูงสุด (811, 816)</p>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
+<ul>
+  <li>ชั่วโมงสัมพันธ์กับยอดเช่าแบบ <b>ไม่เป็นเส้นตรงและเป็นวงรอบ</b> (23:00 อยู่ติดกับ 0:00) → สร้าง <code>hour_sin</code>, <code>hour_cos</code></li>
+  <li>รูปร่างเส้นขึ้นกับประเภทวัน (interaction ชั่วโมง × วันหยุด) → สร้าง <code>is_weekend</code>, <code>is_holiday</code> · โมเดลเชิงเส้นจับ interaction เองไม่ได้ ส่วนโมเดลต้นไม้จับได้ จึงคาดว่าโมเดลต้นไม้จะได้เปรียบ</li>
+  <li>sin/cos คู่เดียวเป็นคลื่นลูกเดียวต่อวัน จับ 2 พีคไม่ได้ → สำหรับโมเดลเชิงเส้นต้องลอง one-hot ของชั่วโมงด้วย</li>
+  <li>รูปที่ 4.3 กับ 4.4 รวมกันบอกว่าความต่างของวันหยุดกับวันทำงานอยู่ที่ <b>"รูปร่าง"</b> ของเส้นรายชั่วโมง ไม่ใช่ "ระดับ" ของทั้งวัน → สร้างทั้ง <code>day_of_week</code> และ <code>is_weekend</code> แล้วให้ feature selection ตัดสินว่าตัวไหนมีประโยชน์</li>
+</ul>
 
 <h3>4.3 ฤดู อุณหภูมิ และฝน</h3>
-<figure><img src="../figures/04_season_temperature.png" alt="" style="max-width:88%"><figcaption>รูปที่ 4.3 ยอดเช่าตามฤดู (ซ้าย) และตามอุณหภูมิพร้อมค่าเฉลี่ยทุกช่วง 5 °C (ขวา)</figcaption></figure>
+<p class="lbl">ผลลัพธ์</p>
+<figure><img src="../figures/04_season_temperature.png" alt="" style="max-width:88%"><figcaption>รูปที่ 4.5 ยอดเช่าตามฤดู (ซ้าย) และตามอุณหภูมิพร้อมค่าเฉลี่ยทุกช่วง 5 °C (ขวา)</figcaption></figure>
 <ul>
   <li>ฤดูหนาวเฉลี่ยเพียง ~230 คัน/ชม. เทียบกับ 774–1,037 ในฤดูอื่น</li>
-  <li>ยอดเพิ่มตามอุณหภูมิจนสูงสุดที่ 25–30 °C (~1,258) แล้ว <b>ลดลง</b> เมื่อร้อนเกิน 30 °C → ความสัมพันธ์เป็นโค้งคว่ำ ซึ่งโมเดลเชิงเส้นจับไม่ได้</li>
-  <li>ฝนเป็น 0 ใน 93.9% ของชั่วโมง แต่ชั่วโมงที่ฝนตกยอดตกจาก ~795 เหลือ ~164 คัน และแม้ฝนแค่ ≤ 1 มม. ยอดก็เหลือ ~223 → ผลของ <b>"มีฝนหรือไม่"</b> สำคัญกว่าปริมาณฝน</li>
+  <li>ยอดเพิ่มตามอุณหภูมิจนสูงสุดที่ 25–30 °C (~1,258) แล้ว <b>ลดลง</b> เมื่อร้อนเกิน 30 °C</li>
+  <li>ฝนเป็น 0 ใน 93.9% ของชั่วโมง แต่ชั่วโมงที่ฝนตกยอดตกจาก ~795 เหลือ ~164 คัน และแม้ฝนแค่ ≤ 1 มม. ยอดก็เหลือ ~223</li>
 </ul>
-<figure class="third"><img src="../figures/04_rainfall.png" alt=""><figcaption>รูปที่ 4.4 ยอดเช่าเฉลี่ยตามปริมาณฝน</figcaption></figure>
+<figure class="third"><img src="../figures/04_rainfall.png" alt=""><figcaption>รูปที่ 4.6 ยอดเช่าเฉลี่ยตามปริมาณฝน</figcaption></figure>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
+<ul>
+  <li>อุณหภูมิกับยอดเช่าเป็นความสัมพันธ์ <b>โค้งคว่ำ</b> ซึ่งโมเดลเชิงเส้นจับไม่ได้ เป็นอีกเหตุผลที่คาดว่าโมเดลต้นไม้จะแม่นกว่า</li>
+  <li>ผลของ <b>"มีฝนหรือไม่"</b> สำคัญกว่าปริมาณฝน → สร้าง <code>is_raining</code> · ฝนเป็นเหตุการณ์ที่มีน้อย (~6%) จึงคาดว่าจะเป็นจุดที่โมเดลทายยาก</li>
+  <li>เก็บทั้ง <code>seasons</code> และสร้าง <code>month</code> ที่ละเอียดกว่า แล้วให้ขั้น feature selection ตัดสินว่าซ้ำซ้อนหรือไม่</li>
+</ul>
 
 <h3>4.4 Correlation และ outlier</h3>
+<p class="lbl">ผลลัพธ์</p>
+<figure><img src="../figures/04_correlation.png" alt="" style="max-width:70%"><figcaption>รูปที่ 4.7 Pearson correlation ของตัวแปรตัวเลข (train, เฉพาะชั่วโมงที่ระบบเปิด)</figcaption></figure>
 <ul>
-  <li>มีคู่ตัวแปรเดียวที่ |r| &gt; 0.8 คือ <code>temp_c</code> กับ <code>dew_point_c</code> (r = 0.91) · กับ target: <code>temp_c</code> r = 0.55, <code>hour</code> r = 0.44 · ฝน/หิมะมี r ต่ำ (−0.13, −0.15) ทั้งที่มีผลแรง เพราะความสัมพันธ์ไม่เป็นเส้นตรง</li>
-  <li><b>ไม่ตัด outlier</b> ของสภาพอากาศและยอดเช่า เพราะเป็นเหตุการณ์จริง (ฝนหนัก, ลมแรง, ชั่วโมงพีค) ที่โมเดลต้องเจอตอนใช้งาน · กฎ IQR ใช้ไม่ได้กับตัวแปรที่ส่วนใหญ่เป็น 0 (ทุกชั่วโมงที่ฝนตกกลายเป็น "outlier")</li>
-  <li><b>ความชื้น = 0%</b> มี 17 แถว (19–28 พ.ค. 2018) เมื่อคำนวณย้อนจากอุณหภูมิและ dew point ด้วยสูตร Magnus ได้ 33–72% จึงเป็น <b>ค่าผิดของเซนเซอร์</b> → แปลงเป็น NaN แล้วเติมด้วยค่ามัธยฐานที่เรียนจาก training fold ใน Pipeline</li>
+  <li>มีคู่ตัวแปรเดียวที่ |r| &gt; 0.8 คือ <code>temp_c</code> กับ <code>dew_point_c</code> (r = 0.91) · กับ target: <code>temp_c</code> r = 0.55, <code>hour</code> r = 0.44 · ฝน/หิมะมี r ต่ำ (−0.13, −0.15) ทั้งที่หัวข้อ 4.3 แสดงว่ามีผลแรง · คู่ที่สัมพันธ์ปานกลาง เช่น ความชื้นกับทัศนวิสัย (−0.55) และความชื้นกับ dew point (0.54)</li>
+  <li>กฎ IQR นับทุกชั่วโมงที่ฝนหรือหิมะตกเป็น "outlier" (เพราะ IQR = 0) และพบค่าเกินขอบใน <code>solar_radiation_mj</code> (~7%), <code>wind_speed_ms</code> (~1.6%) และยอดเช่า (~1.4%) ซึ่งล้วนอยู่ในช่วงที่เกิดขึ้นได้จริง</li>
+  <li><b>ความชื้น = 0%</b> มี 17 แถว (19–28 พ.ค. 2018) เมื่อคำนวณย้อนจากอุณหภูมิและ dew point ด้วยสูตร Magnus ได้ 33–72%</li>
+</ul>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
+<ul>
+  <li>r ของฝน/หิมะต่ำเพราะความสัมพันธ์ไม่เป็นเส้นตรง (ส่วนใหญ่เป็น 0) ไม่ได้แปลว่าไม่สำคัญ → ยืนยันการสร้าง <code>is_raining</code> · <b>ยังไม่ตัด</b> <code>dew_point_c</code> แต่ให้ feature selection ตัดสิน และความซ้ำซ้อนของตัวแปรอากาศเป็นเหตุผลที่ลอง PCA</li>
+  <li><b>ไม่ตัด outlier</b> ของสภาพอากาศและยอดเช่า เพราะเป็นเหตุการณ์จริง (ฝนหนัก, ลมแรง, ชั่วโมงพีค) ที่โมเดลต้องเจอตอนใช้งาน และชั่วโมงพีคคือชั่วโมงที่ผู้ให้บริการต้องการให้ทายแม่นที่สุด</li>
+  <li>ความชื้น 0% ขัดกับอุณหภูมิและ dew point ในแถวเดียวกัน จึงเป็น <b>ค่าผิดของเซนเซอร์</b> → แปลงเป็น NaN แล้วเติมด้วยค่ามัธยฐานที่เรียนจาก training fold ใน Pipeline (หัวข้อ 5)</li>
 </ul>
 
 <!-- ============================ 5 ============================ -->
 <h2>5. Feature engineering และ preprocessing</h2>
+<p class="lbl">วิธีดำเนินการ</p>
+<ol>
+  <li><b>กฎกำหนดขอบเขต</b> (ใช้กับ train และ test เหมือนกัน เพราะเป็นกฎตายตัวรายแถว ไม่ได้เรียนค่าจากข้อมูล): ตัดแถว <code>functioning_day = No</code> และแปลง <code>humidity_pct = 0</code> เป็น NaN</li>
+  <li><b>สร้าง feature ใหม่</b> จากค่าในแถวเดียวกันเท่านั้น ไม่ใช้ target (ตารางที่ 5.1)</li>
+  <li><b>ประกอบ Pipeline</b>: ทุกขั้นที่เรียนค่าจากข้อมูลอยู่ใน <code>Pipeline</code> เพื่อให้ CV fit ใหม่ทุก fold — ตัวแปรตัวเลขและ binary ผ่าน <code>SimpleImputer(median)</code> → <code>StandardScaler</code> ส่วน <code>seasons</code>, <code>month</code>, <code>day_of_week</code> ผ่าน <code>OneHotEncoder</code> ตามด้วยช่อง <code>select</code> (สำหรับ selector/PCA) และช่อง <code>model</code></li>
+</ol>
 <table>
   <caption>ตารางที่ 5.1 feature ที่สร้างเพิ่ม (คำนวณจากแถวเดียวกันเท่านั้น ไม่ใช้ target)</caption>
   <tr><th>feature</th><th>สร้างจาก</th><th>เหตุผล (จาก EDA)</th></tr>
@@ -206,19 +300,36 @@
   <tr><td><code>month</code></td><td>date</td><td>ละเอียดกว่าฤดู (ต้น/ปลาย Spring ต่างกันมาก)</td></tr>
   <tr><td><code>is_raining</code></td><td>rainfall_mm &gt; 0</td><td>"มีฝน" ลดยอด ~80% ไม่ว่าจะตกมากหรือน้อย</td></tr>
 </table>
-<p><b>Pipeline:</b> ทุกขั้นที่เรียนค่าจากข้อมูลอยู่ใน <code>Pipeline</code> เพื่อให้ CV fit ใหม่ทุก fold — ตัวแปรตัวเลขและ binary ผ่าน <code>SimpleImputer(median)</code> → <code>StandardScaler</code> ส่วน <code>seasons</code>, <code>month</code>, <code>day_of_week</code> ผ่าน <code>OneHotEncoder</code> ตามด้วยช่อง <code>select</code> (สำหรับ selector/PCA) และช่อง <code>model</code></p>
-<p><b>การ encode ชั่วโมง</b> เลือกได้ 3 แบบตามชนิดโมเดล เพราะ sin/cos คู่เดียวให้โมเดลเชิงเส้นสร้างพีคได้แค่ 1 ครั้งต่อวัน แต่ข้อมูลมี 2 พีค:</p>
+<p class="lbl">ผลลัพธ์</p>
+<ul>
+  <li>การ encode ชั่วโมงบนวงกลม: 23:00 กับ 0:00 ห่างกัน 0.261 เท่ากับ 0:00–1:00 ส่วน 0:00 กับ 12:00 ห่างกันมากที่สุด (2.0) ตรงกับธรรมชาติของเวลา (รูปที่ 5.1)</li>
+  <li>กฎขอบเขต: train 7,008 → <b>6,768 แถว</b> (ตัด 240), test 1,752 → <b>1,697 แถว</b> (ตัด 55) · ความชื้นกลายเป็น NaN ใน train 17 แถว</li>
+  <li>X_train มี 17 คอลัมน์ · หลัง preprocess (hour แบบ sin/cos) ได้ 36 คอลัมน์ ไม่มี NaN เหลือ ค่าที่ใช้เติมความชื้น = 57.0 (มัธยฐานของ train) ตัวแปรตัวเลขทุกตัวมี mean 0 และ std 1 และ one-hot ของแต่ละกลุ่มรวมกันได้ 1 ทุกแถว</li>
+  <li>ตรวจการรั่วของ Pipeline ใน GroupKFold: ทุก fold มีวันซ้ำระหว่าง train กับ validation 0 วัน และ scaler / imputer เรียนค่าจาก training fold ของตัวเอง (mean ของ <code>temp_c</code> 13.35–13.40, median ความชื้น 57–58 ต่างกันเล็กน้อยในแต่ละ fold)</li>
+</ul>
+<figure class="third"><img src="../figures/05_hour_cyclic.png" alt=""><figcaption>รูปที่ 5.1 ชั่วโมงหลังแปลงเป็น (hour_sin, hour_cos) เรียงเป็นวงกลม</figcaption></figure>
 <table>
+  <caption>ตารางที่ 5.2 การ encode ชั่วโมงตามชนิดโมเดล</caption>
   <tr><th>โมเดล</th><th>encoding</th><th class="r">คอลัมน์หลัง preprocess</th><th>เหตุผล</th></tr>
   <tr><td>Linear Regression</td><td>one-hot 24 คอลัมน์</td><td class="r">58</td><td>ให้แต่ละชั่วโมงมีค่าคงที่ของตัวเอง รองรับ 2 พีค</td></tr>
   <tr><td>kNN</td><td>sin/cos</td><td class="r">36</td><td>ใช้ระยะทาง ต้องการให้ 23:00 ใกล้ 0:00 และมิติน้อย</td></tr>
   <tr><td>Random Forest, HistGradientBoosting</td><td>0–23 ตรงๆ</td><td class="r">35</td><td>ต้นไม้ตัดแบ่งช่วงชั่วโมงได้เองหลายครั้ง</td></tr>
 </table>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
+<ul>
+  <li><b>Missing value:</b> เติมด้วย <b>มัธยฐาน</b> แทนค่าเฉลี่ย เพราะไม่ไวต่อค่าสุดโต่ง และเติมใน Pipeline เพื่อให้ค่ามัธยฐานมาจาก training fold เท่านั้น ถ้าเติมก่อนแบ่งข้อมูล ค่าจาก test จะรั่วเข้ามา · ไม่ลบแถวทิ้งเพราะค่าอื่นในแถวยังถูกต้อง</li>
+  <li><b>Encoding:</b> ใช้ one-hot กับ <code>seasons</code>, <code>month</code>, <code>day_of_week</code> เพราะเป็นหมวดหมู่ที่ไม่มีลำดับ ถ้าใช้ label encoding (เช่น Winter = 3, Autumn = 0) โมเดลเชิงเส้นและ kNN จะตีความว่าเป็นระยะทางหรือขนาดที่ไม่มีอยู่จริง</li>
+  <li><b>ชั่วโมง</b> encode ต่างกันตามชนิดโมเดล เพราะ sin/cos คู่เดียวให้โมเดลเชิงเส้นสร้างพีคได้แค่ 1 ครั้งต่อวัน แต่ข้อมูลมี 2 พีค (ตารางที่ 5.2)</li>
+  <li><b>Scaling:</b> จำเป็นกับ kNN (ระยะทาง), PCA (variance) และ Lasso/Ridge (ขนาดของ penalty) เพราะตัวแปรมีสเกลต่างกันมาก เช่น <code>visibility_10m</code> 27–2,000 เทียบกับ <code>wind_speed_ms</code> 0–7.4 ส่วนโมเดลต้นไม้ไม่ได้รับผลจาก scaling แต่ใช้ Pipeline เดียวกันเพื่อให้เทียบกันได้</li>
+  <li><b>ทำไมเลือก Standardization (Z-score) แทน Min-Max:</b> Min-Max ใช้ค่า min และ max เป็นตัวหาร จึงไวต่อค่าสุดโต่งที่เราตัดสินใจเก็บไว้ (หัวข้อ 4.4) เช่น <code>rainfall_mm</code> ที่ max 35 มม. แต่ Q3 = 0 ค่าฝนเกือบทั้งหมดจะถูกบีบไปกองใกล้ 0 และค่าใน test ที่เกินช่วงของ train จะหลุดนอกช่วง [0, 1] ขณะที่ Z-score ใช้ mean และ std ซึ่งได้รับผลจากค่าสุดโต่งน้อยกว่า และให้ทุกตัวแปรมี mean 0 เหมาะกับ PCA และ penalty ของ Lasso/Ridge (ข้อนี้เป็นเหตุผลเชิงหลักการ ไม่ได้ทดลองเทียบกันด้วย CV)</li>
+</ul>
 
 <!-- ============================ 6 ============================ -->
 <h2>6. Feature selection</h2>
+<p class="lbl">วิธีดำเนินการ</p>
 <p>ทำ 3 แนวทาง โดย selector อยู่ในช่อง <code>select</code> ของ Pipeline และเลือกจำนวน feature ด้วย <code>GridSearchCV</code> + GroupKFold · ประเมินด้วย Linear Regression (hour one-hot, 58 คอลัมน์) เพราะ feature selection มีผลกับโมเดลเชิงเส้นมากที่สุด
 หมายเหตุ: <b>ใช้ chi² ไม่ได้</b> เพราะ chi² ต้องการ target เป็นหมวดหมู่ (และต้องการค่า feature ไม่ติดลบ ขณะที่อุณหภูมิติดลบได้) จึงใช้ <code>f_regression</code> และ <code>mutual_info_regression</code> แทน</p>
+<p class="lbl">ผลลัพธ์</p>
 <table>
   <caption>ตารางที่ 6.1 สรุปผล feature selection (CV MAE, คัน/ชม.)</caption>
   <tr><th>วิธี</th><th>แนวทาง</th><th>พารามิเตอร์ที่ดีที่สุด</th><th class="r">จำนวน feature</th><th class="r">CV MAE</th></tr>
@@ -229,6 +340,7 @@
   <tr><td>SelectFromModel(Lasso)</td><td>Embedded</td><td>alpha = 0.1</td><td class="r">52</td><td class="r">266.2</td></tr>
 </table>
 <figure class="half"><img src="../figures/07_filter_k.png" alt=""><figcaption>รูปที่ 6.1 CV MAE ตามจำนวน feature ที่ filter เลือก (k)</figcaption></figure>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li><b>Filter:</b> MAE ลดลงเรื่อยๆ เมื่อ k เพิ่ม และดีที่สุดเมื่อใช้ทุกตัว เพราะ filter ให้คะแนนทีละคอลัมน์ แต่ one-hot ของชั่วโมงมีประโยชน์ <i>เมื่ออยู่ด้วยกัน</i> · ทั้งสองวิธีจัด <code>temp_c</code> เป็นอันดับ 1 และ mutual information จับผลของฝน (<code>is_raining</code>, <code>rainfall_mm</code>) ได้ดีกว่า F-test</li>
   <li><b>Wrapper (RFE):</b> ใช้ 30 จาก 58 feature ได้ MAE เท่าเดิม (ต่าง 0.4 คัน น้อยกว่า std 4.8) — ตัดข้อมูลซ้ำซ้อนทิ้ง เช่น <code>is_weekend</code>/<code>is_holiday</code> กับ one-hot ของวัน, เดือนกับฤดู และ <code>rainfall_mm</code> (เก็บ <code>is_raining</code>)</li>
@@ -238,7 +350,10 @@
 
 <!-- ============================ 7 ============================ -->
 <h2>7. PCA</h2>
-<p>ทำ PCA บนข้อมูลหลัง standardize (36 คอลัมน์, hour แบบ sin/cos) ต้องใช้ <b>14 components</b> จึงอธิบาย variance ได้ ≥ 90% และ 19 components สำหรับ ≥ 95% → ข้อมูลซ้ำซ้อนพอสมควรแต่บีบมิติได้ไม่มาก</p>
+<p class="lbl">วิธีดำเนินการ</p>
+<p>ทำ PCA บนข้อมูลหลัง standardize (36 คอลัมน์, hour แบบ sin/cos) เพื่อดูว่าบีบมิติได้แค่ไหน ตีความ component แรกๆ จาก loading แล้วใส่ PCA ในช่อง <code>select</code> ของ Pipeline เทียบ CV MAE กับการไม่ใส่ ทั้งใน Linear Regression และ kNN</p>
+<p class="lbl">ผลลัพธ์</p>
+<p>ต้องใช้ <b>14 components</b> จึงอธิบาย variance ได้ ≥ 90% และ 19 components สำหรับ ≥ 95% → ข้อมูลซ้ำซ้อนพอสมควรแต่บีบมิติได้ไม่มาก</p>
 <figure class="half"><img src="../figures/08_pca_variance.png" alt=""><figcaption>รูปที่ 7.1 cumulative explained variance</figcaption></figure>
 <table>
   <caption>ตารางที่ 7.1 การตีความ principal component แรกๆ จาก loading</caption>
@@ -253,22 +368,27 @@
   <tr><td>Linear Regression</td><td class="r"><b>314.6</b></td><td class="r">364.9</td><td class="r">340.2</td><td class="r">325.6</td><td class="r">329.2</td><td class="r">315.6</td></tr>
   <tr><td>kNN (k = 10)</td><td class="r">194.4</td><td class="r">200.8</td><td class="r">190.5</td><td class="r"><b>189.5</b></td><td class="r">201.3</td><td class="r">195.0</td></tr>
 </table>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <p>PCA <b>ไม่ช่วย</b> Linear Regression (ตัดข้อมูลบางส่วนทิ้ง ส่วนโมเดลเชิงเส้นบนแกนที่หมุนแล้วก็ยังเป็นเชิงเส้นเหมือนเดิม) และ <b>ช่วย kNN เล็กน้อย</b> (~5 คัน) เพราะการตัดมิติที่เป็น noise ทำให้ "เพื่อนบ้าน" มีความหมายขึ้น → ใช้ PCA(15) เป็นตัวเลือกหนึ่งใน tuning ของ kNN</p>
 
 <!-- ============================ 8 ============================ -->
 <h2>8. Baseline และการเทียบโมเดล</h2>
+<p class="lbl">วิธีดำเนินการ</p>
+<p>สร้าง baseline 3 แบบเป็นเพดานล่าง (ทายค่าเฉลี่ย, ทายมัธยฐาน และค่าเฉลี่ยของแต่ละชั่วโมง × ประเภทวัน) แล้วเทียบ 4 ตระกูลโมเดลที่มีสมมติฐานต่างกัน — เส้นตรง (Linear Regression), ระยะทาง (kNN), ต้นไม้แบบ bagging (Random Forest) และต้นไม้แบบ boosting (HistGradientBoosting) — ด้วยค่า default ภายใต้ 5-fold GroupKFold บน train และบันทึก MAE บน train คู่กันเพื่อดู overfit/underfit (gap = CV MAE − train MAE)</p>
+<p class="lbl">ผลลัพธ์</p>
 <table>
-  <caption>ตารางที่ 8.1 baseline และ 4 โมเดลด้วยค่า default (5-fold GroupKFold บน train, หน่วยคัน/ชม.)</caption>
-  <tr><th>โมเดล</th><th class="r">CV MAE</th><th class="r">± std</th><th class="r">RMSE</th><th class="r">R²</th><th class="r">MAE บน train</th><th class="r">gap</th></tr>
-  <tr><td>Dummy (mean)</td><td class="r">527.5</td><td class="r">12.9</td><td class="r">650.4</td><td class="r">−0.003</td><td class="r">527.1</td><td class="r">—</td></tr>
-  <tr><td>Dummy (median)</td><td class="r">512.2</td><td class="r">16.6</td><td class="r">673.6</td><td class="r">−0.075</td><td class="r">511.8</td><td class="r">—</td></tr>
-  <tr><td>เวลาอย่างเดียว (hour × ประเภทวัน)</td><td class="r">401.0</td><td class="r">10.5</td><td class="r">520.2</td><td class="r">0.358</td><td class="r">396.0</td><td class="r">—</td></tr>
-  <tr><td>Linear Regression (hour one-hot)</td><td class="r">266.2</td><td class="r">4.8</td><td class="r">347.7</td><td class="r">0.713</td><td class="r">259.8</td><td class="r">6.4</td></tr>
-  <tr><td>kNN (k = 10, sin/cos)</td><td class="r">194.4</td><td class="r">8.6</td><td class="r">289.9</td><td class="r">0.800</td><td class="r">151.9</td><td class="r">42.5</td></tr>
-  <tr><td>Random Forest (200 ต้น)</td><td class="r">122.4</td><td class="r">9.4</td><td class="r">199.4</td><td class="r">0.904</td><td class="r">36.8</td><td class="r">85.6</td></tr>
-  <tr class="best"><td>HistGradientBoosting</td><td class="r">114.1</td><td class="r">10.0</td><td class="r">184.6</td><td class="r">0.918</td><td class="r">69.0</td><td class="r">45.1</td></tr>
+  <caption>ตารางที่ 8.1 baseline และ 4 โมเดลด้วยค่า default (5-fold GroupKFold บน train, หน่วยคัน/ชม. ยกเว้น MSE เป็นคัน²)</caption>
+  <tr><th>โมเดล</th><th class="r">CV MAE</th><th class="r">± std</th><th class="r">MSE</th><th class="r">RMSE</th><th class="r">R²</th><th class="r">MAE บน train</th><th class="r">gap</th></tr>
+  <tr><td>Dummy (mean)</td><td class="r">527.5</td><td class="r">12.9</td><td class="r">423,381</td><td class="r">650.4</td><td class="r">−0.003</td><td class="r">527.1</td><td class="r">—</td></tr>
+  <tr><td>Dummy (median)</td><td class="r">512.2</td><td class="r">16.6</td><td class="r">454,336</td><td class="r">673.6</td><td class="r">−0.075</td><td class="r">511.8</td><td class="r">—</td></tr>
+  <tr><td>เวลาอย่างเดียว (hour × ประเภทวัน)</td><td class="r">401.0</td><td class="r">10.5</td><td class="r">270,794</td><td class="r">520.2</td><td class="r">0.358</td><td class="r">396.0</td><td class="r">—</td></tr>
+  <tr><td>Linear Regression (hour one-hot)</td><td class="r">266.2</td><td class="r">4.8</td><td class="r">120,964</td><td class="r">347.7</td><td class="r">0.713</td><td class="r">259.8</td><td class="r">6.4</td></tr>
+  <tr><td>kNN (k = 10, sin/cos)</td><td class="r">194.4</td><td class="r">8.6</td><td class="r">84,316</td><td class="r">289.9</td><td class="r">0.800</td><td class="r">151.9</td><td class="r">42.5</td></tr>
+  <tr><td>Random Forest (200 ต้น)</td><td class="r">122.4</td><td class="r">9.4</td><td class="r">40,192</td><td class="r">199.4</td><td class="r">0.904</td><td class="r">36.8</td><td class="r">85.6</td></tr>
+  <tr class="best"><td>HistGradientBoosting</td><td class="r">114.1</td><td class="r">10.0</td><td class="r">34,462</td><td class="r">184.6</td><td class="r">0.918</td><td class="r">69.0</td><td class="r">45.1</td></tr>
 </table>
 <figure class="half"><img src="../figures/10_model_comparison.png" alt=""><figcaption>รูปที่ 8.1 CV MAE ± std (สีเทา = baseline)</figcaption></figure>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li>baseline "เวลาอย่างเดียว" คือค่าเฉลี่ยของแต่ละ (ชั่วโมง × ประเภทวัน) ที่เรียนจาก training fold ใช้วัดว่า <b>ข้อมูลอากาศช่วยจริงไหม</b> — ทุกโมเดลชนะ baseline นี้ชัดเจน</li>
   <li><b>Linear Regression</b> gap แค่ 6.4 คัน = underfit (จับความสัมพันธ์โค้งและ interaction ไม่ได้) · <b>Random Forest</b> MAE บน train แค่ 36.8 และ gap 85.6 = overfit มากที่สุด (bias ต่ำ variance สูง) · <b>HistGradientBoosting</b> แม่นที่สุดและ gap ปานกลาง</li>
@@ -277,7 +397,9 @@
 
 <!-- ============================ 9 ============================ -->
 <h2>9. Hyperparameter tuning</h2>
+<p class="lbl">วิธีดำเนินการ</p>
 <p>tune ด้วย <code>GridSearchCV</code> (Linear, kNN) และ <code>RandomizedSearchCV</code> (RF สุ่ม 15 จาก 64 ชุด, HGB สุ่ม 30 จาก 480 ชุด) ทั้งหมดใช้ GroupKFold + groups และเลือกด้วย MAE · ลองฝึกบน <code>log1p(y)</code> ผ่าน <code>TransformedTargetRegressor</code> ด้วย (แปลงค่าทำนายกลับก่อนคิดคะแนน MAE จึงยังเป็นหน่วยคัน)</p>
+<p class="lbl">ผลลัพธ์</p>
 <table>
   <caption>ตารางที่ 9.1 CV MAE ก่อนและหลัง tune (คัน/ชม.)</caption>
   <tr><th>โมเดล</th><th class="r">ก่อน</th><th class="r">หลัง</th><th>พารามิเตอร์ที่ได้</th></tr>
@@ -289,6 +411,7 @@
   <tr class="best"><td>HistGradientBoosting</td><td class="r">114.1</td><td class="r">109.0 ± 8.1</td><td>learning_rate = 0.02, max_iter = 400, max_leaf_nodes = 127, min_samples_leaf = 5, l2 = 1.0</td></tr>
   <tr><td>HistGradientBoosting + log1p(y)</td><td class="r">—</td><td class="r">110.7 ± 8.0</td><td>พารามิเตอร์เดียวกับ HGB</td></tr>
 </table>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li><b>log1p ช่วยโมเดลเชิงเส้นมาก</b> เพราะผลของอากาศเป็นแบบ "คูณ" (ฝนตก → ยอดลด ~80% ไม่ว่ายอดปกติจะเป็นหลักร้อยหรือหลักพัน) บนสเกล log ผลแบบคูณกลายเป็นแบบบวกซึ่งโมเดลเชิงเส้นจับได้ · แต่ไม่ช่วย kNN และ HGB ซึ่งไม่ได้สมมติรูปร่างความสัมพันธ์อยู่แล้ว</li>
   <li>พารามิเตอร์ที่ดีที่สุดของ HGB อยู่ที่ขอบของ grid (learning_rate ต่ำสุด, max_leaf_nodes สูงสุด) ขยาย grid ได้อีก แต่ส่วนที่เหลือน่าจะน้อยกว่า std (~8 คัน)</li>
@@ -296,28 +419,34 @@
 
 <!-- ============================ 10 ============================ -->
 <h2>10. การเลือกโมเดลและทรัพยากรที่ใช้</h2>
+<p class="lbl">วิธีดำเนินการ</p>
+<p>นำตัวที่ดีที่สุดของแต่ละตระกูลหลัง tune มาเทียบกันทั้งความแม่น (CV MAE) และทรัพยากร (เวลา fit บน train ทั้งหมด, ขนาดไฟล์โมเดล, เวลาทำนาย 1 แถว) โดย<b>เลือกด้วย CV ไม่ใช้ test</b> เพื่อให้ test เป็นการประเมินที่ไม่ลำเอียงจริง</p>
+<p class="lbl">ผลลัพธ์</p>
 <table>
   <caption>ตารางที่ 10.1 เปรียบเทียบความแม่นและทรัพยากร (ตัวที่ดีที่สุดของแต่ละตระกูลหลัง tune)</caption>
   <tr><th>โมเดล</th><th class="r">CV MAE</th><th class="r">fit ทั้ง train (s)</th><th class="r">ไฟล์ joblib (MB)</th><th class="r">latency / 1 แถว (ms)</th><th>ต้นทุนการทำนาย</th></tr>
-  <tr class="best"><td>HistGradientBoosting</td><td class="r">109.0 ± 8.1</td><td class="r">2.97</td><td class="r">5.77</td><td class="r">7.0</td><td>O(จำนวนต้น × ความลึก)</td></tr>
-  <tr><td>Random Forest</td><td class="r">121.8 ± 9.1</td><td class="r">3.20</td><td class="r"><b>121.72</b></td><td class="r">9.4</td><td>O(จำนวนต้น × ความลึก) · ไฟล์ใหญ่</td></tr>
-  <tr><td>kNN (+PCA 15)</td><td class="r">183.7 ± 7.8</td><td class="r">0.02</td><td class="r">1.81</td><td class="r">2.7</td><td>O(n·d) ต่อครั้ง ต้องเก็บ train ทั้งหมด</td></tr>
-  <tr><td>Linear Regression + log1p(y)</td><td class="r">211.0 ± 6.9</td><td class="r">0.02</td><td class="r">0.01</td><td class="r">2.6</td><td>O(d)</td></tr>
+  <tr class="best"><td>HistGradientBoosting</td><td class="r">109.0 ± 8.1</td><td class="r">2.88</td><td class="r">5.77</td><td class="r">6.3</td><td>O(จำนวนต้น × ความลึก)</td></tr>
+  <tr><td>Random Forest</td><td class="r">121.8 ± 9.1</td><td class="r">3.14</td><td class="r"><b>121.72</b></td><td class="r">9.3</td><td>O(จำนวนต้น × ความลึก) · ไฟล์ใหญ่</td></tr>
+  <tr><td>kNN (+PCA 15)</td><td class="r">183.7 ± 7.8</td><td class="r">0.02</td><td class="r">1.81</td><td class="r">2.4</td><td>O(n·d) ต่อครั้ง ต้องเก็บ train ทั้งหมด</td></tr>
+  <tr><td>Linear Regression + log1p(y)</td><td class="r">211.0 ± 6.9</td><td class="r">0.02</td><td class="r">0.01</td><td class="r">2.4</td><td>O(d)</td></tr>
 </table>
 <p class="note">เวลา fit และ latency เปลี่ยนเล็กน้อยทุกครั้งที่รันและขึ้นกับเครื่อง ใช้ดูลำดับขนาดเท่านั้น (latency = มัธยฐานของการทำนาย 1 แถว 30 ครั้ง รวม preprocessing ใน Pipeline)</p>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <p><b>เลือก HistGradientBoosting:</b> MAE ต่ำที่สุด ห่างจาก Random Forest 12.8 คัน (~1.5 เท่าของ std จึงไม่ถือว่าเสมอกัน) ไฟล์เพียง ~5.8 MB และทำนาย 1 แถวใช้ไม่กี่มิลลิวินาที · Random Forest ตกไปเพราะทั้งแม่นน้อยกว่าและไฟล์ ~122 MB เกินขีดจำกัด 100 MB ของ GitHub</p>
 
 <!-- ============================ 11 ============================ -->
 <h2>11. ผลบนชุดทดสอบและ error analysis</h2>
-<p>นำ HistGradientBoosting ที่ fit บน train ทั้งหมดมาทำนาย test 1,697 แถว <b>เป็นครั้งแรกและครั้งเดียว</b> (ค่าทำนายติดลบ 3 แถว clip เป็น 0)</p>
+<p class="lbl">วิธีดำเนินการ</p>
+<p>นำ HistGradientBoosting ที่ fit บน train ทั้งหมดมาทำนาย test 1,697 แถว <b>เป็นครั้งแรกและครั้งเดียว</b> (ค่าทำนายติดลบ 3 แถว clip เป็น 0) แล้ววิเคราะห์ error แยกตามฤดู ประเภทวัน ฝน และชั่วโมง พร้อมดู 10 ชั่วโมงที่ทายพลาดมากที่สุด</p>
+<p class="lbl">ผลลัพธ์</p>
 <table style="width:60%">
   <caption>ตารางที่ 11.1 CV เทียบ test</caption>
   <tr><th>เมตริก</th><th class="r">CV บน train</th><th class="r">test</th></tr>
   <tr><td>MAE (คัน/ชม.)</td><td class="r">109.0</td><td class="r"><b>97.4</b></td></tr>
+  <tr><td>MSE (คัน²)</td><td class="r">—</td><td class="r">28,947.7</td></tr>
   <tr><td>RMSE (คัน/ชม.)</td><td class="r">—</td><td class="r">170.1</td></tr>
   <tr><td>R²</td><td class="r">—</td><td class="r"><b>0.919</b></td></tr>
 </table>
-<p>test MAE ใกล้กับ CV แปลว่าโมเดลไม่ได้ overfit และ CV ประเมินได้สมจริง ที่ test ต่ำกว่า CV ~12 คัน สอดคล้องกับที่บันทึกไว้ในหัวข้อ 3: test มีชั่วโมงฤดูหนาวมากกว่า ซึ่งยอดต่ำ ค่าคลาดเป็นคันจึงเล็กตาม ไม่ได้แปลว่าโมเดลเก่งขึ้น</p>
 <table>
   <caption>ตารางที่ 11.2 error แยกกลุ่ม (bias = ค่าเฉลี่ยของ ทำนาย − จริง, บวก = ทายสูงเกิน)</caption>
   <tr><th>กลุ่ม</th><th class="r">n</th><th class="r">ยอดเฉลี่ย</th><th class="r">MAE</th><th class="r">bias</th><th class="r">MAE / ยอดเฉลี่ย</th></tr>
@@ -331,7 +460,9 @@
   <tr><td>ไม่มีฝน</td><td class="r">1,594</td><td class="r">647.3</td><td class="r">93.4</td><td class="r">+21.9</td><td class="r">14.4%</td></tr>
 </table>
 <figure><img src="../figures/13_test_errors.png" alt=""><figcaption>รูปที่ 11.1 ค่าจริง vs ค่าทำนาย (ซ้าย), residual (กลาง), MAE รายชั่วโมงเทียบยอดเฉลี่ย (ขวา)</figcaption></figure>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
+  <li>test MAE ใกล้กับ CV แปลว่าโมเดลไม่ได้ overfit และ CV ประเมินได้สมจริง ที่ test ต่ำกว่า CV ~12 คัน สอดคล้องกับที่บันทึกไว้ในหัวข้อ 3: test มีชั่วโมงฤดูหนาวมากกว่า ซึ่งยอดต่ำ ค่าคลาดเป็นคันจึงเล็กตาม ไม่ได้แปลว่าโมเดลเก่งขึ้น</li>
   <li>ค่าทำนายเกาะเส้นทแยงดี แต่ <b>ความคลาดโตตามระดับยอด</b> (residual เป็นรูปกรวย) · MAE สูงสุดที่ชั่วโมงพีค 18:00–19:00 และ 8:00 ต่ำสุดตี 3–5</li>
   <li><b>ชั่วโมงฝนตกคือจุดอ่อนที่สุด</b>: คลาด 88.7% ของยอดและทายสูงเกิน (ชั่วโมงฝนตกมีแค่ ~6% ของ train ให้เรียน)</li>
   <li>bias เป็นบวกทุกกลุ่ม → โดยรวมโมเดลทายสูงกว่าจริงเล็กน้อย</li>
@@ -340,7 +471,9 @@
 
 <!-- ============================ 12 ============================ -->
 <h2>12. การทำนายข้อมูลใหม่</h2>
+<p class="lbl">วิธีดำเนินการ</p>
 <p>สร้างสถานการณ์สมมติในรูปแบบเดียวกับข้อมูลดิบ ผ่านฟังก์ชันสร้าง feature ชุดเดียวกับ train (dew point คำนวณจากอุณหภูมิและความชื้นให้สอดคล้องกันทางกายภาพ) แล้วทำนายด้วยโมเดลที่เลือก</p>
+<p class="lbl">ผลลัพธ์</p>
 <table>
   <caption>ตารางที่ 12.1 ผลทำนายสถานการณ์สมมติ</caption>
   <tr><th>สถานการณ์</th><th class="r">ทำนาย (คัน/ชม.)</th><th>ความหมาย</th></tr>
@@ -349,6 +482,7 @@
   <tr><td>เสาร์ 18:00 อากาศเหมือนแถวแรก</td><td class="r"><b>2,167</b></td><td>วันหยุดไม่มีพีคเดินทางกลับบ้าน ต่ำกว่าวันพุธ ~800 คัน</td></tr>
   <tr><td>พุธ 08:00 ฤดูหนาว −3 °C</td><td class="r"><b>690</b></td><td>ยังมีพีคเช้า แต่ต่ำกว่าฤดูร้อนมาก</td></tr>
 </table>
+<p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <p>ทิศทางของทุกปัจจัยสมเหตุสมผลและตรงกับ EDA แต่ค่าทำนายของชั่วโมงฝนตกมีความไม่แน่นอนสูงที่สุด (หัวข้อ 11)</p>
 
 <!-- ============================ 13 ============================ -->
