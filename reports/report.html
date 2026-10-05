@@ -432,10 +432,10 @@
 <table>
   <caption>ตารางที่ 10.1 เปรียบเทียบความแม่นและทรัพยากร (ตัวที่ดีที่สุดของแต่ละตระกูลหลัง tune)</caption>
   <tr><th>โมเดล</th><th class="r">CV MAE</th><th class="r">fit ทั้ง train (s)</th><th class="r">latency / 1 แถว (ms)</th><th>ต้นทุนการทำนาย</th></tr>
-  <tr class="best"><td>HistGradientBoosting</td><td class="r">109.0 ± 8.1</td><td class="r">4.80</td><td class="r">11.3</td><td>O(จำนวนต้น × ความลึก)</td></tr>
-  <tr><td>Random Forest</td><td class="r">121.8 ± 9.1</td><td class="r">3.62</td><td class="r">10.3</td><td>O(จำนวนต้น × ความลึก)</td></tr>
-  <tr><td>kNN (+PCA 15)</td><td class="r">183.7 ± 7.8</td><td class="r">0.03</td><td class="r">4.2</td><td>O(n·d) ต่อครั้ง ต้องเก็บ train ทั้งหมด</td></tr>
-  <tr><td>Linear Regression + log1p(y)</td><td class="r">211.0 ± 6.9</td><td class="r">0.04</td><td class="r">4.9</td><td>O(d)</td></tr>
+  <tr class="best"><td>HistGradientBoosting</td><td class="r">109.0 ± 8.1</td><td class="r">5.26</td><td class="r">14.1</td><td>O(จำนวนต้น × ความลึก)</td></tr>
+  <tr><td>Random Forest</td><td class="r">121.8 ± 9.1</td><td class="r">3.77</td><td class="r">11.7</td><td>O(จำนวนต้น × ความลึก)</td></tr>
+  <tr><td>kNN (+PCA 15)</td><td class="r">183.7 ± 7.8</td><td class="r">0.03</td><td class="r">3.9</td><td>O(n·d) ต่อครั้ง ต้องเก็บ train ทั้งหมด</td></tr>
+  <tr><td>Linear Regression + log1p(y)</td><td class="r">211.0 ± 6.9</td><td class="r">0.04</td><td class="r">4.7</td><td>O(d)</td></tr>
 </table>
 <p class="note">เวลา fit และ latency เปลี่ยนเล็กน้อยทุกครั้งที่รันและขึ้นกับเครื่อง ใช้ดูลำดับขนาดเท่านั้น (latency = มัธยฐานของการทำนาย 1 แถว 30 ครั้ง รวม preprocessing ใน Pipeline)</p>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
