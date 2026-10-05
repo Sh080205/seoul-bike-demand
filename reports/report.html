@@ -427,19 +427,19 @@
 <!-- ============================ 10 ============================ -->
 <h2>10. การเลือกโมเดลและทรัพยากรที่ใช้</h2>
 <p class="lbl">วิธีดำเนินการ</p>
-<p>นำตัวที่ดีที่สุดของแต่ละตระกูลหลัง tune มาเทียบกันทั้งความแม่น (CV MAE) และทรัพยากร (เวลา fit บน train ทั้งหมด, ขนาดไฟล์โมเดล, เวลาทำนาย 1 แถว) โดย<b>เลือกด้วย CV ไม่ใช้ test</b> เพื่อให้ test เป็นการประเมินที่ไม่ลำเอียงจริง</p>
+<p>นำตัวที่ดีที่สุดของแต่ละตระกูลหลัง tune มาเทียบกันทั้งความแม่น (CV MAE) และทรัพยากร (เวลา fit บน train ทั้งหมด, เวลาทำนาย 1 แถว) โดย<b>เลือกด้วย CV ไม่ใช้ test</b> เพื่อให้ test เป็นการประเมินที่ไม่ลำเอียงจริง</p>
 <p class="lbl">ผลลัพธ์</p>
 <table>
   <caption>ตารางที่ 10.1 เปรียบเทียบความแม่นและทรัพยากร (ตัวที่ดีที่สุดของแต่ละตระกูลหลัง tune)</caption>
-  <tr><th>โมเดล</th><th class="r">CV MAE</th><th class="r">fit ทั้ง train (s)</th><th class="r">ไฟล์ joblib (MB)</th><th class="r">latency / 1 แถว (ms)</th><th>ต้นทุนการทำนาย</th></tr>
-  <tr class="best"><td>HistGradientBoosting</td><td class="r">109.0 ± 8.1</td><td class="r">2.88</td><td class="r">5.77</td><td class="r">6.3</td><td>O(จำนวนต้น × ความลึก)</td></tr>
-  <tr><td>Random Forest</td><td class="r">121.8 ± 9.1</td><td class="r">3.14</td><td class="r"><b>121.72</b></td><td class="r">9.3</td><td>O(จำนวนต้น × ความลึก) · ไฟล์ใหญ่</td></tr>
-  <tr><td>kNN (+PCA 15)</td><td class="r">183.7 ± 7.8</td><td class="r">0.02</td><td class="r">1.81</td><td class="r">2.4</td><td>O(n·d) ต่อครั้ง ต้องเก็บ train ทั้งหมด</td></tr>
-  <tr><td>Linear Regression + log1p(y)</td><td class="r">211.0 ± 6.9</td><td class="r">0.02</td><td class="r">0.01</td><td class="r">2.4</td><td>O(d)</td></tr>
+  <tr><th>โมเดล</th><th class="r">CV MAE</th><th class="r">fit ทั้ง train (s)</th><th class="r">latency / 1 แถว (ms)</th><th>ต้นทุนการทำนาย</th></tr>
+  <tr class="best"><td>HistGradientBoosting</td><td class="r">109.0 ± 8.1</td><td class="r">4.80</td><td class="r">11.3</td><td>O(จำนวนต้น × ความลึก)</td></tr>
+  <tr><td>Random Forest</td><td class="r">121.8 ± 9.1</td><td class="r">3.62</td><td class="r">10.3</td><td>O(จำนวนต้น × ความลึก)</td></tr>
+  <tr><td>kNN (+PCA 15)</td><td class="r">183.7 ± 7.8</td><td class="r">0.03</td><td class="r">4.2</td><td>O(n·d) ต่อครั้ง ต้องเก็บ train ทั้งหมด</td></tr>
+  <tr><td>Linear Regression + log1p(y)</td><td class="r">211.0 ± 6.9</td><td class="r">0.04</td><td class="r">4.9</td><td>O(d)</td></tr>
 </table>
 <p class="note">เวลา fit และ latency เปลี่ยนเล็กน้อยทุกครั้งที่รันและขึ้นกับเครื่อง ใช้ดูลำดับขนาดเท่านั้น (latency = มัธยฐานของการทำนาย 1 แถว 30 ครั้ง รวม preprocessing ใน Pipeline)</p>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
-<p><b>เลือก HistGradientBoosting:</b> MAE ต่ำที่สุด ห่างจาก Random Forest 12.8 คัน (~1.5 เท่าของ std จึงไม่ถือว่าเสมอกัน) ไฟล์เพียง ~5.8 MB และทำนาย 1 แถวใช้ไม่กี่มิลลิวินาที · Random Forest ตกไปเพราะทั้งแม่นน้อยกว่าและไฟล์ ~122 MB เกินขีดจำกัด 100 MB ของ GitHub</p>
+<p><b>เลือก HistGradientBoosting:</b> MAE ต่ำที่สุด ห่างจาก Random Forest 12.8 คัน (~1.5 เท่าของ std จึงไม่ถือว่าเสมอกัน) และทำนาย 1 แถวใช้ไม่กี่มิลลิวินาที · ทรัพยากรไม่ใช่ตัวตัดสิน เพราะทุกโมเดล fit ได้ในไม่กี่วินาทีและทำนายในระดับมิลลิวินาที ใช้งานจริงได้ทั้งหมด · Random Forest ตกไปเพราะแม่นน้อยกว่า</p>
 
 <!-- ============================ 11 ============================ -->
 <h2>11. ผลบนชุดทดสอบและ error analysis</h2>
@@ -503,7 +503,6 @@
   <tr><td>chi² ใช้กับ regression ไม่ได้ (และต้องการค่าไม่ติดลบ)</td><td>ใช้ f_regression และ mutual_info_regression</td></tr>
   <tr><td>one-hot ของเดือน/ฤดู/วันซ้อนกัน (multicollinearity)</td><td>ใช้ Ridge จัดอันดับใน RFE และ Lasso ตัด one-hot ที่ซ้ำ</td></tr>
   <tr><td>ชั่วโมงมี 2 พีค แต่ sin/cos ให้โมเดลเชิงเส้นได้แค่ 1 พีค</td><td>เลือก encoding ของชั่วโมงตามชนิดโมเดล</td></tr>
-  <tr><td>Random Forest ไฟล์ ~122 MB</td><td>ใช้ขนาดไฟล์เป็นเกณฑ์หนึ่งในการเลือกโมเดล</td></tr>
 </table>
 
 <!-- ============================ 14 ============================ -->
@@ -535,7 +534,7 @@
 </table>
 
 <h2>ภาคผนวก ข. การรันซ้ำ</h2>
-<p>โค้ดทั้งหมดอยู่ใน notebook 3 ไฟล์ รันตามลำดับ <code>00_setup</code> → <code>01_eda</code> → <code>02_modeling</code> บน Python 3.13 ด้วยไลบรารีตาม <code>requirements.txt</code> (scikit-learn 1.9.1, pandas 2.3.3) · ทุกจุดที่มีการสุ่มใช้ <code>random_state = 42</code> · เมื่อรันซ้ำบนเครื่องใหม่ได้ MAE, RMSE, R² และพารามิเตอร์ที่ดีที่สุดตรงกันทุกค่า ต่างกันแค่เวลา fit/latency · โมเดลสุดท้ายบันทึกที่ <code>models/model.joblib</code> (สร้างใหม่ได้จาก <code>02_modeling</code> ขั้น 12) · รายงานนี้สร้างจาก <code>reports/report.html</code> ด้วย <code>python reports/build_pdf.py</code></p>
+<p>โค้ดทั้งหมดอยู่ใน notebook 3 ไฟล์ รันตามลำดับ <code>00_setup</code> → <code>01_eda</code> → <code>02_modeling</code> บน Python 3.13 ด้วยไลบรารีตาม <code>requirements.txt</code> (scikit-learn 1.9.1, pandas 2.3.3) · ทุกจุดที่มีการสุ่มใช้ <code>random_state = 42</code> · เมื่อรันซ้ำบนเครื่องใหม่ได้ MAE, RMSE, R² และพารามิเตอร์ที่ดีที่สุดตรงกันทุกค่า ต่างกันแค่เวลา fit/latency · โมเดลสุดท้ายไม่ได้บันทึกเป็นไฟล์ <code>02_modeling</code> ขั้น 12 สร้าง <code>final_model</code> ในหน่วยความจำแล้วใช้ต่อในขั้น 13 (รันซ้ำได้โมเดลเดิมเพราะตั้ง <code>random_state</code>) ·รายงานนี้สร้างจาก <code>reports/report.html</code> ด้วย <code>python reports/build_pdf.py</code></p>
 
 <h2>เอกสารอ้างอิง</h2>
 <ol class="refs">

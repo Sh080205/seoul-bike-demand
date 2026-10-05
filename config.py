@@ -17,8 +17,6 @@ SPLIT_DIR = DATA_DIR / "splits"
 TRAIN_DATES = SPLIT_DIR / "train_dates.csv"
 TEST_DATES = SPLIT_DIR / "test_dates.csv"
 FIGURES_DIR = ROOT / "figures"
-MODEL_DIR = ROOT / "models"
-MODEL_PATH = MODEL_DIR / "model.joblib"   # Pipeline ที่เลือกใน 02_modeling ขั้น 12 (preprocess + model)
 REPORTS_DIR = ROOT / "reports"
 
 # ---- dataset ----
