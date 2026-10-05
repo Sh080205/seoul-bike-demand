@@ -58,7 +58,6 @@ data/splits/         รายการวัน train/test
 notebooks/00_setup   ตรวจ environment + กติกากลุ่ม (ขั้น 0)
 notebooks/01_eda     โหลด/ตรวจข้อมูล, split ตามวัน, EDA บน train (ขั้น 2–4)
 notebooks/02_modeling  นิยามปัญหา, feature engineering, Pipeline, FS, PCA, baseline, เทียบ/tune โมเดล, test (ขั้น 1, 5–13)
-models/model.joblib  โมเดลสุดท้าย (สร้างโดย 02_modeling ขั้น 12 · อยู่ใน .gitignore → รัน notebook เพื่อสร้าง)
 figures/             รูปที่ใช้ในรายงาน
 reports/             รายงาน + สไลด์
 ```
@@ -67,13 +66,13 @@ reports/             รายงาน + สไลด์
 
 CV = 5-fold `GroupKFold` (group = วัน) บน train · test ประเมินครั้งเดียวหลังเลือกโมเดล · หน่วย MAE = คัน/ชม.
 
-| โมเดล (หลัง tune) | CV MAE | ไฟล์ joblib |
-|---|---|---|
-| Baseline: เวลาอย่างเดียว (hour × วันทำงาน/วันหยุด) | 401.0 | – |
-| Linear Regression + log1p(y) | 211.0 ± 6.9 | ~0.01 MB |
-| kNN (k=5, distance, PCA 15) | 183.7 ± 7.8 | ~1.8 MB |
-| Random Forest | 121.8 ± 9.1 | ~122 MB (เกิน 100 MB) |
-| **HistGradientBoosting** ✅ | **109.0 ± 8.1** | ~5.8 MB |
+| โมเดล (หลัง tune) | CV MAE |
+|---|---|
+| Baseline: เวลาอย่างเดียว (hour × วันทำงาน/วันหยุด) | 401.0 |
+| Linear Regression + log1p(y) | 211.0 ± 6.9 |
+| kNN (k=5, distance, PCA 15) | 183.7 ± 7.8 |
+| Random Forest | 121.8 ± 9.1 |
+| **HistGradientBoosting** ✅ | **109.0 ± 8.1** |
 
 - **test (HistGradientBoosting):** MAE **97.4** · MSE 28,947.7 · RMSE 170.1 · R² **0.919** (MSE รายงานตามเกณฑ์โจทย์ แต่อธิบายผลด้วย RMSE เพราะหน่วยเป็นคัน/ชม.)
 - Feature selection (f_regression, mutual_info, RFE, Lasso): ไม่มีวิธีไหนลด MAE เกิน noise → ใช้ทุก feature · RFE ใช้ 30/58 feature ได้ MAE เท่าเดิม
