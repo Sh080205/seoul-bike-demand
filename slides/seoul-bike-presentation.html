@@ -26,7 +26,7 @@
 html,body{width:100%;height:100%;margin:0;overflow:hidden;background:var(--stage-bg,#000)}
 .deck-viewport{position:fixed;inset:0;overflow:hidden;background:var(--stage-bg,#000)}
 .deck-stage{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:hidden;transform-origin:0 0;background:var(--slide-bg,#fff);perspective:2800px}
-.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:block;visibility:hidden;opacity:0;pointer-events:none;background:var(--slide-bg,#fff);transform-origin:50% 45%;backface-visibility:hidden}
+.slide{position:absolute;inset:0;width:1920px;height:1080px;overflow:hidden;display:block;visibility:hidden;opacity:0;pointer-events:none;background:var(--slide-bg,#fff);transform-origin:50% 45%}
 .slide.active,.slide.visible,.slide.leave{visibility:visible;opacity:1}
 .slide.active,.slide.visible{pointer-events:auto;z-index:2}.slide.leave{z-index:1}
 img,video,canvas,svg{max-width:100%;max-height:100%}
@@ -46,9 +46,10 @@ body{font-family:var(--font);color:var(--ink)}
 /* ===========================================
    SOFT 3D PAGE TURN
    =========================================== */
-.slide.active.fwd{animation:inF .7s cubic-bezier(.2,.7,.2,1) both}
+/* active turns use backwards, not both: a filled 3D transform keeps the slide on a GPU layer that gets stretched, so text blurs */
+.slide.active.fwd{animation:inF .7s cubic-bezier(.2,.7,.2,1) backwards}
 .slide.leave.fwd{animation:outF .7s cubic-bezier(.5,0,.6,1) both}
-.slide.active.back{animation:inB .7s cubic-bezier(.2,.7,.2,1) both}
+.slide.active.back{animation:inB .7s cubic-bezier(.2,.7,.2,1) backwards}
 .slide.leave.back{animation:outB .7s cubic-bezier(.5,0,.6,1) both}
 @keyframes inF{from{transform:translateX(8%) translateZ(-160px) rotateY(-10deg);opacity:0}to{transform:none;opacity:1}}
 @keyframes outF{to{transform:translateX(-8%) translateZ(-160px) rotateY(10deg);opacity:0}}
