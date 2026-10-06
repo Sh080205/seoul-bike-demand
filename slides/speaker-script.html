@@ -8,34 +8,71 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-/* Printable speaker script — same palette as the deck */
-:root{--pine:#23462f;--cream:#fbf8ef;--ink:#1f3326;--soft:#4f6655;--rule:#e6e0d0;--pink:#d6487a;--a:#a8d5a2;--b:#f3e7a1;--c:#e2c3a3}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--cream:#16211a;--ink:#e8efe6;--soft:#b2c4b6;--rule:#2e3d33}}
-:root[data-theme="dark"]{--cream:#16211a;--ink:#e8efe6;--soft:#b2c4b6;--rule:#2e3d33}
+/* Speaker script — same palette as the deck. Reads on a phone or iPad (sticky bar: speaker tabs,
+   rehearsal timer, text size) and still prints as one document. */
+:root{--pine:#23462f;--cream:#fbf8ef;--ink:#1f3326;--soft:#4f6655;--rule:#e6e0d0;--pink:#d6487a;--a:#a8d5a2;--b:#f3e7a1;--c:#e2c3a3;--q:#d9e4d4;--fs:18px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--cream:#16211a;--ink:#e8efe6;--soft:#b2c4b6;--rule:#2e3d33;--pink:#f07aa3}}
+:root[data-theme="dark"]{--cream:#16211a;--ink:#e8efe6;--soft:#b2c4b6;--rule:#2e3d33;--pink:#f07aa3}
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--cream);color:var(--ink);font:400 18px/1.7 'IBM Plex Sans Thai Looped',sans-serif}
-main{max-width:860px;margin:0 auto;padding:32px 16px 60px}
-h1{font-size:30px;margin:0;line-height:1.3}
+main{max-width:860px;margin:0 auto;padding:24px 16px 80px;font-size:var(--fs)}
+h1{font-size:1.67em;margin:0;line-height:1.3}
 .sub{color:var(--soft);margin-top:4px}
-table{width:100%;border-collapse:collapse;margin:18px 0;font-size:16px}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.89em}
 th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule)}
 th{font-weight:700}
 td.n{text-align:right;font-variant-numeric:tabular-nums}
-h2{margin:36px 0 6px;font-size:24px;padding:6px 14px;border-radius:10px;background:var(--who);color:#1f3326;break-after:avoid}
+h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-radius:10px;background:var(--who);color:#1f3326;break-after:avoid}
 .page{border:1.5px solid var(--rule);border-radius:12px;padding:14px 18px;margin:12px 0;break-inside:avoid}
-.page h3{margin:0;font-size:19px;display:flex;justify-content:space-between;gap:12px}
+.page h3{margin:0;font-size:1.06em;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 12px}
 .page h3 span{font-weight:600;color:var(--pink);white-space:nowrap}
+.page h3 small{font-weight:400;color:var(--soft);font-size:.8em;margin-right:8px}
 .page p{margin:8px 0 0}
-.cue{color:var(--soft);font-size:15px;margin-top:6px}
+.cue{color:var(--soft);font-size:.83em;margin-top:6px}
 .cue b{color:var(--ink)}
 .qa dt{font-weight:700;margin-top:12px}
 .qa dd{margin:2px 0 0 0;color:var(--soft)}
-.note{font-size:15px;color:var(--soft)}
-@media print{body{font-size:14px}main{padding:0}h2{margin-top:18px}.page{padding:8px 12px}}
+.note{font-size:.83em;color:var(--soft)}
+/* rehearsal: tick a page once it is practised */
+.tick{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--rule);background:none;color:var(--ink);font:700 16px/1 sans-serif;cursor:pointer;padding:0}
+.page.done{opacity:.55}
+.page.done .tick{background:var(--a);border-color:var(--a);color:#1f3326}
+.page h3 .t{display:flex;align-items:center;gap:10px;margin-left:auto}
+/* sticky bar */
+.bar{position:sticky;top:0;z-index:5;background:var(--cream);border-bottom:1.5px solid var(--rule);padding:8px 16px;font-size:15px}
+.bar>div{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tabs{display:flex;gap:4px;flex:1 1 100%;overflow-x:auto}
+.tabs button,.tools button{font:600 15px 'IBM Plex Sans Thai Looped',sans-serif;color:var(--ink);background:none;border:1.5px solid var(--rule);border-radius:999px;padding:4px 12px;cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--tab);border-color:var(--tab);color:var(--tabtx,#1f3326)}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 100%}
+.tb{display:flex;flex-direction:column;margin-right:auto}
+.clock{font:700 22px/1.1 'IBM Plex Sans Thai Looped',sans-serif;font-variant-numeric:tabular-nums;min-width:3.2em}
+.clock.over{color:var(--pink)}
+.goal{color:var(--soft);font-size:12px;line-height:1.3;white-space:nowrap}
+[hidden]{display:none!important}
+@media (min-width:700px){.tabs,.tools{flex:0 1 auto}.tools{margin-left:auto}}
+@media print{.bar,.tick{display:none!important}[hidden]{display:block!important}.page.done{opacity:1}
+  main{font-size:14px;padding:0}h2{margin-top:18px}.page{padding:8px 12px}}
 </style>
 </head>
 <body>
+<nav class="bar"><div>
+ <div class="tabs">
+  <button data-who="all" style="--tab:var(--ink);--tabtx:var(--cream)">ทั้งหมด</button>
+  <button data-who="A" style="--tab:var(--a)">A</button>
+  <button data-who="B" style="--tab:var(--b)">B</button>
+  <button data-who="C" style="--tab:var(--c)">C</button>
+  <button data-who="Q" style="--tab:var(--q)">ถาม-ตอบ</button>
+ </div>
+ <div class="tools">
+  <span class="tb"><span class="clock" id="clock">0:00</span><span class="goal" id="goal"></span></span>
+  <button id="go">เริ่ม</button><button id="reset">รีเซ็ต</button>
+  <button id="smaller" aria-label="ตัวอักษรเล็กลง">ก−</button><button id="bigger" aria-label="ตัวอักษรใหญ่ขึ้น">ก+</button>
+ </div>
+</div></nav>
 <main>
+<section data-who="all">
 <h1>บทพูด · Seoul Bike Demand (ML)</h1>
 <div class="sub">เวลารวม 10 นาที รวมถาม-ตอบ · พูดจริง ~7:40 · ไฟล์สไลด์ <code>slides/seoul-bike-presentation.html</code></div>
 
@@ -57,7 +94,9 @@ h2{margin:36px 0 6px;font-size:24px;padding:6px 14px;border-radius:10px;backgrou
 </table>
 <p class="note"><b>ยังไม่ได้เลือกว่าใครเป็น A / B / C</b> · แบ่งตามช่วงงาน 3 ส่วน แต่ละคนพูดอย่างน้อย 1 ส่วน (rubric ข้อ 6: ทุกคนต้องมีส่วนร่วม)</p>
 <p class="note">ปุ่มลัด: → / ← เลื่อนหน้า · B เปิดเมนูสไลด์สำรอง · 1–9 กระโดดไปหน้านั้น · F11 เต็มจอ · กล่องเส้นประสีเทา ("เสริม") ไม่ต้องพูด</p>
+</section>
 
+<section data-who="A">
 <h2 style="--who:var(--a)">ผู้พูด A — หน้า 1–4 และ 12 · ข้อมูล, split, EDA และสรุป</h2>
 
 <div class="page"><h3>หน้า 1 · ปก <span>0:10</span></h3>
@@ -80,7 +119,9 @@ h2{margin:36px 0 6px;font-size:24px;padding:6px 14px;border-radius:10px;backgrou
 <div class="page"><h3>หน้า 12 · สรุป <span>0:30</span></h3>
 <p>สรุป โมเดลสุดท้ายคือ HistGradientBoosting ได้ test MAE 97.4 คันต่อชั่วโมง R² 0.919 ดีกว่าการใช้เวลาอย่างเดียวประมาณ 73% และเรากันข้อมูลรั่วตลอดทางด้วย split ตามวัน Pipeline และ GroupKFold</p>
 <p>ข้อจำกัดคือชั่วโมงฝนตกและเหตุการณ์พิเศษที่ไม่มีในข้อมูล ถ้าทำต่อจะเพิ่มข้อมูลหลายปีและ feature เทศกาลกับคำเตือนอากาศ ขอบคุณครับ ยินดีรับคำถามครับ</p></div>
+</section>
 
+<section data-who="B">
 <h2 style="--who:var(--b)">ผู้พูด B — หน้า 5–7 · เตรียมข้อมูล, Pipeline, คัดฟีเจอร์</h2>
 
 <div class="page"><h3>หน้า 5 · เตรียมข้อมูล <span>0:40</span></h3>
@@ -96,7 +137,9 @@ h2{margin:36px 0 6px;font-size:24px;padding:6px 14px;border-radius:10px;backgrou
 <p>เราทำ feature selection ครบ 3 แบบ คือ Filter, RFE และ Lasso ใช้ chi² ไม่ได้เพราะ target ต่อเนื่อง ผลคือ RFE ใช้แค่ 30 จาก 58 คอลัมน์ได้ MAE เท่าเดิม แต่ไม่มีวิธีไหนทำให้ดีขึ้นเกินระดับ noise เราจึงใช้ทุก feature</p>
 <p>PCA ต้องใช้ 14 component ถึงจะได้ 90% ของ variance และช่วย kNN ได้เล็กน้อย จาก 194.4 เหลือ 189.5</p>
 <p class="cue">ส่งต่อ: "ต่อไป [ชื่อผู้พูด C] จะเล่าการเทียบโมเดลครับ"</p></div>
+</section>
 
+<section data-who="C">
 <h2 style="--who:var(--c)">ผู้พูด C — หน้า 8–11 · โมเดล, tuning, test, ทำนายข้อมูลใหม่</h2>
 
 <div class="page"><h3>หน้า 8 · เทียบ 4 โมเดล <span>0:45</span></h3>
@@ -115,8 +158,10 @@ h2{margin:36px 0 6px;font-size:24px;padding:6px 14px;border-radius:10px;backgrou
 <p class="cue">กดปุ่มทีละอัน: <b>พุธ 18:00 อากาศดี</b> → <b>ฝนตก</b> → <b>เสาร์</b> → <b>ฤดูหนาว</b></p>
 <p>พุธ 6 โมงเย็นอากาศดี ทาย 2,981 คัน ถ้าฝนตก 3 มม. เหลือ 204 วันเสาร์เวลาเดียวกัน 2,167 และเช้าฤดูหนาว 690 ทิศทางทุกปัจจัยตรงกับที่เห็นใน EDA ครับ</p>
 <p class="cue">ส่งต่อ: "[ชื่อผู้พูด A] จะสรุปครับ"</p></div>
+</section>
 
-<h2 style="--who:#d9e4d4">คำถามที่น่าจะโดนถาม → เปิดสไลด์สำรอง (กด B)</h2>
+<section data-who="Q">
+<h2 style="--who:var(--q)">คำถามที่น่าจะโดนถาม → เปิดสไลด์สำรอง (กด B)</h2>
 <dl class="qa">
  <dt>ทำไมไม่ใช้ accuracy หรือ MSE เป็นตัวหลัก</dt><dd>regression ใช้ MAE/MSE/RMSE/R² · MSE หน่วยเป็นคัน² จึงรายงานไว้แต่อธิบายด้วย RMSE → สำรอง 1</dd>
  <dt>รู้ได้ไงว่าไม่มีข้อมูลรั่ว</dt><dd>split ตามวัน · preprocessing ใน Pipeline · GroupKFold วันซ้ำ 0 · ค่า scaler ต่างกันทุก fold → สำรอง 3</dd>
@@ -125,6 +170,72 @@ h2{margin:36px 0 6px;font-size:24px;padding:6px 14px;border-radius:10px;backgrou
  <dt>ชั่วโมงไหนพลาดหนักที่สุด</dt><dd>5 ใน 10 อันดับแรกเป็น 23 ส.ค. 2018 วันไต้ฝุ่น Soulik · ข้อมูลไม่มี feature เหตุการณ์พิเศษ → สำรอง 4</dd>
  <dt>outlier จัดการยังไง</dt><dd>ตรวจด้วย IQR แล้วเก็บไว้ เพราะเป็นเหตุการณ์จริง · ฝน/หิมะ IQR = 0 ใช้กฎนี้ไม่ได้ → สำรอง 5</dd>
 </dl>
+</section>
 </main>
+<script>
+// Choices (tab, text size, ticked pages) are kept per device; the page works the same without storage.
+const store = {
+  get: k => { try { return localStorage.getItem('script.' + k); } catch (e) { return null; } },
+  set: (k, v) => { try { localStorage.setItem('script.' + k, v); } catch (e) {} },
+};
+const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+const toSec = t => { const [m, s] = t.split(':').map(Number); return m * 60 + s; };
+
+// Page timings are read from each card header ("หน้า 3 · ... 0:45"); keep them in step with the table at the top.
+const pages = [...document.querySelectorAll('.page')].map(el => ({
+  el, no: +el.querySelector('h3').textContent.match(/หน้า (\d+)/)[1],
+  dur: toSec(el.querySelector('h3 span').textContent.trim()), who: el.closest('section').dataset.who,
+}));
+let talk = 0;
+[...pages].sort((a, b) => a.no - b.no).forEach(p => { p.start = talk; talk += p.dur; });  // start time in talk order
+const goals = { all: talk, Q: 600 - talk };                                                // Q&A gets what is left of 10 minutes
+pages.forEach(p => { goals[p.who] = (goals[p.who] || 0) + p.dur; });
+
+pages.forEach(p => {
+  const span = p.el.querySelector('h3 span'), box = document.createElement('div');
+  box.className = 't'; span.before(box); box.append(span);
+  span.insertAdjacentHTML('afterbegin', `<small>เริ่ม ${mmss(p.start)} ·</small>`);
+  const tick = document.createElement('button');
+  tick.className = 'tick'; tick.textContent = '✓'; tick.title = 'ซ้อมหน้านี้แล้ว'; box.append(tick);
+  p.el.classList.toggle('done', store.get('done' + p.no) === '1');
+  tick.onclick = () => store.set('done' + p.no, p.el.classList.toggle('done') ? '1' : '0');
+});
+
+// Speaker tabs
+const tabs = [...document.querySelectorAll('.tabs button')];
+function show(who) {
+  document.querySelectorAll('main > section').forEach(s => { s.hidden = who !== 'all' && s.dataset.who !== who; });
+  tabs.forEach(b => b.classList.toggle('on', b.dataset.who === who));
+  document.getElementById('goal').textContent = `เป้า ${mmss(goals[who])}`;
+  goal = goals[who]; tickClock(); store.set('tab', who); scrollTo(0, 0);
+}
+tabs.forEach(b => b.onclick = () => show(b.dataset.who));
+
+// Rehearsal timer; keeps the screen awake while running where the browser allows it
+let goal = 0, startAt = 0, kept = 0, timer = null, lock = null;
+const clock = document.getElementById('clock'), goBtn = document.getElementById('go');
+const elapsed = () => Math.floor((kept + (timer ? Date.now() - startAt : 0)) / 1000);
+function tickClock() { const s = elapsed(); clock.textContent = mmss(s); clock.classList.toggle('over', s > goal); }
+goBtn.onclick = async () => {
+  if (timer) { kept += Date.now() - startAt; clearInterval(timer); timer = null; goBtn.textContent = 'ต่อ'; lock?.release?.(); lock = null; }
+  else {
+    startAt = Date.now(); timer = setInterval(tickClock, 250); goBtn.textContent = 'หยุด';
+    try { lock = await navigator.wakeLock?.request('screen'); } catch (e) {}
+  }
+  tickClock();
+};
+document.getElementById('reset').onclick = () => {
+  if (timer) { clearInterval(timer); timer = null; lock?.release?.(); lock = null; }
+  kept = 0; goBtn.textContent = 'เริ่ม'; tickClock();
+};
+
+// Text size
+let fs = +store.get('fs') || 18;
+const setFs = v => { fs = Math.min(28, Math.max(14, v)); document.documentElement.style.setProperty('--fs', fs + 'px'); store.set('fs', fs); };
+document.getElementById('smaller').onclick = () => setFs(fs - 2);
+document.getElementById('bigger').onclick = () => setFs(fs + 2);
+setFs(fs);
+show(goals[store.get('tab')] !== undefined ? store.get('tab') : 'all');
+</script>
 </body>
 </html>
