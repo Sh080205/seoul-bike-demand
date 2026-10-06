@@ -89,7 +89,7 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
  <tr><td>9</td><td>รายละเอียด: พิสูจน์ไม่รั่ว</td><td>B</td><td class="n">0:25</td></tr>
  <tr><td>10</td><td>คัดฟีเจอร์ + PCA</td><td>B</td><td class="n">0:20</td></tr>
  <tr><td>11</td><td>รายละเอียด: feature selection</td><td>B</td><td class="n">0:25</td></tr>
- <tr><td>12</td><td>เทียบ 4 โมเดล</td><td>C</td><td class="n">0:35</td></tr>
+ <tr><td>12</td><td>Baseline + เทียบ 4 โมเดล</td><td>C</td><td class="n">0:35</td></tr>
  <tr><td>13</td><td>รายละเอียด: ตารางโมเดลเต็ม + MSE</td><td>C</td><td class="n">0:25</td></tr>
  <tr><td>14</td><td>Tuning + เลือกโมเดล</td><td>C</td><td class="n">0:25</td></tr>
  <tr><td>15</td><td>ผล test ครั้งเดียว</td><td>C</td><td class="n">0:35</td></tr>
@@ -151,7 +151,7 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <section data-who="C">
 <h2 style="--who:var(--c)">ผู้พูด C — หน้า 12–17 · โมเดล, tuning, test, ทำนายข้อมูลใหม่</h2>
 
-<div class="page"><h3>หน้า 12 · เทียบ 4 โมเดล <span>0:35</span></h3>
+<div class="page"><h3>หน้า 12 · Baseline + เทียบ 4 โมเดล <span>0:35</span></h3>
 <p>เราเทียบ 4 ตระกูลโมเดลด้วย 5-fold GroupKFold baseline ที่ใช้แค่ชั่วโมงกับประเภทวันได้ MAE 401 ทุกโมเดลชนะ แปลว่าข้อมูลอากาศช่วยจริง</p>
 <p>HistGradientBoosting ดีที่สุดที่ 114.1 Random Forest overfit ที่สุด gap 85.6 และ Linear Regression underfit gap แค่ 6.4</p></div>
 <div class="page"><h3>หน้า 13 · รายละเอียด: ตารางโมเดลเต็ม + MSE <span>0:25</span></h3>

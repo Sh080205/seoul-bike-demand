@@ -203,7 +203,7 @@ body{font-family:var(--font);color:var(--ink)}
 <div class="deck-viewport"><main class="deck-stage" id="deckStage">
 
 <!-- ================= PAGE 1 · COVER (A) ================= -->
-<section class="slide" data-step="-1" data-page="1">
+<section class="slide" data-step="0" data-page="1">
  <div class="left" style="--c:var(--p1)">
   <div class="reveal" style="font:600 26px var(--font);color:var(--blossom)">Machine Learning Project</div>
   <h2 class="reveal" style="--d:1;font-size:88px;line-height:1.05;margin-top:22px">Seoul<br>Bike<br>Demand</h2>
@@ -214,7 +214,8 @@ body{font-family:var(--font);color:var(--ink)}
   <div class="row2 reveal" style="--d:4">
    <div class="card"><h4>ข้อมูล</h4><p>Seoul Bike Sharing Demand · UCI id 560 · CC BY 4.0<br>input: อากาศ 8 ตัว + ชั่วโมง วัน เดือน ฤดู วันหยุด</p></div>
    <div class="card"><h4>ใช้ทำอะไร</h4><p>วางแผนจำนวนจักรยานที่ต้องพร้อมใช้ และจัดคนกระจายจักรยานล่วงหน้าในชั่วโมงที่คาดว่ามีคนเช่ามาก</p></div></div>
-  <div class="phases reveal" style="--d:5"><span style="--c:var(--p1)">ข้อมูล 0–4</span><span style="--c:var(--p2)">เตรียม 5–6</span><span style="--c:var(--p3)">คัดฟีเจอร์ 7–8</span><span style="--c:var(--p4)">โมเดล 9–12</span><span style="--c:var(--p5)">ทดสอบ 13</span></div></div>
+  <div class="phases reveal" style="--d:5"><span style="--c:var(--p1)">ข้อมูล 0–4</span><span style="--c:var(--p2)">เตรียม 5–6</span><span style="--c:var(--p3)">คัดฟีเจอร์ 7–8</span><span style="--c:var(--p4)">โมเดล 9–12</span><span style="--c:var(--p5)">ทดสอบ 13</span></div>
+  <div class="extra reveal" style="--d:6"><b>ขั้น 00 · Setup</b> · ทุกเครื่องใช้ Python 3.13.11 และไลบรารี 11 ตัวตรงเวอร์ชันใน requirements.txt (เช่น pandas 2.3.3 · scikit-learn 1.9.1) · RANDOM_STATE = 42</div></div>
  <div class="petals"></div>
 </section>
 
@@ -435,10 +436,10 @@ body{font-family:var(--font);color:var(--ink)}
    <p style="font-size:19px;margin-top:6px">PC1–PC5 อธิบาย variance 18.5% · 15.8% · 9.7% · 7.9% · 7.5%</p></div></div>
 </section>
 
-<!-- ================= PAGE 12 · MODELS (C) ================= -->
+<!-- ================= PAGE 12 · BASELINE + MODELS (C) ================= -->
 <section class="slide" data-step="9" data-step-end="10" data-page="12">
  <div class="left" style="--c:var(--p4)">
-  <div class="num rng reveal">09–10</div><h2 class="reveal" style="--d:1">เทียบ 4 โมเดล</h2>
+  <div class="num rng reveal">09–10</div><h2 class="reveal" style="--d:1">Baseline + เทียบ 4 โมเดล</h2>
   <ul class="pts">
    <li class="reveal" style="--d:2">ทุกตัวชนะ baseline <b>เวลาอย่างเดียว (401.0)</b> → อากาศช่วยจริง</li>
    <li class="reveal" style="--d:3"><b>HGB ดีที่สุด 114.1</b> · ลดความคลาดจาก baseline ~72%</li>
