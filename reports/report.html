@@ -188,6 +188,14 @@
   <tr><td>Holiday</td><td><code>holiday</code></td><td>Holiday / No Holiday</td></tr>
   <tr><td>Functioning Day</td><td><code>functioning_day</code></td><td>Yes / No (ระบบเปิด/ปิด)</td></tr>
 </table>
+<table style="width:70%">
+  <caption>ตารางที่ 2.2 ตรวจไฟล์ดิบก่อนโหลดจริง (01_eda ขั้น 2.1)</caption>
+  <tr><th>ตรวจ</th><th>ผล</th></tr>
+  <tr><td>อ่านหัวตารางด้วย utf-8</td><td>UnicodeDecodeError ที่ byte <code>\xb0</code> (สัญลักษณ์ °)</td></tr>
+  <tr class="best"><td>อ่านด้วย cp1252</td><td><code>Temperature(°C)</code> ถูกต้อง → ใช้ค่านี้ (บันทึกใน <code>config.py</code>)</td></tr>
+  <tr><td>อ่านด้วย latin-1</td><td><code>Temperature(°C)</code> ถูกต้องเช่นกัน</td></tr>
+  <tr><td>วันที่ ส่วนที่ 1 / 2 / 3</td><td>1–31 / 1–12 / 2017–2018 → วัน/เดือน/ปี (01/12/2017 = 1 ธ.ค. 2017)</td></tr>
+</table>
 <p>ไฟล์ไม่ใช่ UTF-8 (สัญลักษณ์ ° เก็บเป็น byte 0xB0) จึงอ่านด้วย <code>cp1252</code> และระบุรูปแบบวันที่ <code>%d/%m/%Y</code> เอง (ตรวจจากค่าส่วนแรกที่ขึ้นถึง 31) ได้ <b>8,760 แถว × 14 คอลัมน์</b> ครบ 365 วัน × 24 ชั่วโมง ไม่มี missing value และไม่มีแถวซ้ำ</p>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
@@ -284,9 +292,18 @@
 <figure><img src="../figures/04_correlation.png" alt="" style="max-width:70%"><figcaption>รูปที่ 4.7 Pearson correlation ของตัวแปรตัวเลข (train, เฉพาะชั่วโมงที่ระบบเปิด)</figcaption></figure>
 <ul>
   <li>มีคู่ตัวแปรเดียวที่ |r| &gt; 0.8 คือ <code>temp_c</code> กับ <code>dew_point_c</code> (r = 0.91) · กับ target: <code>temp_c</code> r = 0.55, <code>hour</code> r = 0.44 · ฝน/หิมะมี r ต่ำ (−0.13, −0.15) ทั้งที่หัวข้อ 4.3 แสดงว่ามีผลแรง · คู่ที่สัมพันธ์ปานกลาง เช่น ความชื้นกับทัศนวิสัย (−0.55) และความชื้นกับ dew point (0.54)</li>
-  <li>กฎ IQR นับทุกชั่วโมงที่ฝนหรือหิมะตกเป็น "outlier" (เพราะ IQR = 0) และพบค่าเกินขอบใน <code>solar_radiation_mj</code> (~7%), <code>wind_speed_ms</code> (~1.6%) และยอดเช่า (~1.4%) ซึ่งล้วนอยู่ในช่วงที่เกิดขึ้นได้จริง</li>
+  <li>กฎ IQR (ตารางที่ 4.2) นับทุกชั่วโมงที่ฝนหรือหิมะตกเป็น "outlier" (เพราะ IQR = 0) และพบค่าเกินขอบใน <code>solar_radiation_mj</code> (7.18%), <code>wind_speed_ms</code> (1.63%) และยอดเช่า (1.40%) ซึ่งล้วนอยู่ในช่วงที่เกิดขึ้นได้จริง</li>
   <li><b>ความชื้น = 0%</b> มี 17 แถว (19–28 พ.ค. 2018) เมื่อคำนวณย้อนจากอุณหภูมิและ dew point ด้วยสูตร Magnus ได้ 33–72%</li>
 </ul>
+<table>
+  <caption>ตารางที่ 4.2 outlier ตามกฎ IQR (ต่ำกว่า Q1 − 1.5·IQR หรือสูงกว่า Q3 + 1.5·IQR) · train เฉพาะชั่วโมงที่ระบบเปิด · ตัวแปรอื่นไม่มีค่าเกินขอบ</caption>
+  <tr><th>ตัวแปร</th><th class="r">ขอบล่าง</th><th class="r">ขอบบน</th><th class="r">max</th><th class="r">outlier (แถว)</th><th class="r">%</th></tr>
+  <tr><td><code>solar_radiation_mj</code></td><td class="r">−1.42</td><td class="r">2.38</td><td class="r">3.52</td><td class="r">486</td><td class="r">7.18</td></tr>
+  <tr><td><code>rainfall_mm</code></td><td class="r">0.00</td><td class="r">0.00</td><td class="r">35.00</td><td class="r">413</td><td class="r">6.10</td></tr>
+  <tr><td><code>snowfall_cm</code></td><td class="r">0.00</td><td class="r">0.00</td><td class="r">8.80</td><td class="r">296</td><td class="r">4.37</td></tr>
+  <tr><td><code>wind_speed_ms</code></td><td class="r">−1.20</td><td class="r">4.40</td><td class="r">7.40</td><td class="r">110</td><td class="r">1.63</td></tr>
+  <tr><td><code>rented_bike_count</code></td><td class="r">−1,116</td><td class="r">2,460</td><td class="r">3,556</td><td class="r">95</td><td class="r">1.40</td></tr>
+</table>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li>r ของฝน/หิมะต่ำเพราะความสัมพันธ์ไม่เป็นเส้นตรง (ส่วนใหญ่เป็น 0) ไม่ได้แปลว่าไม่สำคัญ → ยืนยันการสร้าง <code>is_raining</code> · <b>ยังไม่ตัด</b> <code>dew_point_c</code> แต่ให้ feature selection ตัดสิน และความซ้ำซ้อนของตัวแปรอากาศเป็นเหตุผลที่ลอง PCA</li>
@@ -316,8 +333,18 @@
   <li>การ encode ชั่วโมงบนวงกลม: 23:00 กับ 0:00 ห่างกัน 0.261 เท่ากับ 0:00–1:00 ส่วน 0:00 กับ 12:00 ห่างกันมากที่สุด (2.0) ตรงกับธรรมชาติของเวลา (รูปที่ 5.1)</li>
   <li>กฎขอบเขต: train 7,008 → <b>6,768 แถว</b> (ตัด 240), test 1,752 → <b>1,697 แถว</b> (ตัด 55) · ความชื้นกลายเป็น NaN ใน train 17 แถว</li>
   <li>X_train มี 17 คอลัมน์ · หลัง preprocess (hour แบบ sin/cos) ได้ 36 คอลัมน์ ไม่มี NaN เหลือ ค่าที่ใช้เติมความชื้น = 57.0 (มัธยฐานของ train) ตัวแปรตัวเลขทุกตัวมี mean 0 และ std 1 และ one-hot ของแต่ละกลุ่มรวมกันได้ 1 ทุกแถว</li>
-  <li>ตรวจการรั่วของ Pipeline ใน GroupKFold: ทุก fold มีวันซ้ำระหว่าง train กับ validation 0 วัน และ scaler / imputer เรียนค่าจาก training fold ของตัวเอง (mean ของ <code>temp_c</code> 13.35–13.40, median ความชื้น 57–58 ต่างกันเล็กน้อยในแต่ละ fold)</li>
+  <li>ตรวจการรั่วของ Pipeline ใน GroupKFold (ตารางที่ 5.3): ทุก fold มีวันซ้ำระหว่าง train กับ validation 0 วัน และค่าที่ scaler / imputer เรียนได้เปลี่ยนไปตาม fold (mean ของ <code>temp_c</code> 13.348–13.395, median ความชื้น 57–58) แปลว่า fit ใหม่จาก training fold ของตัวเองทุกรอบ ไม่เคยเห็นข้อมูล validation</li>
 </ul>
+<table>
+  <caption>ตารางที่ 5.3 จำลอง cross-validation ทีละ fold (5-fold GroupKFold บน train) เพื่อพิสูจน์ว่า Pipeline ไม่รั่ว</caption>
+  <tr><th>fold</th><th class="r">วัน train</th><th class="r">วัน val</th><th class="r">วันซ้ำ</th><th class="r">scaler mean temp_c</th><th class="r">median ความชื้น</th><th class="r">ยอดเฉลี่ย val</th></tr>
+  <tr><td>0</td><td class="r">225</td><td class="r">57</td><td class="r">0</td><td class="r">13.395</td><td class="r">57.0</td><td class="r">783.931</td></tr>
+  <tr><td>1</td><td class="r">225</td><td class="r">57</td><td class="r">0</td><td class="r">13.385</td><td class="r">57.0</td><td class="r">719.159</td></tr>
+  <tr><td>2</td><td class="r">226</td><td class="r">56</td><td class="r">0</td><td class="r">13.348</td><td class="r">58.0</td><td class="r">772.452</td></tr>
+  <tr><td>3</td><td class="r">226</td><td class="r">56</td><td class="r">0</td><td class="r">13.362</td><td class="r">58.0</td><td class="r">778.076</td></tr>
+  <tr><td>4</td><td class="r">226</td><td class="r">56</td><td class="r">0</td><td class="r">13.395</td><td class="r">57.0</td><td class="r">730.462</td></tr>
+  <tr><td colspan="7">เทียบ KFold ธรรมดา fold 0: validation มี 281 วัน และซ้ำกับ train ครบทั้ง 281 วัน</td></tr>
+</table>
 <figure class="third"><img src="../figures/05_hour_cyclic.png" alt=""><figcaption>รูปที่ 5.1 ชั่วโมงหลังแปลงเป็น (hour_sin, hour_cos) เรียงเป็นวงกลม</figcaption></figure>
 <table>
   <caption>ตารางที่ 5.2 การ encode ชั่วโมงตามชนิดโมเดล</caption>
@@ -351,11 +378,22 @@
   <tr><td>SelectFromModel(Lasso)</td><td>Embedded</td><td>alpha = 0.1</td><td class="r">52</td><td class="r">266.2</td></tr>
 </table>
 <figure class="half"><img src="../figures/07_filter_k.png" alt=""><figcaption>รูปที่ 6.1 CV MAE ตามจำนวน feature ที่ filter เลือก (k)</figcaption></figure>
+<table>
+  <caption>ตารางที่ 6.2 CV MAE (คัน/ชม.) ของ RFE ตามจำนวน feature ที่เก็บ (n) · RFE ตัดตัวที่ |coefficient| เล็กสุดทีละ 2 ตัว</caption>
+  <tr><th>n</th><th class="r">5</th><th class="r">10</th><th class="r">15</th><th class="r">20</th><th class="r">30</th><th class="r">40</th><th class="r">58</th></tr>
+  <tr><td>CV MAE</td><td class="r">485.8</td><td class="r">313.6</td><td class="r">296.9</td><td class="r">285.1</td><td class="r"><b>265.8</b></td><td class="r">266.0</td><td class="r">266.2</td></tr>
+</table>
+<table>
+  <caption>ตารางที่ 6.3 Lasso ตามค่า alpha · ยิ่ง alpha สูง ยิ่งดัน coefficient เป็น 0 มากขึ้น</caption>
+  <tr><th>alpha</th><th class="r">0.1</th><th class="r">0.3</th><th class="r">1</th><th class="r">3</th><th class="r">10</th><th class="r">30</th></tr>
+  <tr><td>feature ที่เหลือ</td><td class="r">52</td><td class="r">52</td><td class="r">48</td><td class="r">39</td><td class="r">26</td><td class="r">7</td></tr>
+  <tr><td>CV MAE</td><td class="r"><b>266.2</b></td><td class="r">266.2</td><td class="r">266.4</td><td class="r">267.0</td><td class="r">274.7</td><td class="r">345.9</td></tr>
+</table>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li><b>Filter:</b> MAE ลดลงเรื่อยๆ เมื่อ k เพิ่ม และดีที่สุดเมื่อใช้ทุกตัว เพราะ filter ให้คะแนนทีละคอลัมน์ แต่ one-hot ของชั่วโมงมีประโยชน์ <i>เมื่ออยู่ด้วยกัน</i> · ทั้งสองวิธีจัด <code>temp_c</code> เป็นอันดับ 1 และ mutual information จับผลของฝน (<code>is_raining</code>, <code>rainfall_mm</code>) ได้ดีกว่า F-test</li>
   <li><b>Wrapper (RFE):</b> ใช้ 30 จาก 58 feature ได้ MAE เท่าเดิม (ต่าง 0.4 คัน น้อยกว่า std 4.8) — ตัดข้อมูลซ้ำซ้อนทิ้ง เช่น <code>is_weekend</code>/<code>is_holiday</code> กับ one-hot ของวัน, เดือนกับฤดู และ <code>rainfall_mm</code> (เก็บ <code>is_raining</code>)</li>
-  <li><b>Embedded (Lasso):</b> ดัน coefficient เป็น 0 ให้ one-hot ที่ซ้ำกับกลุ่มอื่น 6 ตัว (เช่น <code>seasons_Summer</code>, <code>month_7</code>) และให้ coefficient ใหญ่สุดกับชั่วโมงพีค (<code>hour_18</code> +837 คัน) · ต่างจากที่คาดไว้ Lasso ไม่ได้ตัด <code>dew_point_c</code> ทั้งที่ r กับ <code>temp_c</code> สูง</li>
+  <li><b>Embedded (Lasso):</b> ที่ alpha = 0.1 ดัน coefficient เป็น 0 ให้ one-hot ที่ซ้ำกับกลุ่มอื่น 6 ตัว (<code>day_of_week_3</code>, <code>day_of_week_5</code>, <code>month_4</code>, <code>month_7</code>, <code>month_9</code>, <code>seasons_Summer</code>) โดย MAE ไม่เปลี่ยน แต่ถ้า alpha สูงเกินไปจะตัดตัวที่มีประโยชน์ทิ้งและ MAE แย่ลง (ตารางที่ 6.3) · coefficient ใหญ่สุดเป็นชั่วโมงพีค (<code>hour_18</code> +836.8, <code>hour_19</code> +550.5, <code>hour_8</code> +496.6 และ <code>hour_4</code> −401.9 คัน) · ต่างจากที่คาดไว้ Lasso ไม่ได้ตัด <code>dew_point_c</code> ทั้งที่ r กับ <code>temp_c</code> สูง</li>
 </ul>
 <p><b>ตัดสินใจ:</b> ไม่มีวิธีไหนทำให้ MAE ดีขึ้นเกินระดับ noise จึงใช้ทุก feature ในโมเดลสุดท้าย และใช้ผลขั้นนี้อธิบายความสำคัญและความซ้ำซ้อนของ feature</p>
 
@@ -471,12 +509,27 @@
   <tr><td>ไม่มีฝน</td><td class="r">1,594</td><td class="r">647.3</td><td class="r">93.4</td><td class="r">+21.9</td><td class="r">14.4%</td></tr>
 </table>
 <figure><img src="../figures/13_test_errors.png" alt=""><figcaption>รูปที่ 11.1 ค่าจริง vs ค่าทำนาย (ซ้าย), residual (กลาง), MAE รายชั่วโมงเทียบยอดเฉลี่ย (ขวา)</figcaption></figure>
+<table>
+  <caption>ตารางที่ 11.3 10 ชั่วโมงที่ทายพลาดมากที่สุดใน test (error = ทำนาย − จริง, บวก = ทายเกิน)</caption>
+  <tr><th>วันที่</th><th class="r">ชม.</th><th>ฤดู</th><th class="r">°C</th><th class="r">ความชื้น %</th><th class="r">ฝน มม.</th><th>ประเภทวัน</th><th class="r">จริง</th><th class="r">ทำนาย</th><th class="r">error</th></tr>
+  <tr><td>2018-08-23 (พฤ.)</td><td class="r">21</td><td>Summer</td><td class="r">28</td><td class="r">72</td><td class="r">0</td><td>วันทำงาน</td><td class="r">189</td><td class="r">1,613</td><td class="r">+1,424</td></tr>
+  <tr><td>2018-08-23 (พฤ.)</td><td class="r">20</td><td>Summer</td><td class="r">29</td><td class="r">62</td><td class="r">0</td><td>วันทำงาน</td><td class="r">257</td><td class="r">1,642</td><td class="r">+1,385</td></tr>
+  <tr><td>2018-08-23 (พฤ.)</td><td class="r">19</td><td>Summer</td><td class="r">30</td><td class="r">59</td><td class="r">0</td><td>วันทำงาน</td><td class="r">582</td><td class="r">1,939</td><td class="r">+1,357</td></tr>
+  <tr><td>2018-11-08 (พฤ.)</td><td class="r">8</td><td>Autumn</td><td class="r">11</td><td class="r">89</td><td class="r">0</td><td>วันทำงาน</td><td class="r">148</td><td class="r">1,249</td><td class="r">+1,101</td></tr>
+  <tr><td>2018-08-23 (พฤ.)</td><td class="r">18</td><td>Summer</td><td class="r">31</td><td class="r">55</td><td class="r">0</td><td>วันทำงาน</td><td class="r">1,447</td><td class="r">2,510</td><td class="r">+1,063</td></tr>
+  <tr><td>2018-09-24 (จ.)</td><td class="r">18</td><td>Autumn</td><td class="r">20</td><td class="r">35</td><td class="r">0</td><td>วันหยุด</td><td class="r">1,237</td><td class="r">2,193</td><td class="r">+956</td></tr>
+  <tr><td>2018-06-22 (ศ.)</td><td class="r">18</td><td>Summer</td><td class="r">29</td><td class="r">27</td><td class="r">0</td><td>วันทำงาน</td><td class="r">3,365</td><td class="r">2,464</td><td class="r">−901</td></tr>
+  <tr><td>2018-08-23 (พฤ.)</td><td class="r">22</td><td>Summer</td><td class="r">27</td><td class="r">84</td><td class="r">2</td><td>วันทำงาน</td><td class="r">215</td><td class="r">1,102</td><td class="r">+887</td></tr>
+  <tr><td>2018-07-09 (จ.)</td><td class="r">7</td><td>Summer</td><td class="r">21</td><td class="r">66</td><td class="r">0</td><td>วันทำงาน</td><td class="r">451</td><td class="r">1,323</td><td class="r">+872</td></tr>
+  <tr><td>2018-06-12 (อ.)</td><td class="r">22</td><td>Summer</td><td class="r">20</td><td class="r">70</td><td class="r">0</td><td>วันทำงาน</td><td class="r">2,309</td><td class="r">1,455</td><td class="r">−854</td></tr>
+</table>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li>test MAE ใกล้กับ CV แปลว่าโมเดลไม่ได้ overfit และ CV ประเมินได้สมจริง ที่ test ต่ำกว่า CV ~12 คัน สอดคล้องกับที่บันทึกไว้ในหัวข้อ 3: test มีชั่วโมงฤดูหนาวมากกว่า ซึ่งยอดต่ำ ค่าคลาดเป็นคันจึงเล็กตาม ไม่ได้แปลว่าโมเดลเก่งขึ้น</li>
   <li>ค่าทำนายเกาะเส้นทแยงดี แต่ <b>ความคลาดโตตามระดับยอด</b> (residual เป็นรูปกรวย) · MAE สูงสุดที่ชั่วโมงพีค 18:00–19:00 และ 8:00 ต่ำสุดตี 3–5</li>
   <li><b>ชั่วโมงฝนตกคือจุดอ่อนที่สุด</b>: คลาด 88.7% ของยอดและทายสูงเกิน (ชั่วโมงฝนตกมีแค่ ~6% ของ train ให้เรียน)</li>
   <li>bias เป็นบวกทุกกลุ่ม → โดยรวมโมเดลทายสูงกว่าจริงเล็กน้อย</li>
+  <li>ใน 10 ชั่วโมงที่พลาดมากที่สุด (ตารางที่ 11.3) ทายเกิน 8 แถว และทุกแถวเป็นชั่วโมงเดินทาง (7:00–8:00 และ 18:00–22:00) ซึ่งยอดสูง ค่าคลาดเป็นคันจึงใหญ่ตาม</li>
   <li><b>10 ชั่วโมงที่ผิดมากที่สุด 5 ชั่วโมงมาจากวันเดียว</b> คือ 23 ส.ค. 2018 เวลา 18:00–22:00 ซึ่งอากาศในข้อมูลดูปกติ แต่ยอดจริงต่ำมาก (เช่น 21:00 จริง 189 ทาย 1,613) วันนั้นพายุไต้ฝุ่น Soulik ขึ้นฝั่งเกาหลีใต้ อีกกรณีคือ 24 ก.ย. 2018 ช่วงเทศกาลชูซอกที่คนเดินทางออกจากโซล → error ก้อนใหญ่มาจาก <b>เหตุการณ์ที่ไม่มีใน feature</b></li>
 </ul>
 
