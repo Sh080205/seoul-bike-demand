@@ -31,8 +31,6 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 .page p{margin:8px 0 0}
 .cue{color:var(--soft);font-size:.83em;margin-top:6px}
 .cue b{color:var(--ink)}
-.qa dt{font-weight:700;margin-top:12px}
-.qa dd{margin:2px 0 0 0;color:var(--soft)}
 .note{font-size:.83em;color:var(--soft)}
 /* rehearsal: tick a page once it is practised */
 .tick{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--rule);background:none;color:var(--ink);font:700 16px/1 sans-serif;cursor:pointer;padding:0}
@@ -161,15 +159,33 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 </section>
 
 <section data-who="Q">
-<h2 style="--who:var(--q)">คำถามที่น่าจะโดนถาม → เปิดสไลด์สำรอง (กด B)</h2>
-<dl class="qa">
- <dt>ทำไมไม่ใช้ accuracy หรือ MSE เป็นตัวหลัก</dt><dd>regression ใช้ MAE/MSE/RMSE/R² · MSE หน่วยเป็นคัน² จึงรายงานไว้แต่อธิบายด้วย RMSE → สำรอง 1</dd>
- <dt>รู้ได้ไงว่าไม่มีข้อมูลรั่ว</dt><dd>split ตามวัน · preprocessing ใน Pipeline · GroupKFold วันซ้ำ 0 · ค่า scaler ต่างกันทุก fold → สำรอง 3</dd>
- <dt>Lasso / RFE ตัด feature อะไรบ้าง</dt><dd>RFE ตัด 28 ตัว ส่วนใหญ่ซ้ำซ้อน · Lasso ตัด one-hot ซ้ำ 6 ตัว · coefficient ใหญ่สุดเป็นชั่วโมง → สำรอง 2</dd>
- <dt>ทำไม test MAE ต่ำกว่า CV</dt><dd>test มีชั่วโมงฤดูหนาว 31.5% (train 22.9%) ยอดต่ำ ค่าคลาดเป็นคันจึงเล็ก · ดูแยกฤดูในหน้า 10</dd>
- <dt>ชั่วโมงไหนพลาดหนักที่สุด</dt><dd>5 ใน 10 อันดับแรกเป็น 23 ส.ค. 2018 วันไต้ฝุ่น Soulik · ข้อมูลไม่มี feature เหตุการณ์พิเศษ → สำรอง 4</dd>
- <dt>outlier จัดการยังไง</dt><dd>ตรวจด้วย IQR แล้วเก็บไว้ เพราะเป็นเหตุการณ์จริง · ฝน/หิมะ IQR = 0 ใช้กฎนี้ไม่ได้ → สำรอง 5</dd>
-</dl>
+<h2 style="--who:var(--q)">ถาม-ตอบ → สไลด์สำรอง 1–5</h2>
+<p class="note">สไลด์สำรองอยู่ต่อจากหน้า 12 เรียงตามคำถามที่น่าจะโดนถามมากสุดก่อน · กด → ไล่ไปทีละหน้า หรือกด B เลือกจากเมนู · หัวสไลด์แต่ละหน้าบอกว่าตอบคำถามอะไร · คนที่ตอบคือคนที่พูดหน้านั้นในช่วงนำเสนอ</p>
+
+<div class="page ans"><h3>สำรอง 1 · พิสูจน์ว่าไม่รั่ว <span>ตอบ: B</span></h3>
+<p class="cue">ถ้าถาม: <b>"รู้ได้ไงว่าไม่มีข้อมูลรั่ว"</b></p>
+<p>เราตรวจ 2 ชั้นครับ ชั้นแรกคือ GroupKFold ตารางนี้นับวันที่ซ้ำกันระหว่าง train กับ validation ได้ 0 ทุก fold ถ้าใช้ KFold ธรรมดา validation ของ fold 0 มี 281 วัน และซ้ำกับ train ครบทั้ง 281 วัน</p>
+<p>ชั้นที่สองคือ Pipeline ค่าเฉลี่ย temp_c ที่ scaler เรียนได้เปลี่ยนไปตาม fold ตั้งแต่ 13.348 ถึง 13.395 แปลว่า fit ใหม่บน training fold ทุกครั้ง ไม่เคยเห็นข้อมูล validation ด้านล่างเป็นเช็คลิสต์ เช่น target ไม่อยู่ใน X และเราแตะ test ครั้งเดียวในขั้น 13</p></div>
+
+<div class="page ans"><h3>สำรอง 2 · ตารางโมเดลเต็ม + MSE <span>ตอบ: C</span></h3>
+<p class="cue">ถ้าถาม: <b>"ทำไมไม่ใช้ accuracy"</b> · <b>"MSE อยู่ไหน"</b> · <b>"ทำไม test MAE ต่ำกว่า CV"</b></p>
+<p>accuracy ใช้กับ classification ครับ งานเราเป็น regression จึงรายงานครบ 4 ตัว คือ MAE, MSE, RMSE และ R² ของทุกโมเดลในตารางนี้ MSE มีหน่วยเป็นคันยกกำลังสอง อ่านยาก เราจึงอธิบายด้วย RMSE ซึ่งเป็นรากที่สองของมัน ทุกเมตริกเรียงอันดับเหมือนกัน HGB ดีที่สุดทุกตัว</p>
+<p>ส่วน test ได้ MAE 97.4 ต่ำกว่า CV 109.0 เพราะ test มีชั่วโมงฤดูหนาว 31.5% ส่วน train มี 22.9% ฤดูหนาวยอดเช่าต่ำ ค่าคลาดเป็นจำนวนคันจึงเล็กตาม ไม่ได้แปลว่าโมเดลเก่งขึ้นครับ</p></div>
+
+<div class="page ans"><h3>สำรอง 3 · Feature selection ละเอียด <span>ตอบ: B</span></h3>
+<p class="cue">ถ้าถาม: <b>"RFE / Lasso ตัด feature อะไรบ้าง"</b> · <b>"ทำไมใช้ทุก feature"</b></p>
+<p>Filter ทั้ง f_regression และ mutual_info ยิ่งเก็บ feature มาก MAE ยิ่งดี ดีสุดตอนใช้ครบ 58 คอลัมน์ที่ 266.2 ส่วน RFE ใช้แค่ 30 คอลัมน์ได้ 265.8 แทบเท่าเดิม แปลว่าอีก 28 คอลัมน์ซ้ำซ้อน</p>
+<p>Lasso ที่ alpha 0.1 ให้ coefficient เป็น 0 จำนวน 6 คอลัมน์ คือบางวันในสัปดาห์ บางเดือน และ seasons_Summer ส่วน coefficient ใหญ่สุดเป็นชั่วโมง เช่น 18:00 บวก 836.8 ไม่มีวิธีไหนลด MAE ได้เกินระดับ noise เราจึงใช้ทุก feature ส่วน PCA ช่วย kNN เล็กน้อยจาก 194.4 เหลือ 189.5 ที่ 15 component แต่ทำให้ Linear แย่ลงครับ</p></div>
+
+<div class="page ans"><h3>สำรอง 4 · 10 ชั่วโมงที่ทายพลาดมากที่สุด <span>ตอบ: C</span></h3>
+<p class="cue">ถ้าถาม: <b>"ชั่วโมงไหนทายพลาดหนักที่สุด"</b> · <b>"โมเดลพลาดเพราะอะไร"</b></p>
+<p>5 ใน 10 แถวมาจากวันเดียว คือ 23 ส.ค. 2018 ช่วง 18 ถึง 22 นาฬิกา เป็นวันที่ไต้ฝุ่น Soulik ขึ้นฝั่งเกาหลีใต้และโรงเรียนปิด แต่อากาศที่วัดได้ดูปกติ ฝนเกือบเป็น 0 โมเดลจึงทายสูงเหมือนวันทำงานทั่วไป เช่น 3 ทุ่ม ยอดจริง 189 คัน แต่ทาย 1,613 คัน</p>
+<p>อีกแถวคือ 24 ก.ย. ซึ่งตรงกับวันชูซอก dataset ไม่มี feature เหตุการณ์พิเศษ ถ้าทำต่อจะเพิ่มคำเตือนอากาศกับวันเทศกาลครับ</p></div>
+
+<div class="page ans"><h3>สำรอง 5 · Correlation + outlier <span>ตอบ: A</span></h3>
+<p class="cue">ถ้าถาม: <b>"จัดการ outlier ยังไง"</b> · <b>"feature ไหนสัมพันธ์กับยอดมากสุด"</b></p>
+<p>เราตรวจ outlier ด้วยกฎ IQR บน train เช่น ฝนนับได้ 413 ชั่วโมง หรือ 6.10% แต่ฝนกับหิมะมี IQR เป็น 0 เพราะเกือบทุกชั่วโมงไม่มีฝน ทุกชั่วโมงที่มีฝนจึงถูกนับเป็น outlier ทั้งที่เป็นเหตุการณ์จริง เราจึงเก็บไว้ ไม่ตัดออก</p>
+<p>ส่วน correlation ยอดเช่าสัมพันธ์กับอุณหภูมิมากที่สุด r เท่ากับ 0.55 รองลงมาคือชั่วโมง 0.44 ครับ</p></div>
 </section>
 </main>
 <script>
@@ -182,7 +198,7 @@ const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 const toSec = t => { const [m, s] = t.split(':').map(Number); return m * 60 + s; };
 
 // Page timings are read from each card header ("หน้า 3 · ... 0:45"); keep them in step with the table at the top.
-const pages = [...document.querySelectorAll('.page')].map(el => ({
+const pages = [...document.querySelectorAll('.page:not(.ans)')].map(el => ({  // .ans = Q&A answers, not timed
   el, no: +el.querySelector('h3').textContent.match(/หน้า (\d+)/)[1],
   dur: toSec(el.querySelector('h3 span').textContent.trim()), who: el.closest('section').dataset.who,
 }));

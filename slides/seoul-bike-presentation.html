@@ -493,7 +493,7 @@ body{font-family:var(--font);color:var(--ink)}
   <div class="card reveal" style="--d:2"><h4>เช็คลิสต์ leakage</h4><div class="chips">
    <span class="chip">✓ split ตามวัน + CV ใช้ GroupKFold + groups</span><span class="chip">✓ y = ยอดเช่าดิบ</span><span class="chip">✓ rented_bike_count ไม่อยู่ใน X</span>
    <span class="chip">✓ imputer / scaler / encoder / selector / PCA อยู่ใน Pipeline</span><span class="chip">✓ ไม่มี feature ที่คำนวณจาก target</span><span class="chip">✓ เลือกโมเดลด้วย CV · แตะ test ครั้งเดียวในขั้น 13</span></div></div>
-  <div class="card reveal" style="--d:3"><h4>สรุปคำตอบ</h4><p>วันซ้ำระหว่าง train กับ validation = <b>0 ทุก fold</b> · ค่าที่ scaler และ imputer เรียนได้ต่างกันทุก fold (เช่น mean temp_c 13.348–13.395) → Pipeline fit ใหม่บน training fold ทุกครั้ง ไม่เคยเห็นข้อมูล validation</p></div></div>
+  <div class="card reveal" style="--d:3"><h4>สรุปคำตอบ</h4><p>วันซ้ำระหว่าง train กับ validation = <b>0 ทุก fold</b> · ค่าที่ scaler และ imputer เรียนได้เปลี่ยนไปตาม fold (เช่น mean temp_c 13.348–13.395) → Pipeline fit ใหม่บน training fold ทุกครั้ง ไม่เคยเห็นข้อมูล validation</p></div></div>
 </section>
 
 <section class="slide" data-step="10" data-page="สำรอง 2" data-backup="ตารางโมเดลเต็ม (MSE, baseline)">
