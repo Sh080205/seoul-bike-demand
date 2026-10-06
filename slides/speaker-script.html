@@ -155,7 +155,7 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <h2 style="--who:var(--c)">ผู้พูด C — หน้า 12–17 · โมเดล, tuning, test, ทำนายข้อมูลใหม่</h2>
 
 <div class="page"><h3>หน้า 12 · Baseline + เทียบ 4 โมเดล <span>0:35</span></h3>
-<p>เราเทียบ 4 ตระกูลโมเดลด้วย 5-fold GroupKFold baseline ที่ใช้แค่ชั่วโมงกับประเภทวันได้ MAE 401 ทุกโมเดลชนะ แปลว่าข้อมูลอากาศช่วยจริง</p>
+<p>เราเทียบ 4 ตระกูลโมเดลด้วย 5-fold GroupKFold baseline คือทายค่าเฉลี่ยของชั่วโมงนั้นในวันทำงานหรือวันหยุด ไม่ใช้อากาศเลย ได้ MAE 401 ทุกโมเดลชนะ แปลว่าข้อมูลอากาศช่วยจริง</p>
 <p>HistGradientBoosting ดีที่สุดที่ 114.1 Random Forest overfit ที่สุด gap 85.6 และ Linear Regression underfit gap แค่ 6.4</p></div>
 <div class="page"><h3>หน้า 13 · รายละเอียด: ตารางโมเดลเต็ม + MSE <span>0:25</span></h3>
 <p>ตารางเต็มมีครบ MAE, MSE, RMSE และ R² MSE หน่วยเป็นคันยกกำลังสอง จึงอธิบายด้วย RMSE คอลัมน์ gap คือ CV MAE ลบ MAE ตอน train</p>
@@ -179,6 +179,7 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <h2 style="--who:var(--q)">ถาม-ตอบ · ถ้าโดนถาม เปิดหน้านี้</h2>
 <p class="note">"หน้า" = สไลด์นำเสนอ · "รายงานตาราง" = <code>reports/report.pdf</code> ฉบับ 23 หน้า ใช้เปิดเมื่อกรรมการขอดูตัวเลขเต็ม</p>
 <dl class="qa">
+ <dt>baseline คำนวณยังไง</dt><dd>หน้า 13 · <b>รายงานหัวข้อ 8, ตาราง 8.1</b> · Dummy ทายค่าเฉลี่ย/มัธยฐานทุกแถว · เวลาอย่างเดียว = ค่าเฉลี่ยของ ชั่วโมง × (วันทำงาน/วันหยุด) 48 กลุ่ม เรียนจาก training fold และวัดด้วย GroupKFold ชุดเดียวกับโมเดลจริง</dd>
  <dt>ทำไมไม่ใช้ accuracy · MSE อยู่ไหน</dt><dd>หน้า 13 · <b>รายงานตาราง 8.1, 11.1</b> · regression ใช้ MAE/MSE/RMSE/R² · MSE หน่วยคัน² จึงอธิบายด้วย RMSE</dd>
  <dt>รู้ได้ไงว่าไม่มีข้อมูลรั่ว</dt><dd>หน้า 9 · <b>รายงานตาราง 5.3, ภาคผนวก ก</b> · วันซ้ำ 0 ทุก fold · scaler fit ใหม่ทุก fold · แตะ test ครั้งเดียว</dd>
  <dt>RFE / Lasso ตัด feature อะไรบ้าง</dt><dd>หน้า 11 · <b>รายงานตาราง 6.2, 6.3</b> · Lasso ตัดบางวันในสัปดาห์ บางเดือน และ seasons_Summer · coefficient ใหญ่สุดเป็นชั่วโมง เช่น 18:00 +836.8</dd>

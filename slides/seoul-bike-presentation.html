@@ -135,6 +135,7 @@ body{font-family:var(--font);color:var(--ink)}
 .bar.base{color:var(--soft)}.bar.base .fill{background:#ddd7c7}
 .slide.active .bar .fill{transition:width .9s cubic-bezier(.2,.7,.2,1);transition-delay:calc(800ms + var(--d)*200ms);width:var(--w)}
 .bar .val{text-align:right;font-variant-numeric:tabular-nums}
+.bar small{display:block;font:400 17px/1.2 var(--font);color:var(--soft)}
 
 /* svg charts — lines draw themselves, bars grow */
 .chart{width:100%;display:block}
@@ -483,7 +484,7 @@ body{font-family:var(--font);color:var(--ink)}
    <tr class="best"><td>HistGradientBoosting</td><td class="n">114.1</td><td class="n">10.0</td><td class="n">34,462</td><td class="n">184.6</td><td class="n">0.918</td><td class="n">69.0</td><td class="n">45.1</td></tr></table></div>
   <div class="row2 reveal" style="--d:2">
    <div class="card"><h4>test ครั้งเดียว (HGB หลัง tune)</h4><p>MAE <b>97.4</b> · MSE <b>28,947.7</b> · RMSE <b>170.1</b> · R² <b>0.919</b> · CV MAE 109.0</p><p>test ต่ำกว่า CV เพราะ test มีชั่วโมงฤดูหนาว 31.5% (train 22.9%) ซึ่งยอดต่ำ ไม่ใช่เพราะโมเดลเก่งขึ้น</p></div>
-   <div class="card how"><h4>อ่านตารางยังไง</h4><ul><li><b>± std</b> = MAE แกว่งแค่ไหนระหว่าง 5 fold · <b>gap</b> = CV MAE − MAE train</li><li>gap ใหญ่ = จำ train ได้ดีแต่ทายวันใหม่แย่ (RF 85.6 = overfit) · gap เล็กแต่ MAE สูง = โมเดลง่ายเกิน (Linear 6.4 = underfit)</li><li><b>Dummy</b> = ทายค่าเฉลี่ย/มัธยฐานทุกแถว ใช้เป็นเกณฑ์ต่ำสุด · R² ใกล้ 0 หรือติดลบ = ไม่ดีกว่าทายค่าเฉลี่ย</li><li>MSE ใน CV เป็นค่าเฉลี่ยของ MSE แต่ละ fold จึงไม่เท่ากับ RMSE² พอดี · ทุกเมตริกเรียงอันดับเหมือนกัน</li></ul></div></div></div>
+   <div class="card how"><h4>อ่านตารางยังไง</h4><ul><li><b>± std</b> = MAE แกว่งแค่ไหนระหว่าง 5 fold · <b>gap</b> = CV MAE − MAE train</li><li>gap ใหญ่ = จำ train ได้ดีแต่ทายวันใหม่แย่ (RF 85.6 = overfit) · gap เล็กแต่ MAE สูง = โมเดลง่ายเกิน (Linear 6.4 = underfit)</li><li><b>Dummy</b> = ทายค่าเฉลี่ย/มัธยฐานทุกแถว ใช้เป็นเกณฑ์ต่ำสุด · R² ใกล้ 0 หรือติดลบ = ไม่ดีกว่าทายค่าเฉลี่ย</li><li><b>เวลาอย่างเดียว</b> = ค่าเฉลี่ยยอดเช่าของแต่ละ ชั่วโมง × (วันทำงาน/วันหยุด) 48 กลุ่ม เรียนจาก training fold · ไม่ใช้อากาศ → โมเดลที่ชนะตัวนี้ได้ประโยชน์จากอากาศจริง</li><li>MSE ใน CV เป็นค่าเฉลี่ยของ MSE แต่ละ fold จึงไม่เท่ากับ RMSE² พอดี · ทุกเมตริกเรียงอันดับเหมือนกัน</li></ul></div></div></div>
 </section>
 
 <!-- ================= PAGE 14 · TUNING + SELECTION (C) ================= -->
@@ -617,7 +618,7 @@ body{font-family:var(--font);color:var(--ink)}
    and the notebook's own aggregation code re-run on the committed data
    =========================================== */
 const TEST_DAYS=[0,3,5,9,15,22,25,30,33,39,42,45,46,55,56,57,63,72,73,76,77,78,82,90,93,94,101,108,109,114,119,124,126,137,152,165,176,183,192,193,195,196,203,220,224,233,234,237,242,248,253,262,265,275,283,292,297,300,304,309,325,329,331,337,338,342,345,346,347,349,352,359,361];
-const MODELS=[["Dummy (mean)",527.5,"base"],["Dummy (median)",512.2,"base"],["เวลาอย่างเดียว",401.0,"base"],["Linear Regression",266.2],["kNN",194.4],["Random Forest",122.4],["HistGradientBoosting",114.1,"best"]];
+const MODELS=[["Dummy (mean)",527.5,"base"],["Dummy (median)",512.2,"base"],["เวลาอย่างเดียว",401.0,"base","เฉลี่ยตามชั่วโมง × ประเภทวัน"],["Linear Regression",266.2],["kNN",194.4],["Random Forest",122.4],["HistGradientBoosting",114.1,"best"]];
 const HOURLY={weekday:[521,404,276,183,124,156,367,822,1381,763,554,626,714,717,731,805,930,1220,1810,1369,1190,1151,1038,739],
   weekend:[703,575,431,296,183,133,175,275,456,549,596,689,840,948,999,1089,1168,1238,1204,1123,1078,1030,903,697],
   holiday:[668,563,428,300,182,126,189,310,499,545,607,708,856,958,977,967,1026,1104,1097,987,979,936,823,607]};
@@ -665,7 +666,7 @@ smallBars(document.getElementById('rain'),RAIN,850,0,'#23462f');
 
 /* calendar, model bars, folds, RFE squares */
 document.querySelectorAll('.cal').forEach(c=>{let h='<i class="pad"></i>'.repeat(4);for(let d=0;d<365;d++){const k=TEST_DAYS.indexOf(d);h+=k>=0?`<i class="t" style="--o:${k}"></i>`:'<i></i>'}c.innerHTML=h});
-document.getElementById('bars').innerHTML=MODELS.map(([n,v,t],i)=>`<div class="bar ${t||''}"><span>${n}</span><div class="track"><div class="fill" style="--w:${v/527.5*100}%;--d:${i}"></div></div><span class="val">${v.toFixed(1)}</span></div>`).join('');
+document.getElementById('bars').innerHTML=MODELS.map(([n,v,t,how],i)=>`<div class="bar ${t||''}"><span>${n}${how?`<small>${how}</small>`:''}</span><div class="track"><div class="fill" style="--w:${v/527.5*100}%;--d:${i}"></div></div><span class="val">${v.toFixed(1)}</span></div>`).join('');
 document.getElementById('folds').innerHTML=Array.from({length:5},(_,f)=>`<div class="fold"><span>fold ${f}</span><div class="segs">${Array.from({length:5},(_,k)=>`<i class="${k===f?'v':''}" style="--f:${f}"></i>`).join('')}</div></div>`).join('');
 let od=0;document.getElementById('feat').innerHTML=COLS.map(c=>`<i title="${c}" class="${DROPPED.has(c)?'drop':''}" style="--o:${DROPPED.has(c)?od++:0}"></i>`).join('');
 
