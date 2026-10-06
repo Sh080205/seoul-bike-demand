@@ -8,123 +8,250 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
-/* Printable speaker script — same palette as the deck */
-:root{--pine:#23462f;--cream:#fbf8ef;--ink:#1f3326;--soft:#4f6655;--rule:#e6e0d0;--pink:#d6487a;--a:#a8d5a2;--b:#f3e7a1;--c:#e2c3a3}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--cream:#16211a;--ink:#e8efe6;--soft:#b2c4b6;--rule:#2e3d33}}
-:root[data-theme="dark"]{--cream:#16211a;--ink:#e8efe6;--soft:#b2c4b6;--rule:#2e3d33}
+/* Speaker script — same palette as the deck. Reads on a phone or iPad (sticky bar: speaker tabs,
+   rehearsal timer, text size) and still prints as one document. */
+:root{--pine:#23462f;--cream:#fbf8ef;--ink:#1f3326;--soft:#4f6655;--rule:#e6e0d0;--pink:#d6487a;--a:#a8d5a2;--b:#f3e7a1;--c:#e2c3a3;--q:#d9e4d4;--fs:18px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--cream:#16211a;--ink:#e8efe6;--soft:#b2c4b6;--rule:#2e3d33;--pink:#f07aa3}}
+:root[data-theme="dark"]{--cream:#16211a;--ink:#e8efe6;--soft:#b2c4b6;--rule:#2e3d33;--pink:#f07aa3}
 *{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
 body{margin:0;background:var(--cream);color:var(--ink);font:400 18px/1.7 'IBM Plex Sans Thai Looped',sans-serif}
-main{max-width:860px;margin:0 auto;padding:32px 16px 60px}
-h1{font-size:30px;margin:0;line-height:1.3}
+main{max-width:860px;margin:0 auto;padding:24px 16px 80px;font-size:var(--fs)}
+h1{font-size:1.67em;margin:0;line-height:1.3}
 .sub{color:var(--soft);margin-top:4px}
-table{width:100%;border-collapse:collapse;margin:18px 0;font-size:16px}
+table{width:100%;border-collapse:collapse;margin:18px 0;font-size:.89em}
 th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--rule)}
 th{font-weight:700}
 td.n{text-align:right;font-variant-numeric:tabular-nums}
-h2{margin:36px 0 6px;font-size:24px;padding:6px 14px;border-radius:10px;background:var(--who);color:#1f3326;break-after:avoid}
+h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-radius:10px;background:var(--who);color:#1f3326;break-after:avoid}
 .page{border:1.5px solid var(--rule);border-radius:12px;padding:14px 18px;margin:12px 0;break-inside:avoid}
-.page h3{margin:0;font-size:19px;display:flex;justify-content:space-between;gap:12px}
+.page h3{margin:0;font-size:1.06em;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:4px 12px}
 .page h3 span{font-weight:600;color:var(--pink);white-space:nowrap}
+.page h3 small{font-weight:400;color:var(--soft);font-size:.8em;margin-right:8px}
 .page p{margin:8px 0 0}
-.cue{color:var(--soft);font-size:15px;margin-top:6px}
+.cue{color:var(--soft);font-size:.83em;margin-top:6px}
 .cue b{color:var(--ink)}
 .qa dt{font-weight:700;margin-top:12px}
 .qa dd{margin:2px 0 0 0;color:var(--soft)}
-.note{font-size:15px;color:var(--soft)}
-@media print{body{font-size:14px}main{padding:0}h2{margin-top:18px}.page{padding:8px 12px}}
+.note{font-size:.83em;color:var(--soft)}
+/* rehearsal: tick a page once it is practised */
+.tick{flex:none;width:30px;height:30px;border-radius:50%;border:2px solid var(--rule);background:none;color:var(--ink);font:700 16px/1 sans-serif;cursor:pointer;padding:0}
+.page.done{opacity:.55}
+.page.done .tick{background:var(--a);border-color:var(--a);color:#1f3326}
+.page h3 .t{display:flex;align-items:center;gap:10px;margin-left:auto}
+/* sticky bar */
+.bar{position:sticky;top:0;z-index:5;background:var(--cream);border-bottom:1.5px solid var(--rule);padding:8px 16px;font-size:15px}
+.bar>div{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tabs{display:flex;gap:4px;flex:1 1 100%;overflow-x:auto}
+.tabs button,.tools button{font:600 15px 'IBM Plex Sans Thai Looped',sans-serif;color:var(--ink);background:none;border:1.5px solid var(--rule);border-radius:999px;padding:4px 12px;cursor:pointer;white-space:nowrap}
+.tabs button.on{background:var(--tab);border-color:var(--tab);color:var(--tabtx,#1f3326)}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 100%}
+.tb{display:flex;flex-direction:column;margin-right:auto}
+.clock{font:700 22px/1.1 'IBM Plex Sans Thai Looped',sans-serif;font-variant-numeric:tabular-nums;min-width:3.2em}
+.clock.over{color:var(--pink)}
+.goal{color:var(--soft);font-size:12px;line-height:1.3;white-space:nowrap}
+[hidden]{display:none!important}
+@media (min-width:700px){.tabs,.tools{flex:0 1 auto}.tools{margin-left:auto}}
+@media print{.bar,.tick{display:none!important}[hidden]{display:block!important}.page.done{opacity:1}
+  main{font-size:14px;padding:0}h2{margin-top:18px}.page{padding:8px 12px}}
 </style>
 </head>
 <body>
+<nav class="bar"><div>
+ <div class="tabs">
+  <button data-who="all" style="--tab:var(--ink);--tabtx:var(--cream)">ทั้งหมด</button>
+  <button data-who="A" style="--tab:var(--a)">A</button>
+  <button data-who="B" style="--tab:var(--b)">B</button>
+  <button data-who="C" style="--tab:var(--c)">C</button>
+  <button data-who="Q" style="--tab:var(--q)">ถาม-ตอบ</button>
+ </div>
+ <div class="tools">
+  <span class="tb"><span class="clock" id="clock">0:00</span><span class="goal" id="goal"></span></span>
+  <button id="go">เริ่ม</button><button id="reset">รีเซ็ต</button>
+  <button id="smaller" aria-label="ตัวอักษรเล็กลง">ก−</button><button id="bigger" aria-label="ตัวอักษรใหญ่ขึ้น">ก+</button>
+ </div>
+</div></nav>
 <main>
+<section data-who="all">
 <h1>บทพูด · Seoul Bike Demand (ML)</h1>
-<div class="sub">เวลารวม 10 นาที รวมถาม-ตอบ · พูดจริง ~7:40 · ไฟล์สไลด์ <code>slides/seoul-bike-presentation.html</code></div>
+<div class="sub">เวลารวม 10 นาที รวมถาม-ตอบ · พูดจริง ~9:00 · เหลือถาม-ตอบ ~1:00 · ไฟล์สไลด์ <code>slides/seoul-bike-presentation.html</code></div>
 
 <table>
  <tr><th>หน้า</th><th>หัวข้อ</th><th>คนพูด</th><th class="n">เวลา</th></tr>
  <tr><td>1</td><td>ปก</td><td>A</td><td class="n">0:10</td></tr>
- <tr><td>2</td><td>โจทย์ + เมตริก</td><td>A</td><td class="n">0:40</td></tr>
- <tr><td>3</td><td>Split ตามวัน</td><td>A</td><td class="n">0:45</td></tr>
- <tr><td>4</td><td>EDA</td><td>A</td><td class="n">0:50</td></tr>
- <tr><td>5</td><td>เตรียมข้อมูล</td><td>B</td><td class="n">0:40</td></tr>
- <tr><td>6</td><td>Pipeline + GroupKFold</td><td>B</td><td class="n">0:45</td></tr>
- <tr><td>7</td><td>คัดฟีเจอร์ + PCA</td><td>B</td><td class="n">0:40</td></tr>
- <tr><td>8</td><td>เทียบ 4 โมเดล</td><td>C</td><td class="n">0:45</td></tr>
- <tr><td>9</td><td>Tuning + เลือกโมเดล</td><td>C</td><td class="n">0:30</td></tr>
- <tr><td>10</td><td>ผล test ครั้งเดียว</td><td>C</td><td class="n">0:40</td></tr>
- <tr><td>11</td><td>ทำนายข้อมูลใหม่ (กดปุ่ม)</td><td>C</td><td class="n">0:45</td></tr>
- <tr><td>12</td><td>สรุป + ถาม-ตอบ</td><td>A</td><td class="n">0:30</td></tr>
- <tr><th colspan="3">รวม · A 2:55 · B 2:05 · C 2:40</th><th class="n">7:40</th></tr>
+ <tr><td>2</td><td>โจทย์ + เมตริก</td><td>A</td><td class="n">0:30</td></tr>
+ <tr><td>3</td><td>โหลดและตรวจข้อมูล</td><td>A</td><td class="n">0:30</td></tr>
+ <tr><td>4</td><td>Split ตามวัน</td><td>A</td><td class="n">0:40</td></tr>
+ <tr><td>5</td><td>EDA</td><td>A</td><td class="n">0:40</td></tr>
+ <tr><td>6</td><td>รายละเอียด: correlation + outlier</td><td>A</td><td class="n">0:25</td></tr>
+ <tr><td>7</td><td>เตรียมข้อมูล</td><td>B</td><td class="n">0:40</td></tr>
+ <tr><td>8</td><td>Pipeline + GroupKFold</td><td>B</td><td class="n">0:35</td></tr>
+ <tr><td>9</td><td>รายละเอียด: พิสูจน์ไม่รั่ว</td><td>B</td><td class="n">0:25</td></tr>
+ <tr><td>10</td><td>คัดฟีเจอร์ + PCA</td><td>B</td><td class="n">0:20</td></tr>
+ <tr><td>11</td><td>รายละเอียด: feature selection</td><td>B</td><td class="n">0:25</td></tr>
+ <tr><td>12</td><td>Baseline + เทียบ 4 โมเดล</td><td>C</td><td class="n">0:35</td></tr>
+ <tr><td>13</td><td>รายละเอียด: ตารางโมเดลเต็ม + MSE</td><td>C</td><td class="n">0:25</td></tr>
+ <tr><td>14</td><td>Tuning + เลือกโมเดล</td><td>C</td><td class="n">0:25</td></tr>
+ <tr><td>15</td><td>ผล test ครั้งเดียว</td><td>C</td><td class="n">0:35</td></tr>
+ <tr><td>16</td><td>รายละเอียด: ชั่วโมงที่ทายพลาด</td><td>C</td><td class="n">0:25</td></tr>
+ <tr><td>17</td><td>ทำนายข้อมูลใหม่ (กดปุ่ม)</td><td>C</td><td class="n">0:45</td></tr>
+ <tr><td>18</td><td>สรุป + ถาม-ตอบ</td><td>A</td><td class="n">0:30</td></tr>
+ <tr><th colspan="3">รวม · A 3:25 · B 2:25 · C 3:10</th><th class="n">9:00</th></tr>
 </table>
 <p class="note"><b>ยังไม่ได้เลือกว่าใครเป็น A / B / C</b> · แบ่งตามช่วงงาน 3 ส่วน แต่ละคนพูดอย่างน้อย 1 ส่วน (rubric ข้อ 6: ทุกคนต้องมีส่วนร่วม)</p>
-<p class="note">ปุ่มลัด: → / ← เลื่อนหน้า · B เปิดเมนูสไลด์สำรอง · 1–9 กระโดดไปหน้านั้น · F11 เต็มจอ · กล่องเส้นประสีเทา ("เสริม") ไม่ต้องพูด</p>
+<p class="note">ปุ่มลัด: → / ← เลื่อนหน้า · 1–9 กระโดดไปหน้านั้น · F11 เต็มจอ · หน้า "รายละเอียด" ต่อจากหน้าหลักเรื่องเดียวกัน คนเดิมพูดต่อ · กล่องเส้นประสีเทา ("เสริม") ไม่ต้องพูด</p>
+</section>
 
-<h2 style="--who:var(--a)">ผู้พูด A — หน้า 1–4 และ 12 · ข้อมูล, split, EDA และสรุป</h2>
+<section data-who="A">
+<h2 style="--who:var(--a)">ผู้พูด A — หน้า 1–6 และ 18 · ข้อมูล, split, EDA และสรุป</h2>
 
 <div class="page"><h3>หน้า 1 · ปก <span>0:10</span></h3>
 <p>สวัสดีครับ กลุ่มเราทำโปรเจกต์ Seoul Bike Demand คือทายว่าแต่ละชั่วโมงจะมีคนเช่าจักรยานในโซลกี่คัน จากพยากรณ์อากาศและปฏิทินครับ</p></div>
-
-<div class="page"><h3>หน้า 2 · โจทย์ + เมตริก <span>0:40</span></h3>
-<p>ข้อมูลมาจาก UCI มี 8,760 ชั่วโมง ตั้งแต่ ธ.ค. 2017 ถึง พ.ย. 2018 เป้าหมายคือยอดเช่าคันต่อชั่วโมงของทั้งเมือง จึงเป็น regression และเราใช้แค่ข้อมูลที่รู้ล่วงหน้าได้ ไม่ใช้ยอดเช่าชั่วโมงก่อนหน้า</p>
+<div class="page"><h3>หน้า 2 · โจทย์ + เมตริก <span>0:30</span></h3>
+<p>ข้อมูลมาจาก UCI เป้าหมายคือยอดเช่าคันต่อชั่วโมงของทั้งเมือง จึงเป็น regression และเราใช้แค่ข้อมูลที่รู้ล่วงหน้าได้ ไม่ใช้ยอดเช่าชั่วโมงก่อนหน้า</p>
 <p>กราฟนี้คือยอดเช่าใน train เบ้ขวา ค่าเฉลี่ย 756.8 สูงกว่ามัธยฐาน 582.5 เราเลยใช้ MAE เป็นเมตริกหลัก เพราะอ่านตรงว่าทายคลาดเฉลี่ยกี่คัน และไม่ถูกชั่วโมงพีคไม่กี่ชั่วโมงครอบงำแบบ RMSE</p></div>
-
-<div class="page"><h3>หน้า 3 · Split ตามวัน <span>0:45</span></h3>
+<div class="page"><h3>หน้า 3 · โหลดและตรวจข้อมูล <span>0:30</span></h3>
+<p>ข้อมูลมี 8,760 ชั่วโมง ตั้งแต่ ธ.ค. 2017 ถึง พ.ย. 2018 ก่อนโหลดจริงเราตรวจไฟล์ดิบก่อนครับ ไฟล์เก็บสัญลักษณ์องศาเป็น byte B0 ถ้าอ่านแบบ utf-8 จะ error เราจึงใช้ cp1252</p>
+<p class="cue">ชี้ <b>encoding="cp1252"</b> แล้วชี้ <b>format=</b> ในโค้ด</p>
+<p>ส่วนวันที่ ส่วนแรกมีค่าถึง 31 จึงเป็นแบบ วัน/เดือน/ปี เราระบุ format เอง ไม่ให้ pandas เดาวันกับเดือนสลับกัน ผลคือ 14 คอลัมน์ ไม่มี missing ไม่มีแถวซ้ำ และทุกวันมีครบ 24 ชั่วโมงครับ</p></div>
+<div class="page"><h3>หน้า 4 · Split ตามวัน <span>0:40</span></h3>
 <p>ความท้าทายแรกคือการแบ่งข้อมูล ชั่วโมงในวันเดียวกันคล้ายกันมาก ถ้าสุ่มทีละชั่วโมง 14:00 อาจอยู่ train แต่ 15:00 อยู่ test โมเดลก็แค่จำวันนั้น เราเลยแบ่งทีละวันด้วย GroupShuffleSplit โดยใช้วันที่เป็น groups</p>
 <p class="cue">รอให้โค้ดพิมพ์จบ แล้วชี้ <b>groups=df["date"]</b></p>
 <p>ได้ train 292 วัน test 73 วัน และบันทึกรายการวันลงไฟล์ ทุก notebook ใช้วัน test ชุดเดียวกัน test มีครบ 4 ฤดู แต่มีฤดูหนาวมากกว่า train ซึ่งเราจะกลับมาพูดตอนดูผล test</p></div>
-
-<div class="page"><h3>หน้า 4 · EDA <span>0:50</span></h3>
-<p>EDA ทำบน train เท่านั้น เจอ 3 อย่างที่เปลี่ยนการออกแบบ อย่างแรก วันทำงานมี 2 พีค คือ 8 โมงเช้าประมาณ 1,381 คัน และ 6 โมงเย็นประมาณ 1,810 คัน ส่วนวันหยุดไม่มีพีคเช้า</p>
-<p>อย่างที่สอง อุณหภูมิเป็นโค้งคว่ำ ยอดสูงสุดช่วง 25–30 องศา อย่างที่สาม ชั่วโมงที่มีฝน ยอดเฉลี่ยตกจาก 795 เหลือ 164 คัน ไม่ว่าฝนมากหรือน้อย ความสัมพันธ์ที่ไม่เป็นเส้นตรงพวกนี้คือเหตุผลที่โมเดลต้นไม้ชนะในตอนท้ายครับ</p>
+<div class="page"><h3>หน้า 5 · EDA <span>0:40</span></h3>
+<p>EDA ทำบน train เท่านั้น เจอ 3 อย่าง วันทำงานมี 2 พีค คือ 8 โมงเช้าประมาณ 1,381 คัน และ 6 โมงเย็นประมาณ 1,810 คัน ส่วนวันหยุดไม่มีพีคเช้า</p>
+<p>อุณหภูมิเป็นโค้งคว่ำ ยอดสูงสุดช่วง 25–30 องศา และชั่วโมงที่มีฝน ยอดเฉลี่ยตกจาก 795 เหลือ 164 คัน ความสัมพันธ์ที่ไม่เป็นเส้นตรงพวกนี้คือเหตุผลที่โมเดลต้นไม้ชนะในตอนท้ายครับ</p></div>
+<div class="page"><h3>หน้า 6 · รายละเอียด: correlation + outlier <span>0:25</span></h3>
+<p>หน้านี้อ่านแบบนี้ครับ แต่ละช่องคือค่า r สีแดงคือบวก สีน้ำเงินคือลบ อุณหภูมิสัมพันธ์มากสุดที่ 0.55 แต่ r วัดแค่เส้นตรง จึงต้องดูกราฟคู่กัน</p>
+<p>outlier ใช้กฎ 1.5 เท่าของ IQR ชั่วโมงที่มีฝนถูกนับเป็น outlier ทั้งที่เป็นเหตุการณ์จริง เราจึงไม่ตัดครับ</p>
 <p class="cue">ส่งต่อ: "ต่อไป [ชื่อผู้พูด B] จะเล่าการเตรียมข้อมูลครับ"</p></div>
-
-<div class="page"><h3>หน้า 12 · สรุป <span>0:30</span></h3>
+<div class="page"><h3>หน้า 18 · สรุป <span>0:30</span></h3>
 <p>สรุป โมเดลสุดท้ายคือ HistGradientBoosting ได้ test MAE 97.4 คันต่อชั่วโมง R² 0.919 ดีกว่าการใช้เวลาอย่างเดียวประมาณ 73% และเรากันข้อมูลรั่วตลอดทางด้วย split ตามวัน Pipeline และ GroupKFold</p>
 <p>ข้อจำกัดคือชั่วโมงฝนตกและเหตุการณ์พิเศษที่ไม่มีในข้อมูล ถ้าทำต่อจะเพิ่มข้อมูลหลายปีและ feature เทศกาลกับคำเตือนอากาศ ขอบคุณครับ ยินดีรับคำถามครับ</p></div>
+</section>
 
-<h2 style="--who:var(--b)">ผู้พูด B — หน้า 5–7 · เตรียมข้อมูล, Pipeline, คัดฟีเจอร์</h2>
+<section data-who="B">
+<h2 style="--who:var(--b)">ผู้พูด B — หน้า 7–11 · เตรียมข้อมูล, Pipeline, คัดฟีเจอร์</h2>
 
-<div class="page"><h3>หน้า 5 · เตรียมข้อมูล <span>0:40</span></h3>
+<div class="page"><h3>หน้า 7 · เตรียมข้อมูล <span>0:40</span></h3>
 <p>ผมจะเล่าการเตรียมข้อมูลครับ ชั่วโมงที่ระบบปิดมี 240 แถวใน train และยอดเป็น 0 ทุกแถว เราตัดออกและประกาศว่าโมเดลใช้กับชั่วโมงที่ระบบเปิดเท่านั้น</p>
 <p>ความชื้น 0% มี 17 แถว เราคำนวณย้อนกลับจากอุณหภูมิกับ dew point ด้วยสูตร Magnus ได้ 33 ถึง 72% แปลว่าเซนเซอร์ผิด จึงแปลงเป็น NaN แล้วให้ Pipeline เติมด้วย median ส่วน outlier อื่นเป็นเหตุการณ์จริง เราไม่ตัด และเพิ่ม feature ใหม่ 7 ตัว เช่น hour_sin, hour_cos, is_raining</p></div>
-
-<div class="page"><h3>หน้า 6 · Pipeline + GroupKFold <span>0:45</span></h3>
+<div class="page"><h3>หน้า 8 · Pipeline + GroupKFold <span>0:35</span></h3>
 <p>ความท้าทายที่สองคือข้อมูลรั่วระหว่าง cross-validation เราใส่ imputer, scaler และ one-hot ไว้ใน Pipeline ทุกครั้งที่ CV จะ fit ใหม่บน training fold เท่านั้น</p>
 <p class="cue">ชี้ <b>groups=groups_train</b> ในโค้ด แล้วชี้แผนภาพ fold</p>
-<p>และใช้ GroupKFold ให้ทั้งวันอยู่ fold เดียวกัน วันซ้ำระหว่าง train กับ validation เป็น 0 ทุก fold ถ้าใช้ KFold ธรรมดา validation 281 วันจะซ้ำกับ train ทั้ง 281 วันครับ</p></div>
-
-<div class="page"><h3>หน้า 7 · คัดฟีเจอร์ + PCA <span>0:40</span></h3>
-<p>เราทำ feature selection ครบ 3 แบบ คือ Filter, RFE และ Lasso ใช้ chi² ไม่ได้เพราะ target ต่อเนื่อง ผลคือ RFE ใช้แค่ 30 จาก 58 คอลัมน์ได้ MAE เท่าเดิม แต่ไม่มีวิธีไหนทำให้ดีขึ้นเกินระดับ noise เราจึงใช้ทุก feature</p>
-<p>PCA ต้องใช้ 14 component ถึงจะได้ 90% ของ variance และช่วย kNN ได้เล็กน้อย จาก 194.4 เหลือ 189.5</p>
+<p>และใช้ GroupKFold ให้ทั้งวันอยู่ fold เดียวกันเสมอ หน้าถัดไปคือหลักฐานครับ</p></div>
+<div class="page"><h3>หน้า 9 · รายละเอียด: พิสูจน์ไม่รั่ว <span>0:25</span></h3>
+<p>ตารางนี้ 1 แถวคือ 1 fold คอลัมน์วันซ้ำคือวันที่อยู่ทั้งใน train และ validation ได้ 0 ทุก fold ถ้าใช้ KFold ธรรมดาจะซ้ำครบ 281 วัน</p>
+<p>ส่วนค่าที่ scaler เรียนได้เปลี่ยนไปตาม fold แปลว่า Pipeline fit ใหม่ทุกรอบ ไม่เคยเห็นข้อมูล validation ครับ</p></div>
+<div class="page"><h3>หน้า 10 · คัดฟีเจอร์ + PCA <span>0:20</span></h3>
+<p>เราทำ feature selection ครบ 3 แบบ คือ Filter, RFE และ Lasso ใช้ chi² ไม่ได้เพราะ target ต่อเนื่อง ส่วน PCA ต้องใช้ 14 component ถึงจะได้ 90% ของ variance</p></div>
+<div class="page"><h3>หน้า 11 · รายละเอียด: feature selection <span>0:25</span></h3>
+<p>Filter ให้คะแนนทีละ feature แล้วเก็บ k ตัวบนสุด RFE ตัดตัวที่ coefficient เล็กสุดทีละ 2 ตัว เหลือ 30 ตัวก็ได้ MAE เท่าเดิม</p>
+<p>Lasso ดัน coefficient ที่ไม่สำคัญเป็น 0 ตัดได้ 6 ตัว ไม่มีวิธีไหนดีเกิน noise เราจึงใช้ทุก feature ครับ</p>
 <p class="cue">ส่งต่อ: "ต่อไป [ชื่อผู้พูด C] จะเล่าการเทียบโมเดลครับ"</p></div>
+</section>
 
-<h2 style="--who:var(--c)">ผู้พูด C — หน้า 8–11 · โมเดล, tuning, test, ทำนายข้อมูลใหม่</h2>
+<section data-who="C">
+<h2 style="--who:var(--c)">ผู้พูด C — หน้า 12–17 · โมเดล, tuning, test, ทำนายข้อมูลใหม่</h2>
 
-<div class="page"><h3>หน้า 8 · เทียบ 4 โมเดล <span>0:45</span></h3>
+<div class="page"><h3>หน้า 12 · Baseline + เทียบ 4 โมเดล <span>0:35</span></h3>
 <p>เราเทียบ 4 ตระกูลโมเดลด้วย 5-fold GroupKFold baseline ที่ใช้แค่ชั่วโมงกับประเภทวันได้ MAE 401 ทุกโมเดลชนะ แปลว่าข้อมูลอากาศช่วยจริง</p>
-<p>HistGradientBoosting ดีที่สุดที่ 114.1 ส่วน gap ระหว่าง train กับ validation บอกว่า Random Forest overfit ที่สุด gap 85.6 และ Linear Regression underfit gap แค่ 6.4 เพราะจับความโค้งกับ interaction ไม่ได้</p></div>
-
-<div class="page"><h3>หน้า 9 · Tuning + เลือกโมเดล <span>0:30</span></h3>
+<p>HistGradientBoosting ดีที่สุดที่ 114.1 Random Forest overfit ที่สุด gap 85.6 และ Linear Regression underfit gap แค่ 6.4</p></div>
+<div class="page"><h3>หน้า 13 · รายละเอียด: ตารางโมเดลเต็ม + MSE <span>0:25</span></h3>
+<p>ตารางเต็มมีครบ MAE, MSE, RMSE และ R² MSE หน่วยเป็นคันยกกำลังสอง จึงอธิบายด้วย RMSE คอลัมน์ gap คือ CV MAE ลบ MAE ตอน train</p>
+<p>gap ใหญ่คือ overfit อย่าง Random Forest 85.6 gap เล็กแต่ MAE สูงคือ underfit อย่าง Linear 6.4 ครับ</p></div>
+<div class="page"><h3>หน้า 14 · Tuning + เลือกโมเดล <span>0:25</span></h3>
 <p>tune ด้วย CV บน train เท่านั้น HGB ดีขึ้นเป็น 109.0 ห่าง Random Forest 12.8 คัน ประมาณ 1.5 เท่าของ std เราจึงเลือก HGB ส่วนเวลา fit และเวลาทำนายเร็วพอใช้งานจริงทุกตัว</p></div>
-
-<div class="page"><h3>หน้า 10 · ผล test ครั้งเดียว <span>0:40</span></h3>
+<div class="page"><h3>หน้า 15 · ผล test ครั้งเดียว <span>0:35</span></h3>
 <p>หลังเลือกโมเดลแล้ว เราเปิด test ครั้งเดียว ได้ MAE 97.4 RMSE 170.1 R² 0.919 ใกล้กับ CV แปลว่าไม่ overfit ที่ต่ำกว่า CV เพราะ test มีฤดูหนาว 31.5% ซึ่งยอดต่ำ ไม่ได้แปลว่าโมเดลเก่งขึ้น</p>
 <p>จุดอ่อนที่สุดคือชั่วโมงฝนตก คลาด 88.7% ของยอด</p></div>
-
-<div class="page"><h3>หน้า 11 · ทำนายข้อมูลใหม่ <span>0:45</span></h3>
+<div class="page"><h3>หน้า 16 · รายละเอียด: ชั่วโมงที่ทายพลาด <span>0:25</span></h3>
+<p>error คือค่าทายลบค่าจริง 8 ใน 10 แถวทายเกิน และเป็นชั่วโมงเดินทางทั้งหมด 5 แถวมาจาก 23 ส.ค. 2018 วันที่ไต้ฝุ่น Soulik ขึ้นฝั่ง</p>
+<p>อากาศที่วัดได้ดูปกติแต่คนไม่ออกมา เช่น 3 ทุ่ม จริง 189 ทาย 1,613 ข้อมูลไม่มีเหตุการณ์แบบนี้ครับ</p></div>
+<div class="page"><h3>หน้า 17 · ทำนายข้อมูลใหม่ <span>0:45</span></h3>
 <p>ขั้นสุดท้ายคือทำนายข้อมูลใหม่ ข้อมูลดิบผ่าน add_features ตัวเดียวกับตอนฝึก แล้วเข้า final_model ซึ่งรวม preprocessing ไว้ในตัว</p>
 <p class="cue">กดปุ่มทีละอัน: <b>พุธ 18:00 อากาศดี</b> → <b>ฝนตก</b> → <b>เสาร์</b> → <b>ฤดูหนาว</b></p>
 <p>พุธ 6 โมงเย็นอากาศดี ทาย 2,981 คัน ถ้าฝนตก 3 มม. เหลือ 204 วันเสาร์เวลาเดียวกัน 2,167 และเช้าฤดูหนาว 690 ทิศทางทุกปัจจัยตรงกับที่เห็นใน EDA ครับ</p>
 <p class="cue">ส่งต่อ: "[ชื่อผู้พูด A] จะสรุปครับ"</p></div>
+</section>
 
-<h2 style="--who:#d9e4d4">คำถามที่น่าจะโดนถาม → เปิดสไลด์สำรอง (กด B)</h2>
+<section data-who="Q">
+<h2 style="--who:var(--q)">ถาม-ตอบ · ถ้าโดนถาม เปิดหน้านี้</h2>
+<p class="note">"หน้า" = สไลด์นำเสนอ · "รายงานตาราง" = <code>reports/report.pdf</code> ฉบับ 23 หน้า ใช้เปิดเมื่อกรรมการขอดูตัวเลขเต็ม</p>
 <dl class="qa">
- <dt>ทำไมไม่ใช้ accuracy หรือ MSE เป็นตัวหลัก</dt><dd>regression ใช้ MAE/MSE/RMSE/R² · MSE หน่วยเป็นคัน² จึงรายงานไว้แต่อธิบายด้วย RMSE → สำรอง 1</dd>
- <dt>รู้ได้ไงว่าไม่มีข้อมูลรั่ว</dt><dd>split ตามวัน · preprocessing ใน Pipeline · GroupKFold วันซ้ำ 0 · ค่า scaler ต่างกันทุก fold → สำรอง 3</dd>
- <dt>Lasso / RFE ตัด feature อะไรบ้าง</dt><dd>RFE ตัด 28 ตัว ส่วนใหญ่ซ้ำซ้อน · Lasso ตัด one-hot ซ้ำ 6 ตัว · coefficient ใหญ่สุดเป็นชั่วโมง → สำรอง 2</dd>
- <dt>ทำไม test MAE ต่ำกว่า CV</dt><dd>test มีชั่วโมงฤดูหนาว 31.5% (train 22.9%) ยอดต่ำ ค่าคลาดเป็นคันจึงเล็ก · ดูแยกฤดูในหน้า 10</dd>
- <dt>ชั่วโมงไหนพลาดหนักที่สุด</dt><dd>5 ใน 10 อันดับแรกเป็น 23 ส.ค. 2018 วันไต้ฝุ่น Soulik · ข้อมูลไม่มี feature เหตุการณ์พิเศษ → สำรอง 4</dd>
- <dt>outlier จัดการยังไง</dt><dd>ตรวจด้วย IQR แล้วเก็บไว้ เพราะเป็นเหตุการณ์จริง · ฝน/หิมะ IQR = 0 ใช้กฎนี้ไม่ได้ → สำรอง 5</dd>
+ <dt>ทำไมไม่ใช้ accuracy · MSE อยู่ไหน</dt><dd>หน้า 13 · <b>รายงานตาราง 8.1, 11.1</b> · regression ใช้ MAE/MSE/RMSE/R² · MSE หน่วยคัน² จึงอธิบายด้วย RMSE</dd>
+ <dt>รู้ได้ไงว่าไม่มีข้อมูลรั่ว</dt><dd>หน้า 9 · <b>รายงานตาราง 5.3, ภาคผนวก ก</b> · วันซ้ำ 0 ทุก fold · scaler fit ใหม่ทุก fold · แตะ test ครั้งเดียว</dd>
+ <dt>RFE / Lasso ตัด feature อะไรบ้าง</dt><dd>หน้า 11 · <b>รายงานตาราง 6.2, 6.3</b> · Lasso ตัดบางวันในสัปดาห์ บางเดือน และ seasons_Summer · coefficient ใหญ่สุดเป็นชั่วโมง เช่น 18:00 +836.8</dd>
+ <dt>ทำไม test MAE ต่ำกว่า CV</dt><dd>หน้า 15 · <b>รายงานตาราง 3.1, 11.2</b> · test มีชั่วโมงฤดูหนาว 31.5% (train 22.9%) ยอดต่ำ ค่าคลาดเป็นคันจึงเล็ก</dd>
+ <dt>ชั่วโมงไหนพลาดหนักที่สุด</dt><dd>หน้า 16 · <b>รายงานตาราง 11.3</b> · 23 ส.ค. 2018 ไต้ฝุ่น Soulik · 24 ก.ย. ตรงกับวันชูซอก</dd>
+ <dt>outlier จัดการยังไง</dt><dd>หน้า 6 · <b>รายงานตาราง 4.2</b> · IQR ของฝน/หิมะ = 0 ใช้กฎนี้ไม่ได้ · เก็บไว้เพราะเป็นเหตุการณ์จริง</dd>
 </dl>
+</section>
 </main>
+<script>
+// Choices (tab, text size, ticked pages) are kept per device; the page works the same without storage.
+const store = {
+  get: k => { try { return localStorage.getItem('script.' + k); } catch (e) { return null; } },
+  set: (k, v) => { try { localStorage.setItem('script.' + k, v); } catch (e) {} },
+};
+const mmss = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+const toSec = t => { const [m, s] = t.split(':').map(Number); return m * 60 + s; };
+
+// Page timings are read from each card header ("หน้า 3 · ... 0:45"); keep them in step with the table at the top.
+const pages = [...document.querySelectorAll('.page')].map(el => ({
+  el, no: +el.querySelector('h3').textContent.match(/หน้า (\d+)/)[1],
+  dur: toSec(el.querySelector('h3 span').textContent.trim()), who: el.closest('section').dataset.who,
+}));
+let talk = 0;
+[...pages].sort((a, b) => a.no - b.no).forEach(p => { p.start = talk; talk += p.dur; });  // start time in talk order
+const goals = { all: talk, Q: 600 - talk };                                                // Q&A gets what is left of 10 minutes
+pages.forEach(p => { goals[p.who] = (goals[p.who] || 0) + p.dur; });
+
+pages.forEach(p => {
+  const span = p.el.querySelector('h3 span'), box = document.createElement('div');
+  box.className = 't'; span.before(box); box.append(span);
+  span.insertAdjacentHTML('afterbegin', `<small>เริ่ม ${mmss(p.start)} ·</small>`);
+  const tick = document.createElement('button');
+  tick.className = 'tick'; tick.textContent = '✓'; tick.title = 'ซ้อมหน้านี้แล้ว'; box.append(tick);
+  p.el.classList.toggle('done', store.get('done' + p.no) === '1');
+  tick.onclick = () => store.set('done' + p.no, p.el.classList.toggle('done') ? '1' : '0');
+});
+
+// Speaker tabs
+const tabs = [...document.querySelectorAll('.tabs button')];
+function show(who) {
+  document.querySelectorAll('main > section').forEach(s => { s.hidden = who !== 'all' && s.dataset.who !== who; });
+  tabs.forEach(b => b.classList.toggle('on', b.dataset.who === who));
+  document.getElementById('goal').textContent = `เป้า ${mmss(goals[who])}`;
+  goal = goals[who]; tickClock(); store.set('tab', who); scrollTo(0, 0);
+}
+tabs.forEach(b => b.onclick = () => show(b.dataset.who));
+
+// Rehearsal timer; keeps the screen awake while running where the browser allows it
+let goal = 0, startAt = 0, kept = 0, timer = null, lock = null;
+const clock = document.getElementById('clock'), goBtn = document.getElementById('go');
+const elapsed = () => Math.floor((kept + (timer ? Date.now() - startAt : 0)) / 1000);
+function tickClock() { const s = elapsed(); clock.textContent = mmss(s); clock.classList.toggle('over', s > goal); }
+goBtn.onclick = async () => {
+  if (timer) { kept += Date.now() - startAt; clearInterval(timer); timer = null; goBtn.textContent = 'ต่อ'; lock?.release?.(); lock = null; }
+  else {
+    startAt = Date.now(); timer = setInterval(tickClock, 250); goBtn.textContent = 'หยุด';
+    try { lock = await navigator.wakeLock?.request('screen'); } catch (e) {}
+  }
+  tickClock();
+};
+document.getElementById('reset').onclick = () => {
+  if (timer) { clearInterval(timer); timer = null; lock?.release?.(); lock = null; }
+  kept = 0; goBtn.textContent = 'เริ่ม'; tickClock();
+};
+
+// Text size
+let fs = +store.get('fs') || 18;
+const setFs = v => { fs = Math.min(28, Math.max(14, v)); document.documentElement.style.setProperty('--fs', fs + 'px'); store.set('fs', fs); };
+document.getElementById('smaller').onclick = () => setFs(fs - 2);
+document.getElementById('bigger').onclick = () => setFs(fs + 2);
+setFs(fs);
+show(goals[store.get('tab')] !== undefined ? store.get('tab') : 'all');
+</script>
 </body>
 </html>
