@@ -58,8 +58,9 @@ data/splits/         รายการวัน train/test
 notebooks/00_setup   ตรวจ environment + กติกากลุ่ม (ขั้น 0)
 notebooks/01_eda     โหลด/ตรวจข้อมูล, split ตามวัน, EDA บน train (ขั้น 2–4)
 notebooks/02_modeling  นิยามปัญหา, feature engineering, Pipeline, FS, PCA, baseline, เทียบ/tune โมเดล, test (ขั้น 1, 5–13)
-figures/             รูปที่ใช้ในรายงาน
-reports/             รายงาน + สไลด์
+figures/             รูปที่ใช้ในรายงานและสไลด์
+reports/             รายงาน (report.html → report.pdf)
+slides/              สไลด์นำเสนอ 18 หน้า · บทพูด · ภาพรวมทีละขั้น (HTML)
 ```
 
 ## ผลหลัก
