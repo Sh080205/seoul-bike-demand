@@ -155,6 +155,89 @@ code{font-family:inherit;background:rgba(0,0,0,.06);border-radius:5px;padding:0 
 @keyframes fade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .counter{position:fixed;right:22px;bottom:10px;font:600 15px var(--font);color:#9a968c;z-index:9}
 .editing [contenteditable]{outline:2px dashed var(--pink-d);outline-offset:3px}
+
+/* ===========================================
+   READING MODE — phones and tablets get one scrolling page instead of the fixed 16:9 stage.
+   JS puts .read on <html> for touch screens or narrow windows; the round button flips it.
+   Content is untouched: only layout and type sizes change.
+   =========================================== */
+.modebtn{position:fixed;right:14px;bottom:14px;z-index:1001;font:600 15px var(--font);background:var(--paper);color:var(--ink);
+  border:2px solid var(--ink);border-radius:999px;padding:8px 16px;box-shadow:0 6px 18px rgba(0,0,0,.35);cursor:pointer}
+.rnav,.zoom{display:none}
+html.read,html.read body{height:auto;overflow:visible}
+html.read body{overflow-x:hidden;-webkit-text-size-adjust:100%}
+html.read .deck-viewport{position:static;overflow:visible}
+html.read .deck-stage{position:static;width:auto;height:auto;transform:none!important;overflow:visible;background:none}
+html.read .slide{position:relative;inset:auto;width:auto;height:auto;visibility:visible;opacity:1;pointer-events:auto;overflow:visible;
+  background:none;padding:0 0 12px;scroll-margin-top:58px}
+html.read .slide .body,html.read .slide .hdr,html.read .slide .map,html.read .slide .cover,html.read .slide .facts{animation:none}
+html.read .paper{position:static;width:auto;height:auto;max-width:1120px;margin:0 auto;border-radius:0;box-shadow:none;padding:18px 16px 20px;overflow:visible}
+html.read .holes,html.read .strip,html.read .next,html.read .counter,html.read .howto{display:none}
+html.read .hdr{position:static;height:auto;gap:12px;align-items:flex-start;margin-bottom:14px}
+html.read .roundel{width:46px;height:46px;border-width:3px;font-size:20px}
+html.read .tt h2{font-size:21px;line-height:1.35}
+html.read .tt .sub{font-size:14px;line-height:1.5}
+html.read .body{position:static;display:grid;grid-template-columns:minmax(0,1fr)!important;grid-template-rows:none!important;gap:12px}
+html.read .body>*{grid-row:auto!important;grid-column:auto!important}
+html.read .card{padding:14px 16px;border-radius:12px;overflow:visible}
+html.read .card h3{font-size:15px;padding:0 10px;margin-bottom:6px}
+html.read .card p,html.read .card li{font-size:16px!important;line-height:1.65!important}
+html.read .card ul{padding-left:20px}
+html.read .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
+html.read .tw.many .tbl{min-width:600px}
+html.read .tbl,html.read .tbl.sm{font-size:14px;line-height:1.45}
+html.read .tbl th,html.read .tbl td,html.read .tbl.sm td{padding:5px 8px}
+html.read .tbl td[style]{width:auto!important}
+html.read .tbl td.n,html.read .tbl th.n{white-space:nowrap}
+html.read .kpis{gap:22px}
+html.read .kpi b{font-size:28px}
+html.read .kpi span{font-size:14px}
+html.read .fig img{flex:none;height:auto;cursor:zoom-in}
+html.read .fig .cap{font-size:13px}
+html.read .cover,html.read .facts,html.read .map{position:static}
+html.read .cover .kick{font-size:15px}
+html.read .cover h1{font-size:38px;margin-top:6px}
+html.read .cover .lead{font-size:17px;margin-top:12px}
+html.read .facts{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:20px}
+html.read .fact{padding:12px 14px;border-top-width:6px}
+html.read .fact b{font-size:22px}
+html.read .fact span{font-size:13px}
+html.read .map{grid-template-columns:minmax(0,1fr);gap:12px}
+html.read .line>h3{font-size:18px;padding:10px 14px}
+html.read .line>h3 small{font-size:13px}
+html.read .stop{padding:10px 14px;gap:12px}
+html.read .stop .no{width:38px;height:38px;font-size:16px}
+html.read .stop b{font-size:16px}
+html.read .stop span{font-size:14px}
+/* sticky chip bar: cover, map, steps 0–13, summary */
+html.read .rnav{display:flex;position:sticky;top:0;z-index:50;gap:6px;overflow-x:auto;padding:9px 16px;background:var(--stage-bg);scrollbar-width:none}
+.rnav::-webkit-scrollbar{display:none}
+.rnav a{flex:none;min-width:38px;height:38px;padding:0 11px;border-radius:19px;display:grid;place-items:center;box-sizing:border-box;
+  background:var(--c);color:var(--ink);font:700 15px var(--font);text-decoration:none;opacity:.75}
+.rnav a.here{opacity:1;box-shadow:0 0 0 3px var(--paper)}
+/* a tapped figure opens full screen; pinch to zoom */
+html.read .zoom.on{display:flex;position:fixed;inset:0;z-index:2000;background:rgba(20,19,18,.95);flex-direction:column;justify-content:center;
+  overflow:auto;padding:16px;box-sizing:border-box}
+.zoom img{width:100%;max-height:none;background:#fff;border-radius:8px}
+.zoom p{color:#d8d4ca;font:400 14px/1.5 var(--font);text-align:center;margin:12px 0 0}
+@media (min-width:600px){
+  html.read .slide{padding:0 16px 16px}
+  html.read .paper{border-radius:14px;padding:24px 28px}
+  html.read .card p,html.read .card li{font-size:17px!important}
+  html.read .tt h2{font-size:26px}
+  html.read .roundel{width:56px;height:56px;font-size:24px}
+  html.read .tbl,html.read .tbl.sm{font-size:15px}
+  html.read .cover h1{font-size:54px}
+  html.read .cover .lead{font-size:20px}
+  html.read .facts{grid-template-columns:repeat(4,minmax(0,1fr))}
+  html.read .map{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media (min-width:1000px){
+  html.read .body{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  html.read .body>.wide{grid-column:1/-1!important}
+  html.read .map{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media print{.modebtn,.rnav,.zoom{display:none!important}}
 </style>
 </head>
 <body>
@@ -932,6 +1015,7 @@ const stage = document.getElementById('deckStage');
 const slides = [...document.querySelectorAll('.slide')];
 let cur = 0;
 function fit() {
+  if (document.documentElement.classList.contains('read')) return;  // reading mode: no stage scaling
   const f = Math.min(innerWidth / 1920, innerHeight / 1080);
   stage.style.transform = `translate(${(innerWidth - 1920 * f) / 2}px,${(innerHeight - 1080 * f) / 2}px) scale(${f})`;
 }
@@ -950,6 +1034,7 @@ addEventListener('resize', fit); addEventListener('load', fit); fit();
 go(Math.max(0, (parseInt(location.hash.slice(1)) || 1) - 1));
 
 addEventListener('keydown', e => {
+  if (document.documentElement.classList.contains('read')) return;  // reading mode scrolls natively
   if (document.body.classList.contains('editing') && e.key !== 'Escape' && !(e.ctrlKey && e.key === 's')) return;
   if (['ArrowRight', 'ArrowDown', ' ', 'PageDown'].includes(e.key)) { go(cur + 1); e.preventDefault(); }
   else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) go(cur - 1);
@@ -959,6 +1044,7 @@ addEventListener('keydown', e => {
   else if (e.key === 'e' || e.key === 'E') toggleEdit();
 });
 document.addEventListener('click', e => {
+  if (document.documentElement.classList.contains('read')) return readClick(e);
   if (document.body.classList.contains('editing')) return;
   const t = e.target.closest('[data-jump]');
   if (t) { jump(t.dataset.jump); return; }
@@ -985,6 +1071,84 @@ addEventListener('keydown', e => {
     a.download = location.pathname.split('/').pop() || 'seoul-bike-overview.html'; a.click();
   }
 });
+
+/* ===========================================
+   READING MODE — see the CSS section of the same name
+   =========================================== */
+const root = document.documentElement;
+const isRead = () => root.classList.contains('read');
+// tables scroll sideways on a phone; .wide marks what spans both tablet columns
+document.querySelectorAll('.card .tbl').forEach(t => {
+  const w = document.createElement('div'); w.className = 'tw'; t.before(w); w.append(t);
+  if (Math.max(...[...t.rows].map(r => r.cells.length)) >= 4) w.classList.add('many');  // keep 4+ columns readable, scroll instead
+});
+document.querySelectorAll('.body').forEach(b => {
+  const oneCol = /grid-template-columns:\s*1fr\s*(;|$)/.test(b.getAttribute('style') || '');
+  [...b.children].forEach(el => {
+    const cols = Math.max(0, ...[...el.querySelectorAll('.tbl tr')].map(r => r.children.length));
+    if (oneCol || el.classList.contains('fig') || /grid-column/.test(el.getAttribute('style') || '') || cols >= 4) el.classList.add('wide');
+  });
+});
+// chip bar: cover, map, steps 0–13, summary
+const rnav = document.createElement('nav'); rnav.className = 'rnav';
+const chip = (label, slide, c) => {
+  const k = slides.indexOf(slide), a = document.createElement('a');
+  a.textContent = label; a.href = '#' + (k + 1); a.dataset.k = k; a.style.setProperty('--c', c); rnav.append(a);
+};
+chip('ปก', slides[0], 'var(--paper)');
+chip('แผนที่', document.getElementById('map'), 'var(--paper)');
+for (let i = 0; i < 14; i++) chip(String(i), slides.find(s => +s.dataset.step === i), `var(--${PH(i)})`);
+chip('สรุป', slides[slides.length - 1], 'var(--paper)');
+document.body.prepend(rnav);
+const chips = [...rnav.children];
+function markChip() {
+  // a step with several pages keeps its chip lit on each of them
+  let best = null;
+  chips.forEach(a => { if (+a.dataset.k <= cur) best = a; });
+  chips.forEach(a => a.classList.toggle('here', a === best));
+  if (best && isRead()) rnav.scrollTo({ left: best.offsetLeft - rnav.clientWidth / 2 + best.offsetWidth / 2, behavior: 'smooth' });
+}
+const toSlide = k => { cur = k; slides[k].scrollIntoView({ behavior: 'smooth' }); };
+rnav.addEventListener('click', e => {
+  const a = e.target.closest('a'); if (!a) return;
+  e.preventDefault(); e.stopPropagation(); toSlide(+a.dataset.k);
+});
+// track the page just under the chip bar
+const seen = new IntersectionObserver(es => {
+  if (!isRead()) return;
+  es.forEach(en => { if (en.isIntersecting) cur = slides.indexOf(en.target); });
+  markChip();
+  try { history.replaceState(null, '', '#' + (cur + 1)); } catch (e) {}
+}, { rootMargin: '-60px 0px -70% 0px' });
+slides.forEach(s => seen.observe(s));
+// full-screen figure
+const zoom = document.createElement('div'); zoom.className = 'zoom';
+zoom.innerHTML = '<img alt=""><p>ถ่างนิ้วเพื่อซูม · หมุนจอเป็นแนวนอนจะเห็นชัดขึ้น · แตะเพื่อปิด</p>';
+document.body.append(zoom);
+zoom.addEventListener('click', e => { e.stopPropagation(); zoom.classList.remove('on'); });
+function readClick(e) {
+  const img = e.target.closest('.fig img');
+  if (img) { zoom.querySelector('img').src = img.src; zoom.querySelector('img').alt = img.alt; zoom.classList.add('on'); return; }
+  const t = e.target.closest('[data-jump]');
+  if (t) { const v = t.dataset.jump; toSlide(v === 'map' ? slides.indexOf(document.getElementById('map')) : slides.findIndex(s => +s.dataset.step === +v)); }
+}
+// mode switch: auto = touch screen or narrow window; a button press is remembered
+const btn = document.createElement('button'); btn.className = 'modebtn'; document.body.append(btn);
+function setMode(read, remember) {
+  root.classList.toggle('read', read);
+  btn.textContent = read ? 'โหมดสไลด์' : 'โหมดอ่าน';
+  if (remember) try { localStorage.setItem('ovMode', read ? 'read' : 'slides'); } catch (e) {}
+  if (read) { stage.style.transform = ''; slides[cur].scrollIntoView(); } else { fit(); go(cur); }
+  markChip();
+}
+btn.addEventListener('click', e => { e.stopPropagation(); setMode(!isRead(), true); });
+let saved = null; try { saved = localStorage.getItem('ovMode'); } catch (e) {}
+setMode(saved ? saved === 'read' : matchMedia('(pointer:coarse), (max-width:900px)').matches, false);
+// figures and the web font change page heights after the first scroll; land on the #page again once they are in
+const startK = cur; let moved = false;
+['touchstart', 'wheel', 'keydown'].forEach(t => addEventListener(t, () => { moved = true; }, { once: true, passive: true }));
+Promise.all([new Promise(r => document.readyState === 'complete' ? r() : addEventListener('load', r)), document.fonts.ready])
+  .then(() => { if (isRead() && !moved) { cur = startK; slides[cur].scrollIntoView(); } });
 </script>
 </body>
 </html>
