@@ -271,7 +271,7 @@ html.read .zoom.on{display:flex;position:fixed;inset:0;z-index:2000;background:r
    <div class="line" style="--c:var(--mint)"><h3>สายข้อมูล<small>00_setup · 01_eda · 02_modeling (ขั้น 1)</small></h3>
     <div class="stop" data-jump="0"><div class="no">0</div><div><b>Setup</b><span>เวอร์ชันไลบรารีตรงทุกเครื่อง</span></div></div>
     <div class="stop" data-jump="1"><div class="no">1</div><div><b>นิยามปัญหา</b><span>regression · MAE เป็นเมตริกหลัก</span></div></div>
-    <div class="stop" data-jump="2"><div class="no">2</div><div><b>โหลด + ตรวจข้อมูล</b><span>8,760 × 14 ไม่มี missing/ซ้ำ</span></div></div>
+    <div class="stop" data-jump="2"><div class="no">2</div><div><b>โหลด + ตรวจข้อมูล</b><span>8,760 × 14 ไม่มี NaN/ซ้ำ</span></div></div>
     <div class="stop" data-jump="3"><div class="no">3</div><div><b>Split ตามวัน</b><span>train 292 วัน / test 73 วัน</span></div></div>
     <div class="stop" data-jump="4"><div class="no">4</div><div><b>EDA บน train</b><span>10 การตัดสินใจส่งต่อ</span></div></div>
    </div>
@@ -360,13 +360,13 @@ html.read .zoom.on{display:flex;position:fixed;inset:0;z-index:2000;background:r
    <div class="card"><h3>ทำอะไร</h3><ul>
     <li><b>2.1</b> อ่าน byte ดิบของหัวตาราง ลอง 3 encoding และดูช่วงค่าของแต่ละส่วนของวันที่</li>
     <li><b>2.2</b> โหลด · <code>assert</code> ชื่อคอลัมน์ · เปลี่ยนเป็น snake_case (<code>Temperature(°C)</code> → <code>temp_c</code>) · แปลงวันที่โดยระบุ <code>format=</code></li>
-    <li><b>2.3</b> ตรวจ missing, แถวซ้ำ, ช่วงวัน, ชั่วโมงครบ 0–23 · <b>2.4</b> นับค่าของคอลัมน์หมวดหมู่</li></ul></div>
+    <li><b>2.3</b> ตรวจค่าว่าง (NaN), แถวซ้ำ, ช่วงวัน, ชั่วโมงครบ 0–23 · <b>2.4</b> นับค่าของคอลัมน์หมวดหมู่</li></ul></div>
    <div class="card" style="grid-row:span 2"><h3>ผลลัพธ์</h3>
     <table class="tbl"><tr><th>ตรวจ</th><th>ผล</th></tr>
      <tr><td>byte ของ °</td><td><code>\xb0</code> → utf-8 อ่านไม่ได้ (UnicodeDecodeError) · <b>cp1252</b> อ่านได้ถูก</td></tr>
      <tr><td>รูปแบบวันที่</td><td>ส่วนที่ 1 = 1–31 · ส่วนที่ 2 = 1–12 → <b>dd/mm/yyyy</b> (แถวแรก = 1 ธ.ค. 2017)</td></tr>
      <tr><td>ขนาด</td><td><b>8,760 แถว × 14 คอลัมน์</b> (365 วัน × 24 ชม.)</td></tr>
-     <tr><td>missing / แถวซ้ำ</td><td>0 / 0 · ซ้ำที่ (date, hour) = 0</td></tr>
+     <tr><td>NaN / แถวซ้ำ</td><td>0 / 0 · ซ้ำที่ (date, hour) = 0</td></tr>
      <tr><td>ช่วงวัน</td><td>2017-12-01 ถึง 2018-11-30 = 365 วัน · ทุกวันมี 24 แถว ชั่วโมง 0–23 ครบ</td></tr>
      <tr><td><code>seasons</code></td><td>Spring 2,208 · Summer 2,208 · Autumn 2,184 · Winter 2,160</td></tr>
      <tr><td><code>holiday</code></td><td>Holiday 432 แถว (18 วัน) · No Holiday 8,328</td></tr>
@@ -446,7 +446,7 @@ html.read .zoom.on{display:flex;position:fixed;inset:0;z-index:2000;background:r
    <div class="card"><h3>4.1–4.2 สถิติ + การกระจาย</h3><ul>
     <li>ยอดเช่า mean 730.86 · median 547 · min 0 · max 3,556 → <b>เบ้ขวา</b> (skewness 1.08)</li>
     <li>ยอด = 0 มี <b>240 แถว (3.4%)</b> · เกินหนวด boxplot (&gt; 2,443.5) 102 แถว</li>
-    <li><code>humidity_pct</code> min = <b>0%</b> เป็นไปไม่ได้ทางกายภาพ</li>
+    <li><code>humidity_pct</code> min = <b>0%</b> เป็นไปไม่ได้ทางกายภาพ → อาจเป็น missing value (ตรวจใน 4.10)</li>
     <li><code>visibility_10m</code> สเกล 27–2,000 · ฝน/หิมะ Q3 = 0 · แสงแดด median 0.01 → ส่วนใหญ่เป็น 0</li></ul></div>
    <div class="card"><h3>4.3 functioning_day</h3><ul>
     <li><code>No</code> 240 แถว <b>ยอด = 0 ทุกแถว</b> (mean = min = max = 0)</li>
@@ -528,11 +528,11 @@ html.read .zoom.on{display:flex;position:fixed;inset:0;z-index:2000;background:r
      <tr><td>อีก 5 คอลัมน์</td><td class="n">0</td><td class="n">0</td></tr></table>
     <p style="margin-top:8px">ฝน/หิมะมี IQR = 0 → ทุกชั่วโมงที่มีฝนกลายเป็น outlier · ค่าที่เกินอื่นๆ เป็นเหตุการณ์จริง (แดดจัด ลมแรง พีคเย็น)</p>
     <h3 class="alt" style="margin-top:6px">ตัดสินใจ</h3><p><b>ไม่ตัด outlier</b> · ใช้ StandardScaler ใน Pipeline แทน</p></div>
-   <div class="card"><h3>ความชื้น = 0%</h3><ul>
+   <div class="card"><h3>ความชื้น = 0% (missing value)</h3><ul>
     <li><b>17 แถว</b> ช่วง 19–28 พ.ค. 2018 (5 วัน)</li>
-    <li>คำนวณความชื้นย้อนกลับจากอุณหภูมิ + dew point ด้วย <b>สูตร Magnus</b>: แถวปกติคลาดจากค่าจริงเฉลี่ย 0.24 จุด</li>
-    <li>17 แถวนี้คำนวณได้ <b>33.1–71.7%</b> → ขัดกับข้อมูลในแถวเดียวกัน = ค่าผิดของเซนเซอร์</li></ul>
-    <h3 class="alt" style="margin-top:8px">ตัดสินใจ</h3><p>แปลง 0 → <code>NaN</code> (กฎตายตัว ใช้กับ test ได้) แล้วให้ <code>SimpleImputer(median)</code> <b>ใน Pipeline</b> เติม</p></div>
+    <li>คำนวณความชื้นย้อนกลับจากอุณหภูมิ + dew point ของแถวเดียวกันด้วย <b>สูตร Magnus</b>: แถวปกติคลาดจากค่าจริงเฉลี่ย 0.24 จุด</li>
+    <li>17 แถวนี้คำนวณได้ <b>33.1–71.7%</b> → ขัดกับข้อมูลในแถวเดียวกัน = ค่าผิดของเซนเซอร์ ค่าจริงหายไป = <b>missing value</b></li></ul>
+    <h3 class="alt" style="margin-top:8px">ตัดสินใจ</h3><p><b>ขั้น 5.2</b> แปลง 0 → <code>NaN</code> (กฎตายตัว ใช้กับ test ได้) แล้ว <b>ขั้น 6.2</b> ให้ <code>SimpleImputer(median)</code> <b>ใน Pipeline</b> เติม</p></div>
   </div>
  </div>
 </section>
@@ -553,7 +553,7 @@ html.read .zoom.on{display:flex;position:fixed;inset:0;z-index:2000;background:r
     <tr><td>ฝน</td><td>93.9% เป็น 0 · มีฝน → ยอดลดจาก 795 เหลือ 164</td><td>สร้าง is_raining</td><td>ขั้น 5</td></tr>
     <tr><td>temp_c vs dew_point_c</td><td>r = 0.911 (คู่เดียวที่ &gt; 0.8)</td><td>เก็บทั้งคู่ ให้ FS ตัดสิน</td><td>ขั้น 7</td></tr>
     <tr><td>outlier อากาศ/ยอดเช่า</td><td>เป็นเหตุการณ์จริง</td><td><b>ไม่ตัด</b></td><td>—</td></tr>
-    <tr><td>ความชื้น = 0%</td><td>17 แถว ขัดกับ dew point → ค่าผิด</td><td>→ NaN + median imputer ใน Pipeline</td><td>ขั้น 5, 6</td></tr>
+    <tr><td>ความชื้น = 0%</td><td>17 แถว · Magnus ได้ 33–72% → ค่าผิด = missing value</td><td>5.2 → NaN · 6.2 median imputer ใน Pipeline</td><td>ขั้น 5, 6</td></tr>
     <tr><td>สเกลต่างกันมาก</td><td>visibility 27–2,000 vs ตัวแปรอื่นหลักหน่วย</td><td>StandardScaler ใน Pipeline</td><td>ขั้น 6</td></tr></table>
     <p style="margin-top:10px"><b>ประโยชน์:</b> ทุกการแปลงข้อมูลในขั้น 5–6 มีหลักฐานรองรับจาก EDA และไม่มีการตัดสินใจไหนที่ใช้ข้อมูล test</p></div>
   </div>
@@ -581,7 +581,7 @@ html.read .zoom.on{display:flex;position:fixed;inset:0;z-index:2000;background:r
     <p>ตัวอย่างวันแรกของ train (2 ธ.ค. 2017 วันเสาร์): day_of_week = 5, is_weekend = 1, month = 12 ถูกต้อง</p>
     <p><b>ไม่สร้าง</b> lag ของยอดเช่าหรือค่าเฉลี่ยยอดเช่าจากทั้งชุด เพราะใช้ target สร้าง feature (leakage) และตอนใช้งานจริงไม่มีค่านี้ล่วงหน้า</p></div>
    <div class="card tint"><h3>5.2 <code>apply_scope_rules()</code></h3><ul>
-    <li>ตัด <code>functioning_day = No</code> และแปลงความชื้น 0 → NaN</li>
+    <li>ตัด <code>functioning_day = No</code> และแปลงความชื้น 0 → NaN (missing value จาก 4.10)</li>
     <li>train 7,008 → <b>6,768</b> (ตัด 240 · 282 วัน) · test 1,752 → <b>1,697</b> (ตัด 55) · NaN ความชื้นใน train 17 แถว</li>
     <li>ใช้กับ test ได้โดยไม่รั่ว เพราะเป็น <b>กฎตายตัวจากความรู้โดเมน</b> ไม่ได้คำนวณสถิติจากข้อมูล (ต่างจากค่ามัธยฐานที่ใช้เติม NaN ซึ่งต้องอยู่ใน Pipeline)</li></ul></div>
   </div>
@@ -633,7 +633,7 @@ html.read .zoom.on{display:flex;position:fixed;inset:0;z-index:2000;background:r
     <p style="margin-top:8px"><code>make_pipeline(model, select, hour)</code> = 3 ช่อง <b>pre → select → model</b> · ช่อง <code>select</code> ว่างไว้ให้ขั้น 7–8 · <code>handle_unknown="ignore"</code> กันหมวดที่ไม่เคยเห็น</p></div>
    <div class="card"><h3>6.3 ผลลัพธ์ (fit บน train เพื่อตรวจเท่านั้น)</h3><ul>
     <li>ได้ <b>36 คอลัมน์</b>: ตัวเลข 13 + one-hot 23 (seasons 4, month 12, day_of_week 7) · NaN เหลือ 0</li>
-    <li>ความชื้น 17 แถวถูกเติมด้วย median ของ train = <b>57%</b></li>
+    <li>missing value ของความชื้น 17 แถว (NaN จาก 5.2) ถูกเติมด้วย median ของ train = <b>57%</b></li>
     <li>one-hot ทุกกลุ่มรวมกันได้ 1 ทุกแถว · ตัวเลขทั้ง 13 คอลัมน์ mean 0.000, std 1.000</li></ul>
     <h3 class="alt" style="margin-top:8px">รู้อะไร</h3><p>one-hot ของ seasons กับ month ซ้อนกันสมบูรณ์ → Linear Regression ทำนายได้ แต่ <b>coefficient ไม่มีคำตอบเดียว ตีความไม่ได้</b> → เหตุผลที่ทำ FS และใช้ Lasso ในขั้น 7</p></div>
   </div>
