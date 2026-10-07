@@ -255,7 +255,7 @@ body{font-family:var(--font);color:var(--ink)}
   <ul class="pts">
    <li class="reveal" style="--d:2">ไฟล์เก็บ ° เป็น byte <b>\xb0</b> → utf-8 อ่านไม่ได้ ใช้ <b>cp1252</b></li>
    <li class="reveal" style="--d:3">วันที่เป็น <b>วัน/เดือน/ปี</b> → ระบุ format เอง ไม่ให้ pandas เดา</li>
-   <li class="reveal" style="--d:4"><b>8,760 แถว × 14 คอลัมน์</b> · ไม่มี missing ไม่มีแถวซ้ำ</li>
+   <li class="reveal" style="--d:4"><b>8,760 แถว × 14 คอลัมน์</b> · ไม่มี NaN ไม่มีแถวซ้ำ</li>
    <li class="reveal" style="--d:5">ทุกวันมีครบ 24 ชั่วโมง → ใช้ "วัน" เป็นหน่วย split ได้</li></ul>
   <div class="who">ผู้พูด A</div></div>
  <div class="right">
@@ -272,7 +272,7 @@ body{font-family:var(--font);color:var(--ink)}
     <tr><td>ส่วนที่ 3</td><td class="n">2017–2018</td><td>→ ปี</td></tr></table>
     <p style="font-size:21px;margin-top:8px">01/12/2017 = 1 ธ.ค. 2017 ไม่ใช่ 12 ม.ค.</p></div></div>
   <div class="card reveal" style="--d:4"><h4>2.3 ตรวจความครบ (assert ทุกข้อ)</h4><div class="chips">
-   <span class="chip">8,760 แถว × 14 คอลัมน์</span><span class="chip">missing 0</span><span class="chip">แถวซ้ำ 0 · ซ้ำที่ (date, hour) 0</span><span class="chip">2017-12-01 ถึง 2018-11-30 = 365 วัน</span><span class="chip">ทุกวันมีชั่วโมง 0–23 ครบ</span></div></div></div>
+   <span class="chip">8,760 แถว × 14 คอลัมน์</span><span class="chip">NaN 0</span><span class="chip">แถวซ้ำ 0 · ซ้ำที่ (date, hour) 0</span><span class="chip">2017-12-01 ถึง 2018-11-30 = 365 วัน</span><span class="chip">ทุกวันมีชั่วโมง 0–23 ครบ</span></div></div></div>
 </section>
 
 <!-- ================= PAGE 4 · SPLIT (A) ================= -->
@@ -338,14 +338,14 @@ body{font-family:var(--font);color:var(--ink)}
   <div class="num reveal">05</div><h2 class="reveal" style="--d:1">เตรียมข้อมูล</h2>
   <ul class="pts">
    <li class="reveal" style="--d:2">ตัด <b>240 ชม.</b> ที่ระบบปิด (ยอด = 0 ทุกแถว)</li>
-   <li class="reveal" style="--d:3">ความชื้น 0% <b>17 แถว</b> → NaN แล้วเติม median ใน Pipeline</li>
+   <li class="reveal" style="--d:3">ความชื้น 0% <b>17 แถว</b> = <b>missing value</b> → NaN แล้วเติม median ใน Pipeline</li>
    <li class="reveal" style="--d:4"><b>ไม่ตัด outlier</b> เพราะเป็นเหตุการณ์จริง</li>
    <li class="reveal" style="--d:5">สร้าง feature ใหม่ <b>7 ตัว</b> จากค่าในแถวเดียวกัน</li></ul>
   <div class="who">ผู้พูด B</div></div>
  <div class="right">
   <div class="code reveal" style="--d:1"><span class="src">02_modeling · 5.2</span><span class="ln" style="--l:0">out = df[df[<span class="s">"functioning_day"</span>] == <span class="s">"Yes"</span>]</span><span class="ln" style="--l:1">out[<span class="s">"humidity_pct"</span>] = out[<span class="s">"humidity_pct"</span>].<span class="hl">mask(out[<span class="s">"humidity_pct"</span>] == <span class="n">0</span>)</span></span></div>
   <div class="row2 reveal" style="--d:2">
-   <div class="card"><h4>ความชื้น 0% เป็นค่าผิดจริงไหม</h4><p>คำนวณความชื้นย้อนกลับจากอุณหภูมิ + dew point ด้วย <b>สูตร Magnus</b><br>แถวปกติคลาดเฉลี่ย <b>0.24</b> จุด · 17 แถวนี้ได้ <b>33.1–71.7%</b> → ขัดกัน = เซนเซอร์ผิด</p></div>
+   <div class="card"><h4>ความชื้น 0% เป็นค่าผิดจริงไหม</h4><p>คำนวณความชื้นย้อนกลับจากอุณหภูมิ + dew point ด้วย <b>สูตร Magnus</b><br>แถวปกติคลาดเฉลี่ย <b>0.24</b> จุด · 17 แถวนี้ได้ <b>33.1–71.7%</b> → เซนเซอร์ผิด ค่าจริงหายไป = <b>missing value</b></p></div>
    <div class="card"><h4>หลังใช้กฎขอบเขต</h4><table class="mini">
     <tr><th></th><th class="n">ก่อน</th><th class="n">หลัง</th></tr>
     <tr><td>train</td><td class="n">7,008</td><td class="n">6,768</td></tr>
@@ -596,7 +596,7 @@ body{font-family:var(--font);color:var(--ink)}
    <tr><td>ชั่วโมงในวันเดียวกันคล้ายกันมาก (ข้อมูลรั่วแบบซ่อน)</td><td>split และ CV ตามวัน</td></tr>
    <tr><td>ชั่วโมงที่ระบบปิด ยอด = 0 เสมอ</td><td>ตัดออก + ประกาศขอบเขต</td></tr>
    <tr><td>ไฟล์ไม่ใช่ UTF-8 และวันที่กำกวม</td><td>ตรวจ byte ดิบ · cp1252 · dd/mm/yyyy</td></tr>
-   <tr><td>ความชื้น 0% (เซนเซอร์ผิด)</td><td>สูตร Magnus → NaN + เติมใน Pipeline</td></tr>
+   <tr><td>ความชื้น 0% (เซนเซอร์ผิด = missing value)</td><td>สูตร Magnus → NaN + เติม median ใน Pipeline</td></tr>
    <tr><td>chi² ใช้กับ regression ไม่ได้</td><td>f_regression, mutual_info</td></tr>
    <tr><td>ชั่วโมงมี 2 พีค แต่ sin/cos ให้เส้นตรงได้ 1 พีค</td><td>เลือก encoding ชั่วโมงตามชนิดโมเดล</td></tr></table></div>
   <div class="row2 reveal" style="--d:2">
