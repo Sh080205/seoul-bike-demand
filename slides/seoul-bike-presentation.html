@@ -411,13 +411,16 @@ body{font-family:var(--font);color:var(--ink)}
     <tr><th>วิธี</th><th class="n">feature</th><th class="n">MAE</th></tr>
     <tr><td>ทุก feature</td><td class="n">58</td><td class="n">266.2</td></tr>
     <tr><td>Filter f_regression</td><td class="n">58</td><td class="n">266.2</td></tr>
+    <tr><td>Filter mutual_info</td><td class="n">58</td><td class="n">266.2</td></tr>
     <tr class="best"><td>Wrapper RFE</td><td class="n">30</td><td class="n">265.8</td></tr>
     <tr><td>Embedded Lasso α=0.1</td><td class="n">52</td><td class="n">266.2</td></tr></table>
     <p style="font-size:20px;margin-top:6px">ต่างกัน ≤ 0.4 คัน · std ของ CV = 4.8</p></div>
    <div class="card"><h4>PCA (feature extraction)</h4><p>จาก 36 คอลัมน์: <b>14 PC</b> ได้ ≥ 90% · <b>19 PC</b> ได้ ≥ 95%</p>
-    <table class="mini" style="margin-top:8px"><tr><th>kNN (k=10)</th><th class="n">CV MAE</th></tr>
-     <tr><td>ไม่มี PCA</td><td class="n">194.4</td></tr><tr class="best"><td>PCA 15</td><td class="n">189.5</td></tr></table></div></div>
-  <div class="extra reveal" style="--d:3"><b>เสริม</b> · mutual_info ก็ได้ k = 58 เหมือนกัน · Linear + PCA แย่ลงทุกจำนวน PC (315.6–364.9 vs 314.6) · loading: PC1 ความชื้น/อากาศมัว · PC2 ความอุ่น/กลางวัน · PC3 ฝน</div></div>
+    <table class="mini" style="margin-top:8px"><tr><th>CV MAE</th><th class="n">ไม่มี PCA</th><th class="n">PCA 15</th></tr>
+     <tr><td>Linear</td><td class="n"><b>314.6</b></td><td class="n">325.6</td></tr>
+     <tr><td>kNN (k=10)</td><td class="n">194.4</td><td class="n"><b>189.5</b></td></tr></table>
+    <p style="font-size:20px;margin-top:6px">hour แบบ cyclic · Linear จึงไม่ใช่ 266.2</p></div></div>
+  <div class="extra reveal" style="--d:3"><b>เสริม</b> · Linear + PCA แย่ลงทุกจำนวน PC (315.6–364.9) · loading: PC1 ความชื้น/อากาศมัว · PC2 ความอุ่น/กลางวัน · PC3 ฝน</div></div>
 </section>
 
 <!-- ================= PAGE 11 · DETAIL · FEATURE SELECTION (B) ================= -->
