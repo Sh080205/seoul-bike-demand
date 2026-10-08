@@ -60,9 +60,9 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <nav class="bar"><div>
  <div class="tabs">
   <button data-who="all" style="--tab:var(--ink);--tabtx:var(--cream)">ทั้งหมด</button>
-  <button data-who="A" style="--tab:var(--a)">A</button>
-  <button data-who="B" style="--tab:var(--b)">B</button>
-  <button data-who="C" style="--tab:var(--c)">C</button>
+  <button data-who="A" style="--tab:var(--a)">A · ชญานิน</button>
+  <button data-who="B" style="--tab:var(--b)">B · ศุภวิชญ์</button>
+  <button data-who="C" style="--tab:var(--c)">C · พัฒนเดช</button>
   <button data-who="Q" style="--tab:var(--q)">ถาม-ตอบ</button>
  </div>
  <div class="tools">
@@ -98,12 +98,12 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
  <tr><td>18</td><td>สรุป + ถาม-ตอบ</td><td>A</td><td class="n">0:30</td></tr>
  <tr><th colspan="3">รวม · A 3:25 · B 2:25 · C 3:10</th><th class="n">9:00</th></tr>
 </table>
-<p class="note"><b>ยังไม่ได้เลือกว่าใครเป็น A / B / C</b> · แบ่งตามช่วงงาน 3 ส่วน แต่ละคนพูดอย่างน้อย 1 ส่วน (rubric ข้อ 6: ทุกคนต้องมีส่วนร่วม)</p>
+<p class="note"><b>A</b> = นาย ชญานิน ตลับเงิน (6330300160) · <b>B</b> = นาย ศุภวิชญ์ ไชยานุศักดิ์ (6730300591) · <b>C</b> = นาย พัฒนเดช มะหิเมือง (6730300850) · ทุกคนพูดอย่างน้อย 1 ส่วน (rubric ข้อ 6: ทุกคนต้องมีส่วนร่วม)</p>
 <p class="note">ปุ่มลัด: → / ← เลื่อนหน้า · 1–9 กระโดดไปหน้านั้น · F11 เต็มจอ · หน้า "รายละเอียด" ต่อจากหน้าหลักเรื่องเดียวกัน คนเดิมพูดต่อ · กล่องเส้นประสีเทา ("เสริม") ไม่ต้องพูด</p>
 </section>
 
 <section data-who="A">
-<h2 style="--who:var(--a)">ผู้พูด A — หน้า 1–6 และ 18 · ข้อมูล, split, EDA และสรุป</h2>
+<h2 style="--who:var(--a)">ผู้พูด A · นาย ชญานิน ตลับเงิน — หน้า 1–6 และ 18 · ข้อมูล, split, EDA และสรุป</h2>
 
 <div class="page"><h3>หน้า 1 · ปก <span>0:10</span></h3>
 <p>สวัสดีครับ กลุ่มเราทำโปรเจกต์ Seoul Bike Demand คือทายว่าแต่ละชั่วโมงจะมีคนเช่าจักรยานในโซลกี่คัน จากพยากรณ์อากาศและปฏิทินครับ</p></div>
@@ -124,14 +124,14 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <div class="page"><h3>หน้า 6 · รายละเอียด: correlation + outlier <span>0:25</span></h3>
 <p>หน้านี้อ่านแบบนี้ครับ แต่ละช่องคือค่า r สีแดงคือบวก สีน้ำเงินคือลบ อุณหภูมิสัมพันธ์มากสุดที่ 0.55 แต่ r วัดแค่เส้นตรง จึงต้องดูกราฟคู่กัน</p>
 <p>outlier ใช้กฎ 1.5 เท่าของ IQR ชั่วโมงที่มีฝนถูกนับเป็น outlier ทั้งที่เป็นเหตุการณ์จริง เราจึงไม่ตัดครับ</p>
-<p class="cue">ส่งต่อ: "ต่อไป [ชื่อผู้พูด B] จะเล่าการเตรียมข้อมูลครับ"</p></div>
+<p class="cue">ส่งต่อ: "ต่อไปศุภวิชญ์จะเล่าการเตรียมข้อมูลครับ"</p></div>
 <div class="page"><h3>หน้า 18 · สรุป <span>0:30</span></h3>
 <p>สรุป โมเดลสุดท้ายคือ HistGradientBoosting ได้ test MAE 97.4 คันต่อชั่วโมง R² 0.919 ดีกว่าการใช้เวลาอย่างเดียวประมาณ 73% และเรากันข้อมูลรั่วตลอดทางด้วย split ตามวัน Pipeline และ GroupKFold</p>
 <p>ข้อจำกัดคือชั่วโมงฝนตกและเหตุการณ์พิเศษที่ไม่มีในข้อมูล ถ้าทำต่อจะเพิ่มข้อมูลหลายปีและ feature เทศกาลกับคำเตือนอากาศ ขอบคุณครับ ยินดีรับคำถามครับ</p></div>
 </section>
 
 <section data-who="B">
-<h2 style="--who:var(--b)">ผู้พูด B — หน้า 7–11 · เตรียมข้อมูล, Pipeline, คัดฟีเจอร์</h2>
+<h2 style="--who:var(--b)">ผู้พูด B · นาย ศุภวิชญ์ ไชยานุศักดิ์ — หน้า 7–11 · เตรียมข้อมูล, Pipeline, คัดฟีเจอร์</h2>
 
 <div class="page"><h3>หน้า 7 · เตรียมข้อมูล <span>0:40</span></h3>
 <p>ผมจะเล่าการเตรียมข้อมูลครับ ชั่วโมงที่ระบบปิดมี 240 แถวใน train และยอดเป็น 0 ทุกแถว เราตัดออกและประกาศว่าโมเดลใช้กับชั่วโมงที่ระบบเปิดเท่านั้น</p>
@@ -148,11 +148,11 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <div class="page"><h3>หน้า 11 · รายละเอียด: feature selection <span>0:25</span></h3>
 <p>Filter ให้คะแนนทีละ feature แล้วเก็บ k ตัวบนสุด RFE ตัดตัวที่ coefficient เล็กสุดทีละ 2 ตัว เหลือ 30 ตัวก็ได้ MAE เท่าเดิม</p>
 <p>Lasso ดัน coefficient ที่ไม่สำคัญเป็น 0 ตัดได้ 6 ตัว ไม่มีวิธีไหนดีเกิน noise เราจึงใช้ทุก feature ครับ</p>
-<p class="cue">ส่งต่อ: "ต่อไป [ชื่อผู้พูด C] จะเล่าการเทียบโมเดลครับ"</p></div>
+<p class="cue">ส่งต่อ: "ต่อไปพัฒนเดชจะเล่าการเทียบโมเดลครับ"</p></div>
 </section>
 
 <section data-who="C">
-<h2 style="--who:var(--c)">ผู้พูด C — หน้า 12–17 · โมเดล, tuning, test, ทำนายข้อมูลใหม่</h2>
+<h2 style="--who:var(--c)">ผู้พูด C · นาย พัฒนเดช มะหิเมือง — หน้า 12–17 · โมเดล, tuning, test, ทำนายข้อมูลใหม่</h2>
 
 <div class="page"><h3>หน้า 12 · Baseline + เทียบ 4 โมเดล <span>0:35</span></h3>
 <p>เราเทียบ 4 ตระกูลโมเดลด้วย 5-fold GroupKFold baseline คือทายค่าเฉลี่ยของชั่วโมงนั้นในวันทำงานหรือวันหยุด ไม่ใช้อากาศเลย ได้ MAE 401 ทุกโมเดลชนะ แปลว่าข้อมูลอากาศช่วยจริง</p>
@@ -172,7 +172,7 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <p>ขั้นสุดท้ายคือทำนายข้อมูลใหม่ ข้อมูลดิบผ่าน add_features ตัวเดียวกับตอนฝึก แล้วเข้า final_model ซึ่งรวม preprocessing ไว้ในตัว</p>
 <p class="cue">กดปุ่มทีละอัน: <b>พุธ 18:00 อากาศดี</b> → <b>ฝนตก</b> → <b>เสาร์</b> → <b>ฤดูหนาว</b></p>
 <p>พุธ 6 โมงเย็นอากาศดี ทาย 2,981 คัน ถ้าฝนตก 3 มม. เหลือ 204 วันเสาร์เวลาเดียวกัน 2,167 และเช้าฤดูหนาว 690 ทิศทางทุกปัจจัยตรงกับที่เห็นใน EDA ครับ</p>
-<p class="cue">ส่งต่อ: "[ชื่อผู้พูด A] จะสรุปครับ"</p></div>
+<p class="cue">ส่งต่อ: "ชญานินจะสรุปครับ"</p></div>
 </section>
 
 <section data-who="Q">
