@@ -113,7 +113,7 @@
   <tr><th style="width:36%">ข้อกำหนด</th><th>สิ่งที่ทำ</th><th style="width:12%">หัวข้อ</th></tr>
   <tr><td>1. เลือก dataset และกำหนดเป้าหมาย</td><td>Seoul Bike Sharing Demand (UCI) · regression ทำนายยอดเช่าคัน/ชม.</td><td>1, 2</td></tr>
   <tr><td>1. EDA: สถิติเชิงพรรณนา, visualization, ความสัมพันธ์, outlier</td><td><code>describe()</code>, 7 กราฟ, Pearson correlation, กฎ IQR — ทำบน train เท่านั้น</td><td>4</td></tr>
-  <tr><td>2. จัดการ missing value</td><td>ไฟล์ดิบไม่มี missing value จึงลบค่าความชื้น 0% (outlier) ให้ว่างในไฟล์ใหม่ → <code>info()</code> เห็น missing 17 ค่า → เติมด้วย median ใน Pipeline</td><td>4.4, 5</td></tr>
+  <tr><td>2. จัดการ missing value</td><td><code>info()</code> พบ missing value 9 ค่าในความชื้น → ไม่ลบแถว · เติมด้วย median ใน Pipeline</td><td>2, 5</td></tr>
   <tr><td>2. จัดการ outlier</td><td>ตรวจด้วย IQR แล้วเก็บไว้ เพราะเป็นเหตุการณ์จริง · ยกเว้นความชื้น 0% (เซนเซอร์อ่านค่าผิด ยืนยันด้วยสูตร Magnus)</td><td>4.4</td></tr>
   <tr><td>2. Encoding</td><td>One-hot สำหรับฤดู เดือน วัน · ชั่วโมงเลือก encoding ตามชนิดโมเดล</td><td>5</td></tr>
   <tr><td>2. Feature scaling</td><td>StandardScaler (Z-score) พร้อมเหตุผลที่ไม่ใช้ Min-Max</td><td>5</td></tr>
@@ -168,7 +168,7 @@
 <!-- ============================ 2 ============================ -->
 <h2>2. ข้อมูล</h2>
 <p class="lbl">วิธีดำเนินการ</p>
-<p>เลือกชุดข้อมูล <b>Seoul Bike Sharing Demand</b> (UCI Machine Learning Repository, id 560, สัญญาอนุญาต CC BY 4.0) ซึ่งบันทึกยอดเช่ารายชั่วโมงของระบบจักรยานสาธารณะกรุงโซล ตั้งแต่ 1 ธ.ค. 2017 ถึง 30 พ.ย. 2018 จากนั้นตรวจ byte ดิบของไฟล์เพื่อเลือก encoding ตรวจรูปแบบวันที่ เปลี่ยนชื่อคอลัมน์เป็น snake_case แล้วตรวจความครบถ้วน แถวซ้ำ และค่าที่เป็นไปได้ของคอลัมน์หมวดหมู่</p>
+<p>เลือกชุดข้อมูล <b>Seoul Bike Sharing Demand</b> (UCI Machine Learning Repository, id 560, สัญญาอนุญาต CC BY 4.0) ซึ่งบันทึกยอดเช่ารายชั่วโมงของระบบจักรยานสาธารณะกรุงโซล ตั้งแต่ 1 ธ.ค. 2017 ถึง 30 พ.ย. 2018 จากนั้นตรวจ byte ดิบของไฟล์เพื่อเลือก encoding ตรวจรูปแบบวันที่ เปลี่ยนชื่อคอลัมน์เป็น snake_case แล้วตรวจความครบถ้วน missing value แถวซ้ำ และค่าที่เป็นไปได้ของคอลัมน์หมวดหมู่ (ชุดที่ใช้ลบค่าความชื้นบางชั่วโมงให้เป็นค่าว่าง เพื่อฝึกจัดการ missing value ตามที่อาจารย์อนุญาต · สร้างด้วย <code>scripts/make_dataset.py</code>)</p>
 <p class="lbl">ผลลัพธ์</p>
 <table>
   <caption>ตารางที่ 2.1 ตัวแปรในชุดข้อมูล (เปลี่ยนชื่อเป็น snake_case)</caption>
@@ -189,18 +189,18 @@
   <tr><td>Functioning Day</td><td><code>functioning_day</code></td><td>Yes / No (ระบบเปิด/ปิด)</td></tr>
 </table>
 <table style="width:70%">
-  <caption>ตารางที่ 2.2 ตรวจไฟล์ดิบก่อนโหลดจริง (01_eda ขั้น 2.1)</caption>
+  <caption>ตารางที่ 2.2 ตรวจไฟล์ก่อนโหลดจริง (01_eda ขั้น 2.1)</caption>
   <tr><th>ตรวจ</th><th>ผล</th></tr>
   <tr><td>อ่านหัวตารางด้วย utf-8</td><td>UnicodeDecodeError ที่ byte <code>\xb0</code> (สัญลักษณ์ °)</td></tr>
   <tr class="best"><td>อ่านด้วย cp1252</td><td><code>Temperature(°C)</code> ถูกต้อง → ใช้ค่านี้ (บันทึกใน <code>config.py</code>)</td></tr>
   <tr><td>อ่านด้วย latin-1</td><td><code>Temperature(°C)</code> ถูกต้องเช่นกัน</td></tr>
   <tr><td>วันที่ ส่วนที่ 1 / 2 / 3</td><td>1–31 / 1–12 / 2017–2018 → วัน/เดือน/ปี (01/12/2017 = 1 ธ.ค. 2017)</td></tr>
 </table>
-<p>ไฟล์ไม่ใช่ UTF-8 (สัญลักษณ์ ° เก็บเป็น byte 0xB0) จึงอ่านด้วย <code>cp1252</code> และระบุรูปแบบวันที่ <code>%d/%m/%Y</code> เอง (ตรวจจากค่าส่วนแรกที่ขึ้นถึง 31) ได้ <b>8,760 แถว × 14 คอลัมน์</b> ครบ 365 วัน × 24 ชั่วโมง ไฟล์ดิบไม่มี missing value (NaN) และไม่มีแถวซ้ำ</p>
+<p>ไฟล์ไม่ใช่ UTF-8 (สัญลักษณ์ ° เก็บเป็น byte 0xB0) จึงอ่านด้วย <code>cp1252</code> และระบุรูปแบบวันที่ <code>%d/%m/%Y</code> เอง (ตรวจจากค่าส่วนแรกที่ขึ้นถึง 31) ได้ <b>8,760 แถว × 14 คอลัมน์</b> ครบ 365 วัน × 24 ชั่วโมง ไม่มีแถวซ้ำ · <code>info()</code> พบ <b>missing value 9 ค่า</b> อยู่ในคอลัมน์ <code>humidity_pct</code> คอลัมน์เดียว (8,751 non-null จาก 8,760 · 19–28 พ.ค. 2018)</p>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
   <li>target เป็นจำนวนนับต่อเนื่อง และ feature ทั้งหมดเป็นข้อมูลที่รู้ล่วงหน้าได้จากพยากรณ์อากาศและปฏิทิน จึงเหมาะกับโจทย์ regression ที่นำไปใช้วางแผนได้จริง</li>
-  <li>การที่ไม่มี NaN ไม่ได้แปลว่าทุกค่าถูกต้อง ขั้น EDA จึงตรวจค่าที่เป็นไปไม่ได้ทางกายภาพต่อ (พบความชื้น 0% เป็น outlier ในหัวข้อ 4.4)</li>
+  <li><b>missing value:</b> ไม่ลบแถว เพราะค่าอื่นในแถวยังถูกต้องและทุกวันต้องครบ 24 ชั่วโมงสำหรับการแบ่งตามวัน · เติมด้วยมัธยฐานใน Pipeline (หัวข้อ 5) ไม่เติมตอนนี้ เพราะค่าที่ใช้เติมต้องเรียนจาก train เท่านั้น</li>
   <li><code>date</code> ไม่ใช้เป็น feature โดยตรง แต่ใช้เป็นกลุ่มของการแบ่งข้อมูล (หัวข้อ 3) และใช้สร้าง feature ปฏิทิน (หัวข้อ 5)</li>
 </ul>
 
@@ -236,7 +236,7 @@
   <tr><th>ตัวแปร</th><th class="r">mean</th><th class="r">std</th><th class="r">min</th><th class="r">Q1</th><th class="r">median</th><th class="r">Q3</th><th class="r">max</th></tr>
   <tr><td><code>rented_bike_count</code></td><td class="r">730.86</td><td class="r">653.78</td><td class="r">0</td><td class="r">206</td><td class="r">547</td><td class="r">1,101</td><td class="r">3,556</td></tr>
   <tr><td><code>temp_c</code></td><td class="r">13.46</td><td class="r">11.72</td><td class="r">−16.2</td><td class="r">4.10</td><td class="r">14.80</td><td class="r">22.80</td><td class="r">39.4</td></tr>
-  <tr><td><code>humidity_pct</code></td><td class="r">58.56</td><td class="r">20.35</td><td class="r"><b>0</b></td><td class="r">43</td><td class="r">58</td><td class="r">74.25</td><td class="r">98</td></tr>
+  <tr><td><code>humidity_pct</code></td><td class="r">58.64</td><td class="r">20.25</td><td class="r"><b>0</b></td><td class="r">43</td><td class="r">58</td><td class="r">75.00</td><td class="r">98</td></tr>
   <tr><td><code>wind_speed_ms</code></td><td class="r">1.70</td><td class="r">1.02</td><td class="r">0</td><td class="r">0.90</td><td class="r">1.50</td><td class="r">2.30</td><td class="r">7.4</td></tr>
   <tr><td><code>visibility_10m</code></td><td class="r">1,430.96</td><td class="r">601.10</td><td class="r">27</td><td class="r">943.75</td><td class="r">1,662</td><td class="r">1,998</td><td class="r">2,000</td></tr>
   <tr><td><code>dew_point_c</code></td><td class="r">4.71</td><td class="r">12.85</td><td class="r">−30.6</td><td class="r">−4.20</td><td class="r">5.95</td><td class="r">15.40</td><td class="r">27.2</td></tr>
@@ -293,7 +293,7 @@
 <ul>
   <li>มีคู่ตัวแปรเดียวที่ |r| &gt; 0.8 คือ <code>temp_c</code> กับ <code>dew_point_c</code> (r = 0.91) · กับ target: <code>temp_c</code> r = 0.55, <code>hour</code> r = 0.44 · ฝน/หิมะมี r ต่ำ (−0.13, −0.15) ทั้งที่หัวข้อ 4.3 แสดงว่ามีผลแรง · คู่ที่สัมพันธ์ปานกลาง เช่น ความชื้นกับทัศนวิสัย (−0.55) และความชื้นกับ dew point (0.54)</li>
   <li>กฎ IQR (ตารางที่ 4.2) นับทุกชั่วโมงที่ฝนหรือหิมะตกเป็น "outlier" (เพราะ IQR = 0) และพบค่าเกินขอบใน <code>solar_radiation_mj</code> (7.18%), <code>wind_speed_ms</code> (1.63%) และยอดเช่า (1.40%) ซึ่งล้วนอยู่ในช่วงที่เกิดขึ้นได้จริง</li>
-  <li><b>ความชื้น = 0%</b> มี 17 แถว (19–28 พ.ค. 2018) กฎ IQR จับไม่ได้ (ขอบล่าง −5) แต่เมื่อคำนวณย้อนจากอุณหภูมิและ dew point ของแถวเดียวกันด้วยสูตร Magnus ได้ 33–72%</li>
+  <li><b>ความชื้น = 0%</b> มี 8 แถว (21, 22, 28 พ.ค. 2018 ช่วงเดียวกับ missing value) กฎ IQR จับไม่ได้ (ขอบล่าง −5) แต่เมื่อคำนวณย้อนจากอุณหภูมิและ dew point ของแถวเดียวกันด้วยสูตร Magnus ได้ 34–72%</li>
 </ul>
 <table>
   <caption>ตารางที่ 4.2 outlier ตามกฎ IQR (ต่ำกว่า Q1 − 1.5·IQR หรือสูงกว่า Q3 + 1.5·IQR) · train เฉพาะชั่วโมงที่ระบบเปิด · ตัวแปรอื่นไม่มีค่าเกินขอบ</caption>
@@ -308,14 +308,14 @@
 <ul>
   <li>r ของฝน/หิมะต่ำเพราะความสัมพันธ์ไม่เป็นเส้นตรง (ส่วนใหญ่เป็น 0) ไม่ได้แปลว่าไม่สำคัญ → ยืนยันการสร้าง <code>is_raining</code> · <b>ยังไม่ตัด</b> <code>dew_point_c</code> แต่ให้ feature selection ตัดสิน และความซ้ำซ้อนของตัวแปรอากาศเป็นเหตุผลที่ลอง PCA</li>
   <li><b>ไม่ตัด outlier</b> ของสภาพอากาศและยอดเช่า เพราะเป็นเหตุการณ์จริง (ฝนหนัก, ลมแรง, ชั่วโมงพีค) ที่โมเดลต้องเจอตอนใช้งาน และชั่วโมงพีคคือชั่วโมงที่ผู้ให้บริการต้องการให้ทายแม่นที่สุด</li>
-  <li>ความชื้น 0% ขัดกับอุณหภูมิและ dew point ในแถวเดียวกัน จึงเป็น <b>outlier</b> จากเซนเซอร์อ่านค่าผิด และแก้เป็นค่าที่ถูกไม่ได้ → ลบค่า 0 ให้ว่างในไฟล์ใหม่ (<code>data/processed/</code>) = <b>missing value 17 ค่า</b> (<code>info()</code>: <code>humidity_pct</code> 8,743 non-null จาก 8,760) แล้วเติมด้วยค่ามัธยฐานที่เรียนจาก training fold ใน Pipeline (หัวข้อ 5)</li>
+  <li>ความชื้น 0% ขัดกับอุณหภูมิและ dew point ในแถวเดียวกัน จึงเป็น <b>outlier</b> จากเซนเซอร์อ่านค่าผิด และแก้เป็นค่าที่ถูกไม่ได้ → แปลง 0 เป็น NaN (หัวข้อ 5) รวมกับ missing value 9 ค่าเป็น 17 ค่า แล้วเติมด้วยค่ามัธยฐานที่เรียนจาก training fold ใน Pipeline (หัวข้อ 5)</li>
 </ul>
 
 <!-- ============================ 5 ============================ -->
 <h2>5. Feature engineering และ preprocessing</h2>
 <p class="lbl">วิธีดำเนินการ</p>
 <ol>
-  <li><b>กฎกำหนดขอบเขต</b> (ใช้กับ train และ test เหมือนกัน เพราะเป็นกฎตายตัวรายแถว ไม่ได้เรียนค่าจากข้อมูล): ตัดแถว <code>functioning_day = No</code> · ข้อมูลที่โหลดคือไฟล์ที่ความชื้น 0% เป็นช่องว่างแล้ว (missing value จากหัวข้อ 4.4)</li>
+  <li><b>กฎกำหนดขอบเขต</b> (ใช้กับ train และ test เหมือนกัน เพราะเป็นกฎตายตัวรายแถว ไม่ได้เรียนค่าจากข้อมูล): ตัดแถว <code>functioning_day = No</code> และแปลง <code>humidity_pct = 0</code> (outlier จากหัวข้อ 4.4) เป็น NaN</li>
   <li><b>สร้าง feature ใหม่</b> จากค่าในแถวเดียวกันเท่านั้น ไม่ใช้ target (ตารางที่ 5.1)</li>
   <li><b>ประกอบ Pipeline</b>: ทุกขั้นที่เรียนค่าจากข้อมูลอยู่ใน <code>Pipeline</code> เพื่อให้ CV fit ใหม่ทุก fold — ตัวแปรตัวเลขและ binary ผ่าน <code>SimpleImputer(median)</code> → <code>StandardScaler</code> ส่วน <code>seasons</code>, <code>month</code>, <code>day_of_week</code> ผ่าน <code>OneHotEncoder</code> ตามด้วยช่อง <code>select</code> (สำหรับ selector/PCA) และช่อง <code>model</code></li>
 </ol>
@@ -331,7 +331,7 @@
 <p class="lbl">ผลลัพธ์</p>
 <ul>
   <li>การ encode ชั่วโมงบนวงกลม: 23:00 กับ 0:00 ห่างกัน 0.261 เท่ากับ 0:00–1:00 ส่วน 0:00 กับ 12:00 ห่างกันมากที่สุด (2.0) ตรงกับธรรมชาติของเวลา (รูปที่ 5.1)</li>
-  <li>กฎขอบเขต: train 7,008 → <b>6,768 แถว</b> (ตัด 240), test 1,752 → <b>1,697 แถว</b> (ตัด 55) · train มี missing value ของความชื้น 17 ค่า (<code>info()</code>: 6,991 non-null จาก 7,008)</li>
+  <li>กฎขอบเขต: train 7,008 → <b>6,768 แถว</b> (ตัด 240), test 1,752 → <b>1,697 แถว</b> (ตัด 55) · ความชื้นใน train: missing value 9 (<code>info()</code>: 6,999 non-null จาก 7,008) + outlier 0% 8 → NaN 17 ค่า</li>
   <li>X_train มี 17 คอลัมน์ · หลัง preprocess (hour แบบ sin/cos) ได้ 36 คอลัมน์ ไม่มี NaN เหลือ ค่าที่ใช้เติมความชื้น = 57.0 (มัธยฐานของ train) ตัวแปรตัวเลขทุกตัวมี mean 0 และ std 1 และ one-hot ของแต่ละกลุ่มรวมกันได้ 1 ทุกแถว</li>
   <li>ตรวจการรั่วของ Pipeline ใน GroupKFold (ตารางที่ 5.3): ทุก fold มีวันซ้ำระหว่าง train กับ validation 0 วัน และค่าที่ scaler / imputer เรียนได้เปลี่ยนไปตาม fold (mean ของ <code>temp_c</code> 13.348–13.395, median ความชื้น 57–58) แปลว่า fit ใหม่จาก training fold ของตัวเองทุกรอบ ไม่เคยเห็นข้อมูล validation</li>
 </ul>
@@ -355,7 +355,7 @@
 </table>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
 <ul>
-  <li><b>Missing value (ความชื้น 0%):</b> เติมด้วย <b>มัธยฐาน</b> แทนค่าเฉลี่ย เพราะไม่ไวต่อค่าสุดโต่ง และเติมใน Pipeline เพื่อให้ค่ามัธยฐานมาจาก training fold เท่านั้น ถ้าเติมก่อนแบ่งข้อมูล ค่าจาก test จะรั่วเข้ามา · ไม่ลบแถวทิ้งเพราะค่าอื่นในแถวยังถูกต้อง</li>
+  <li><b>Missing value + outlier ความชื้น 0% (NaN 17 ค่า):</b> เติมด้วย <b>มัธยฐาน</b> แทนค่าเฉลี่ย เพราะไม่ไวต่อค่าสุดโต่ง และเติมใน Pipeline เพื่อให้ค่ามัธยฐานมาจาก training fold เท่านั้น ถ้าเติมก่อนแบ่งข้อมูล ค่าจาก test จะรั่วเข้ามา · ไม่ลบแถวทิ้งเพราะค่าอื่นในแถวยังถูกต้อง</li>
   <li><b>Encoding:</b> ใช้ one-hot กับ <code>seasons</code>, <code>month</code>, <code>day_of_week</code> เพราะเป็นหมวดหมู่ที่ไม่มีลำดับ ถ้าใช้ label encoding (เช่น Winter = 3, Autumn = 0) โมเดลเชิงเส้นและ kNN จะตีความว่าเป็นระยะทางหรือขนาดที่ไม่มีอยู่จริง</li>
   <li><b>ชั่วโมง</b> encode ต่างกันตามชนิดโมเดล เพราะ sin/cos คู่เดียวให้โมเดลเชิงเส้นสร้างพีคได้แค่ 1 ครั้งต่อวัน แต่ข้อมูลมี 2 พีค (ตารางที่ 5.2)</li>
   <li><b>Scaling:</b> จำเป็นกับ kNN (ระยะทาง), PCA (variance) และ Lasso/Ridge (ขนาดของ penalty) เพราะตัวแปรมีสเกลต่างกันมาก เช่น <code>visibility_10m</code> 27–2,000 เทียบกับ <code>wind_speed_ms</code> 0–7.4 ส่วนโมเดลต้นไม้ไม่ได้รับผลจาก scaling แต่ใช้ Pipeline เดียวกันเพื่อให้เทียบกันได้</li>
@@ -474,14 +474,14 @@
 <table>
   <caption>ตารางที่ 10.1 เปรียบเทียบความแม่นและทรัพยากร (ตัวที่ดีที่สุดของแต่ละตระกูลหลัง tune)</caption>
   <tr><th>โมเดล</th><th class="r">CV MAE</th><th class="r">fit ทั้ง train (s)</th><th class="r">latency / 1 แถว (ms)</th><th>ต้นทุนการทำนาย</th></tr>
-  <tr class="best"><td>HistGradientBoosting</td><td class="r">109.0 ± 8.1</td><td class="r">4.16</td><td class="r">10.6</td><td>O(จำนวนต้น × ความลึก)</td></tr>
-  <tr><td>Random Forest</td><td class="r">121.8 ± 9.1</td><td class="r">3.38</td><td class="r">11.1</td><td>O(จำนวนต้น × ความลึก)</td></tr>
-  <tr><td>kNN (+PCA 15)</td><td class="r">183.7 ± 7.8</td><td class="r">0.02</td><td class="r">2.7</td><td>O(n·d) ต่อครั้ง ต้องเก็บ train ทั้งหมด</td></tr>
-  <tr><td>Linear Regression + log1p(y)</td><td class="r">211.0 ± 6.9</td><td class="r">0.02</td><td class="r">2.7</td><td>O(d)</td></tr>
+  <tr class="best"><td>HistGradientBoosting</td><td class="r">109.0 ± 8.1</td><td class="r">12.61</td><td class="r">8.1</td><td>O(จำนวนต้น × ความลึก)</td></tr>
+  <tr><td>Random Forest</td><td class="r">121.8 ± 9.1</td><td class="r">5.29</td><td class="r">22.7</td><td>O(จำนวนต้น × ความลึก)</td></tr>
+  <tr><td>kNN (+PCA 15)</td><td class="r">183.7 ± 7.8</td><td class="r">0.04</td><td class="r">4.9</td><td>O(n·d) ต่อครั้ง ต้องเก็บ train ทั้งหมด</td></tr>
+  <tr><td>Linear Regression + log1p(y)</td><td class="r">211.0 ± 6.9</td><td class="r">0.04</td><td class="r">5.3</td><td>O(d)</td></tr>
 </table>
 <p class="note">เวลา fit และ latency เปลี่ยนเล็กน้อยทุกครั้งที่รันและขึ้นกับเครื่อง ใช้ดูลำดับขนาดเท่านั้น (latency = มัธยฐานของการทำนาย 1 แถว 30 ครั้ง รวม preprocessing ใน Pipeline)</p>
 <p class="lbl">การวิเคราะห์และการตัดสินใจ</p>
-<p><b>เลือก HistGradientBoosting:</b> MAE ต่ำที่สุด ห่างจาก Random Forest 12.8 คัน (~1.5 เท่าของ std จึงไม่ถือว่าเสมอกัน) และทำนาย 1 แถวใช้ไม่กี่มิลลิวินาที · ทรัพยากรไม่ใช่ตัวตัดสิน เพราะทุกโมเดล fit ได้ในไม่กี่วินาทีและทำนายในระดับมิลลิวินาที ใช้งานจริงได้ทั้งหมด · Random Forest ตกไปเพราะแม่นน้อยกว่า</p>
+<p><b>เลือก HistGradientBoosting:</b> MAE ต่ำที่สุด ห่างจาก Random Forest 12.8 คัน (~1.5 เท่าของ std จึงไม่ถือว่าเสมอกัน) และทำนาย 1 แถวใช้ไม่กี่มิลลิวินาที · ทรัพยากรไม่ใช่ตัวตัดสิน เพราะทุกโมเดล fit ได้ในไม่ถึง 15 วินาทีและทำนายในระดับมิลลิวินาที ใช้งานจริงได้ทั้งหมด · Random Forest ตกไปเพราะแม่นน้อยกว่า</p>
 
 <!-- ============================ 11 ============================ -->
 <h2>11. ผลบนชุดทดสอบและ error analysis</h2>
@@ -557,7 +557,7 @@
   <tr><td>ชั่วโมงในวันเดียวกันคล้ายกันมาก (leakage แบบซ่อน)</td><td>แบ่ง train/test และทำ CV ตามวันด้วย GroupShuffleSplit / GroupKFold และแสดงให้เห็นว่า KFold ธรรมดาทำให้ทุกวันใน validation รั่วไปอยู่ใน train</td></tr>
   <tr><td>ชั่วโมงที่ระบบปิด ยอด = 0 เสมอ</td><td>ตัดออกและประกาศขอบเขตของโมเดล แทนที่จะปล่อยให้คะแนนดีขึ้นแบบไม่มีความหมาย</td></tr>
   <tr><td>ไฟล์ไม่ใช่ UTF-8 และวันที่กำกวม</td><td>ตรวจ byte ดิบ เลือก cp1252 และระบุรูปแบบวันที่เอง</td></tr>
-  <tr><td>ความชื้น 0% (outlier: เซนเซอร์อ่านค่าผิด)</td><td>ยืนยันด้วยสูตร Magnus → ลบให้ว่างในไฟล์ใหม่ (missing value 17 ค่า) → เติม median ใน Pipeline</td></tr>
+  <tr><td>missing value ความชื้น 9 ค่า และความชื้น 0% 8 แถว (outlier: เซนเซอร์อ่านค่าผิด)</td><td>ยืนยัน outlier ด้วยสูตร Magnus → แปลงเป็น NaN → เติม median ใน Pipeline ทั้ง 17 ค่า</td></tr>
   <tr><td>chi² ใช้กับ regression ไม่ได้ (และต้องการค่าไม่ติดลบ)</td><td>ใช้ f_regression และ mutual_info_regression</td></tr>
   <tr><td>one-hot ของเดือน/ฤดู/วันซ้อนกัน (multicollinearity)</td><td>ใช้ Ridge จัดอันดับใน RFE และ Lasso ตัด one-hot ที่ซ้ำ</td></tr>
   <tr><td>ชั่วโมงมี 2 พีค แต่ sin/cos ให้โมเดลเชิงเส้นได้แค่ 1 พีค</td><td>เลือก encoding ของชั่วโมงตามชนิดโมเดล</td></tr>
