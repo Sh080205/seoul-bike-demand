@@ -108,7 +108,7 @@ body{font-family:var(--font);color:var(--ink)}
 
 /* code block — typed line by line, then the key part lights up */
 .code{position:relative;background:#1f3326;color:#eef3ea;border-radius:16px;padding:26px 30px;font:400 27px/1.6 var(--mono);white-space:pre}
-.code.s24{font-size:24px}
+.code.s24{font-size:24px}.code.s22{font-size:22px}
 .code .src{position:absolute;right:18px;top:10px;font:600 17px var(--font);color:#9fb5a5}
 .code .ln{display:block;opacity:0}
 .slide.active .code .ln{animation:type .5s steps(20) forwards;animation-delay:calc(1000ms + var(--l)*600ms)}
@@ -367,13 +367,12 @@ body{font-family:var(--font);color:var(--ink)}
    <li class="reveal" style="--d:5">KFold ธรรมดา: ซ้ำ <b>281 / 281</b> วัน</li></ul>
   <div class="who">ผู้พูด B · ศุภวิชญ์ ไชยานุศักดิ์</div></div>
  <div class="right">
-  <div class="code s24 reveal" style="--d:1;--hd:4s"><span class="src">02_modeling · 6.2, 7.0</span><span class="ln" style="--l:0">numeric = <span class="k">Pipeline</span>([(<span class="s">"impute"</span>, SimpleImputer(strategy=<span class="s">"median"</span>)),</span><span class="ln" style="--l:1">                    (<span class="s">"scale"</span>, StandardScaler())])</span><span class="ln" style="--l:2">pipe = <span class="k">Pipeline</span>([(<span class="s">"pre"</span>, make_preprocessor(hour)),</span><span class="ln" style="--l:3">                 (<span class="s">"select"</span>, select), (<span class="s">"model"</span>, model)])</span><span class="ln" style="--l:4">cross_validate(pipe, X_train, y_train, <span class="hl">groups=groups_train</span>, cv=<span class="k">GroupKFold</span>(<span class="n">5</span>))</span></div>
+  <div class="code s22 reveal" style="--d:1;--hd:7.4s"><span class="src">02_modeling · 6.2, 6.4, 7.0</span><span class="ln" style="--l:0">numeric = <span class="k">Pipeline</span>([(<span class="s">"impute"</span>, SimpleImputer(strategy=<span class="s">"median"</span>)),</span><span class="ln" style="--l:1">                    (<span class="s">"scale"</span>, StandardScaler())])</span><span class="ln" style="--l:2">pre = <span class="k">ColumnTransformer</span>([</span><span class="ln" style="--l:3">    (<span class="s">"num"</span>, numeric, WEATHER_COLS + hour_num + BINARY_COLS),</span><span class="ln" style="--l:4">    (<span class="s">"cat"</span>, OneHotEncoder(handle_unknown=<span class="s">"ignore"</span>), CAT_COLS + hour_cat)])</span><span class="ln" style="--l:5">pipe = <span class="k">Pipeline</span>([(<span class="s">"pre"</span>, pre),</span><span class="ln" style="--l:6">                 (<span class="s">"select"</span>, select),   <span class="c"># FS / PCA</span></span><span class="ln" style="--l:7">                 (<span class="s">"model"</span>, model)])</span><span class="ln" style="--l:8">cv = <span class="k">GroupKFold</span>(n_splits=<span class="n">5</span>)</span><span class="ln" style="--l:9">cross_validate(pipe, X_train, y_train, <span class="hl">groups=groups_train</span>,</span><span class="ln" style="--l:10">               cv=cv, scoring=SCORING)</span></div>
   <div class="card reveal" style="--d:2"><h4>GroupKFold 5 fold · ชมพู = validation (ทั้งวันอยู่ฝั่งเดียว)</h4><div class="folds" id="folds"></div>
    <p style="font-size:20px;margin-top:8px">แต่ละ fold: train 225–226 วัน · validation 56–57 วัน</p></div>
   <div class="row2 reveal" style="--d:3">
    <div class="card"><h4>GroupKFold ✓</h4><p>วันที่อยู่ทั้ง train และ validation = <b>0 วัน</b> ทุก fold</p></div>
-   <div class="card"><h4>KFold ธรรมดา ✗</h4><p>validation fold 0 มี 281 วัน · <b>ทั้ง 281 วัน</b> มีชั่วโมงอื่นอยู่ใน train</p></div></div>
-  <div class="extra reveal" style="--d:4"><b>เสริม</b> · พิสูจน์ว่า fit ใหม่จริง: ค่า mean ของ temp_c ใน scaler ต่างกันทุก fold (13.348–13.395) · median ความชื้น 57 หรือ 58% แล้วแต่ fold</div></div>
+   <div class="card"><h4>KFold ธรรมดา ✗</h4><p>validation fold 0 มี 281 วัน · <b>ทั้ง 281 วัน</b> มีชั่วโมงอื่นอยู่ใน train</p></div></div></div>
 </section>
 
 <!-- ================= PAGE 9 · DETAIL · NO-LEAK PROOF (B) ================= -->
