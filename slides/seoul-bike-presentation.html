@@ -117,6 +117,16 @@ body{font-family:var(--font);color:var(--ink)}
 .slide.active .code .hl{animation:hl .5s forwards;animation-delay:var(--hd,2.6s)}
 @keyframes hl{to{background:var(--blossom);color:#1f3326}}
 .code .k{color:#c9b8f0}.code .s{color:#a8d5a2}.code .n{color:#f3e7a1}.code .c{color:#8da394}
+/* page 8 call-outs: 1 = steps that learn from data, 2 = they sit in the Pipeline, 3 = cross_validate refits per fold */
+.code .ann{outline:3px solid;outline-offset:3px;border-radius:4px}
+.code .ann::after{content:attr(data-n);display:inline-block;font:700 15px/22px var(--font);width:22px;text-align:center;border-radius:50%;margin-left:8px;vertical-align:top;color:#1f3326}
+.ann1{outline-color:#5DCAA5;--ann:#5DCAA5}.ann2{outline-color:#AFA9EC;--ann:#AFA9EC}.ann3{outline-color:#F0997B;--ann:#F0997B}
+.code .ann::after,.bd{background:var(--ann)}
+.ann3box{outline:4px solid #F0997B;outline-offset:3px}
+.annlg{position:absolute;left:40px;right:30px;top:742px;background:#fffdf6;color:#1f3326;border-radius:14px;padding:12px 14px;font:600 18px/1.3 var(--font)}
+.annlg p{margin:0 0 8px}.annlg p:last-child{margin:0}
+.annlg small{display:block;margin:2px 0 0 32px;font-size:15px;font-weight:400;color:#4b5a4f}
+.bd{display:inline-block;width:24px;height:24px;line-height:24px;text-align:center;border-radius:50%;margin-right:8px;color:#1f3326}
 
 /* calendar: 1 cell = 1 day */
 .cal{display:grid;grid-template-rows:repeat(7,18px);grid-auto-flow:column;grid-auto-columns:18px;gap:4px}
@@ -365,10 +375,11 @@ body{font-family:var(--font);color:var(--ink)}
    <li class="reveal" style="--d:3">CV fit ใหม่บน training fold ทุกรอบ → validation ไม่รั่ว</li>
    <li class="reveal" style="--d:4"><b>GroupKFold</b>: วันซ้ำ train–val = 0 ทุก fold</li>
    <li class="reveal" style="--d:5">KFold ธรรมดา: ซ้ำ <b>281 / 281</b> วัน</li></ul>
+  <div class="annlg reveal" style="--d:6"><p><b class="bd ann1">1</b>impute · scale · one-hot<small>fit: เรียน median / mean / หมวด จาก training fold<br>transform: เติม NaN ใน validation ด้วยค่านั้น (fold 2 = 58)</small></p><p><b class="bd ann2">2</b>ทั้งสามขั้นอยู่ใน Pipeline ("pre")</p><p><b class="bd ann3">3</b>cross_validate fit ใหม่ทุกรอบ<small>ช่องเขียว = training fold ของรอบนั้น</small></p></div>
   <div class="who">ผู้พูด B · ศุภวิชญ์ ไชยานุศักดิ์</div></div>
  <div class="right">
-  <div class="code s22 reveal" style="--d:1;--hd:7.4s"><span class="src">02_modeling · 6.2, 6.4, 7.0</span><span class="ln" style="--l:0">numeric = <span class="k">Pipeline</span>([(<span class="s">"impute"</span>, SimpleImputer(strategy=<span class="s">"median"</span>)),</span><span class="ln" style="--l:1">                    (<span class="s">"scale"</span>, StandardScaler())])</span><span class="ln" style="--l:2">pre = <span class="k">ColumnTransformer</span>([</span><span class="ln" style="--l:3">    (<span class="s">"num"</span>, numeric, WEATHER_COLS + hour_num + BINARY_COLS),</span><span class="ln" style="--l:4">    (<span class="s">"cat"</span>, OneHotEncoder(handle_unknown=<span class="s">"ignore"</span>), CAT_COLS + hour_cat)])</span><span class="ln" style="--l:5">pipe = <span class="k">Pipeline</span>([(<span class="s">"pre"</span>, pre),</span><span class="ln" style="--l:6">                 (<span class="s">"select"</span>, select),   <span class="c"># FS / PCA</span></span><span class="ln" style="--l:7">                 (<span class="s">"model"</span>, model)])</span><span class="ln" style="--l:8">cv = <span class="k">GroupKFold</span>(n_splits=<span class="n">5</span>)</span><span class="ln" style="--l:9">cross_validate(pipe, X_train, y_train, <span class="hl">groups=groups_train</span>,</span><span class="ln" style="--l:10">               cv=cv, scoring=SCORING)</span></div>
-  <div class="card reveal" style="--d:2"><h4>GroupKFold 5 fold · ชมพู = validation (ทั้งวันอยู่ฝั่งเดียว)</h4><div class="folds" id="folds"></div>
+  <div class="code s22 reveal" style="--d:1;--hd:7.4s"><span class="src">02_modeling · 6.2, 6.4, 7.0</span><span class="ln" style="--l:0">numeric = <span class="k">Pipeline</span>([(<span class="s">"impute"</span>, <span class="ann ann1" data-n="1">SimpleImputer(strategy=<span class="s">"median"</span>)</span>),</span><span class="ln" style="--l:1">                    (<span class="s">"scale"</span>, <span class="ann ann1" data-n="1">StandardScaler()</span>)])</span><span class="ln" style="--l:2">pre = <span class="k">ColumnTransformer</span>([</span><span class="ln" style="--l:3">    (<span class="s">"num"</span>, numeric, WEATHER_COLS + hour_num + BINARY_COLS),</span><span class="ln" style="--l:4">    (<span class="s">"cat"</span>, <span class="ann ann1" data-n="1">OneHotEncoder(handle_unknown=<span class="s">"ignore"</span>)</span>, CAT_COLS + hour_cat)])</span><span class="ln" style="--l:5"><span class="ann ann2" data-n="2">pipe = <span class="k">Pipeline</span>([(<span class="s">"pre"</span>, pre),</span></span><span class="ln" style="--l:6">                 (<span class="s">"select"</span>, select),   <span class="c"># FS / PCA</span></span><span class="ln" style="--l:7">                 (<span class="s">"model"</span>, model)])</span><span class="ln" style="--l:8">cv = <span class="k">GroupKFold</span>(n_splits=<span class="n">5</span>)</span><span class="ln" style="--l:9"><span class="ann ann3" data-n="3">cross_validate(pipe</span>, X_train, y_train, <span class="hl">groups=groups_train</span>,</span><span class="ln" style="--l:10">               cv=cv, scoring=SCORING)</span></div>
+  <div class="card reveal ann3box" style="--d:2"><h4>GroupKFold 5 fold · ชมพู = validation (ทั้งวันอยู่ฝั่งเดียว)</h4><div class="folds" id="folds"></div>
    <p style="font-size:20px;margin-top:8px">แต่ละ fold: train 225–226 วัน · validation 56–57 วัน</p></div>
   <div class="row2 reveal" style="--d:3">
    <div class="card"><h4>GroupKFold ✓</h4><p>วันที่อยู่ทั้ง train และ validation = <b>0 วัน</b> ทุก fold</p></div>
