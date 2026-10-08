@@ -338,14 +338,14 @@ body{font-family:var(--font);color:var(--ink)}
   <div class="num reveal">05</div><h2 class="reveal" style="--d:1">เตรียมข้อมูล</h2>
   <ul class="pts">
    <li class="reveal" style="--d:2">ตัด <b>240 ชม.</b> ที่ระบบปิด (ยอด = 0 ทุกแถว)</li>
-   <li class="reveal" style="--d:3">ความชื้น 0% <b>17 แถว</b> = <b>missing value</b> → NaN แล้วเติม median ใน Pipeline</li>
+   <li class="reveal" style="--d:3">ความชื้น 0% <b>17 แถว</b> = <b>outlier</b> → ลบให้ว่าง = <b>missing value</b> → เติม median</li>
    <li class="reveal" style="--d:4"><b>ไม่ตัด outlier</b> เพราะเป็นเหตุการณ์จริง</li>
    <li class="reveal" style="--d:5">สร้าง feature ใหม่ <b>7 ตัว</b> จากค่าในแถวเดียวกัน</li></ul>
   <div class="who">ผู้พูด B</div></div>
  <div class="right">
-  <div class="code reveal" style="--d:1"><span class="src">02_modeling · 5.2</span><span class="ln" style="--l:0">out = df[df[<span class="s">"functioning_day"</span>] == <span class="s">"Yes"</span>]</span><span class="ln" style="--l:1">out[<span class="s">"humidity_pct"</span>] = out[<span class="s">"humidity_pct"</span>].<span class="hl">mask(out[<span class="s">"humidity_pct"</span>] == <span class="n">0</span>)</span></span></div>
+  <div class="code reveal" style="--d:1"><span class="src">02_modeling · 5.1 · ไฟล์จาก 01_eda 4.11</span><span class="ln" style="--l:0">data = pd.read_csv(config.PROCESSED_CSV, encoding=<span class="s">"cp1252"</span>)</span><span class="ln" style="--l:1">train.<span class="hl">isnull().sum()</span>   <span class="c"># humidity_pct = 17</span></span></div>
   <div class="row2 reveal" style="--d:2">
-   <div class="card"><h4>ความชื้น 0% เป็นค่าผิดจริงไหม</h4><p>คำนวณความชื้นย้อนกลับจากอุณหภูมิ + dew point ด้วย <b>สูตร Magnus</b><br>แถวปกติคลาดเฉลี่ย <b>0.24</b> จุด · 17 แถวนี้ได้ <b>33.1–71.7%</b> → เซนเซอร์ผิด ค่าจริงหายไป = <b>missing value</b></p></div>
+   <div class="card"><h4>ความชื้น 0% เป็นค่าผิดจริงไหม</h4><p>คำนวณความชื้นย้อนกลับจากอุณหภูมิ + dew point ด้วย <b>สูตร Magnus</b><br>แถวปกติคลาดเฉลี่ย <b>0.24</b> จุด · 17 แถวนี้ได้ <b>33.1–71.7%</b> → เซนเซอร์อ่านค่าผิด = <b>outlier</b></p></div>
    <div class="card"><h4>หลังใช้กฎขอบเขต</h4><table class="mini">
     <tr><th></th><th class="n">ก่อน</th><th class="n">หลัง</th></tr>
     <tr><td>train</td><td class="n">7,008</td><td class="n">6,768</td></tr>
@@ -508,10 +508,10 @@ body{font-family:var(--font);color:var(--ink)}
     <tr class="best"><td>HistGradientBoosting</td><td class="n">114.1</td><td class="n">109.0</td></tr></table></div>
    <div class="card"><h4>ตาราง CLO4 (ทรัพยากร)</h4><table class="mini">
     <tr><th>โมเดล</th><th class="n">CV MAE</th><th class="n">fit (s)</th><th class="n">ms/แถว</th></tr>
-    <tr class="best"><td>HGB</td><td class="n">109.0</td><td class="n">5.26</td><td class="n">14.1</td></tr>
-    <tr><td>RF</td><td class="n">121.8</td><td class="n">3.77</td><td class="n">11.7</td></tr>
-    <tr><td>kNN</td><td class="n">183.7</td><td class="n">0.03</td><td class="n">3.9</td></tr>
-    <tr><td>Linear+log1p</td><td class="n">211.0</td><td class="n">0.04</td><td class="n">4.7</td></tr></table>
+    <tr class="best"><td>HGB</td><td class="n">109.0</td><td class="n">4.16</td><td class="n">10.6</td></tr>
+    <tr><td>RF</td><td class="n">121.8</td><td class="n">3.38</td><td class="n">11.1</td></tr>
+    <tr><td>kNN</td><td class="n">183.7</td><td class="n">0.02</td><td class="n">2.7</td></tr>
+    <tr><td>Linear+log1p</td><td class="n">211.0</td><td class="n">0.02</td><td class="n">2.7</td></tr></table>
     <p style="font-size:19px;margin-top:6px">เวลาเปลี่ยนทุกครั้งที่รัน ใช้ดูลำดับขนาด · ทุกตัวเร็วพอใช้งานจริง</p></div></div>
   <div class="code s24 reveal" style="--d:3;--hd:2.2s"><span class="src">final_model · 02_modeling · 12</span><span class="ln" style="--l:0"><span class="hl"><span class="k">HistGradientBoostingRegressor</span></span>(learning_rate=<span class="n">0.02</span>, max_iter=<span class="n">400</span>,</span><span class="ln" style="--l:1">    max_leaf_nodes=<span class="n">127</span>, min_samples_leaf=<span class="n">5</span>, l2_regularization=<span class="n">1.0</span>)</span></div>
   <div class="extra reveal" style="--d:4"><b>เสริม</b> · log1p ไม่ช่วย kNN (188.7 vs 183.7) และ HGB (110.7 vs 109.0)</div></div>
@@ -596,7 +596,7 @@ body{font-family:var(--font);color:var(--ink)}
    <tr><td>ชั่วโมงในวันเดียวกันคล้ายกันมาก (ข้อมูลรั่วแบบซ่อน)</td><td>split และ CV ตามวัน</td></tr>
    <tr><td>ชั่วโมงที่ระบบปิด ยอด = 0 เสมอ</td><td>ตัดออก + ประกาศขอบเขต</td></tr>
    <tr><td>ไฟล์ไม่ใช่ UTF-8 และวันที่กำกวม</td><td>ตรวจ byte ดิบ · cp1252 · dd/mm/yyyy</td></tr>
-   <tr><td>ความชื้น 0% (เซนเซอร์ผิด = missing value)</td><td>สูตร Magnus → NaN + เติม median ใน Pipeline</td></tr>
+   <tr><td>ความชื้น 0% (outlier: เซนเซอร์อ่านค่าผิด)</td><td>Magnus → ลบให้ว่าง (missing 17) → เติม median</td></tr>
    <tr><td>chi² ใช้กับ regression ไม่ได้</td><td>f_regression, mutual_info</td></tr>
    <tr><td>ชั่วโมงมี 2 พีค แต่ sin/cos ให้เส้นตรงได้ 1 พีค</td><td>เลือก encoding ชั่วโมงตามชนิดโมเดล</td></tr></table></div>
   <div class="row2 reveal" style="--d:2">

@@ -47,13 +47,14 @@ jupyter notebook notebooks/
 ```
 
 รัน notebook ตามลำดับ `00_setup` → `01_eda` → `02_modeling`
-(`01_eda` ขั้น 3 สร้าง `data/splits/*.csv` — ไฟล์นี้ commit ไว้แล้ว `02_modeling` จึงรันได้ทันที)
+(`01_eda` ขั้น 3 สร้าง `data/splits/*.csv` และขั้น 4.11 สร้าง `data/processed/*.csv` — ทั้งสองอย่าง commit ไว้แล้ว `02_modeling` จึงรันได้ทันที)
 
 ## โครงสร้าง
 
 ```
 config.py            ค่าคงที่ทั้งหมด (RANDOM_STATE, path, TASK)
 data/raw/            ไฟล์ CSV ต้นฉบับ
+data/processed/      CSV ที่ความชื้น 0% (outlier) เป็นช่องว่าง = missing value · 02_modeling ใช้ไฟล์นี้
 data/splits/         รายการวัน train/test
 notebooks/00_setup   ตรวจ environment + กติกากลุ่ม (ขั้น 0)
 notebooks/01_eda     โหลด/ตรวจข้อมูล, split ตามวัน, EDA บน train (ขั้น 2–4)
