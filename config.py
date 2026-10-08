@@ -13,8 +13,8 @@ TASK = "regression"        # ทำนาย rented_bike_count (คัน/ชั
 # ---- paths ----
 DATA_DIR = ROOT / "data"
 RAW_CSV = DATA_DIR / "raw" / "seoul+bike+sharing+demand" / "SeoulBikeData.csv"   # แตกมาจาก zip ของ UCI
-# ไฟล์ดิบที่ลบค่าความชื้น 0% (outlier จากเซนเซอร์ · 01_eda 4.10) ให้เป็นช่องว่าง → โหลดแล้วเป็น NaN (สร้างใน 01_eda 4.11)
-PROCESSED_CSV = DATA_DIR / "processed" / "SeoulBikeData_humidity0_to_nan.csv"
+# dataset ที่ใช้ทุก notebook: ไฟล์ UCI ที่ความชื้น 0% ว่าง 9 จาก 17 ช่อง (missing value) · สร้างด้วย scripts/make_dataset.py
+DATA_CSV = DATA_DIR / "processed" / "SeoulBikeData_missing.csv"
 SPLIT_DIR = DATA_DIR / "splits"
 TRAIN_DATES = SPLIT_DIR / "train_dates.csv"
 TEST_DATES = SPLIT_DIR / "test_dates.csv"
