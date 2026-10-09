@@ -10,6 +10,34 @@ TEST_FRAC = 0.2            # สัดส่วน "วัน" ที่เป�
 # ---- ชนิดงาน ----
 TASK = "regression"        # ทำนาย rented_bike_count (คัน/ชั่วโมง) — เหตุผลใน 02_modeling ขั้น 1
 
+# ---- ขอบเขตพายุ: กำหนดจากประกาศ KMA ก่อนเหตุการณ์ ไม่ใช้ residual หรือคะแนน test ----
+# รวมวันที่แจ้งฝน/ลมจากพายุบนบกในเขตเมืองหลวง; ไม่อ้างว่าเป็นวันขึ้นฝั่งหรือระดับเตือนภัยเดียวกัน
+STORM_EVENTS = (
+    {
+        "name": "Prapiroon",
+        "dates": ("2018-07-02",),
+        "published": "2018-06-29",
+        "source": "https://testweather.kma.go.kr/metropolitan/html/news/notice_view.jsp?articleno=9627&boardId=press2&pageNo=31",
+        "basis": "2 ก.ค. แจ้งฝน/ลมจากอิทธิพลพายุในเขตเมืองหลวง; 30 มิ.ย.–1 ก.ค. ระบุเป็นมรสุม จึงไม่ตัดด้วยกฎพายุ",
+    },
+    {
+        "name": "Soulik",
+        "dates": ("2018-08-23", "2018-08-24"),
+        "published": "2018-08-22",
+        "source": "https://testweather.kma.go.kr/metropolitan/html/news/notice_view.jsp?articleno=9857&boardId=press2&pageNo=31",
+        "basis": "23–24 ส.ค. แจ้งล่วงหน้าถึงผลกระทบพายุและฝน/ลมในโซล–อินชอน–คยองกี",
+    },
+    {
+        "name": "Kong-rey",
+        "dates": ("2018-10-05", "2018-10-06", "2018-10-07"),
+        "published": "2018-10-04",
+        "source": "https://www.kma.go.kr/metropolitan/html/news/notice_view.jsp?articleno=9956&boardId=press2&pageNo=13",
+        "basis": "5–6 ต.ค. แจ้งฝนจากพายุ; 5–7 ต.ค. แจ้งลมแรงรวมบางพื้นที่บนบกของเขตเมืองหลวง จึงรวม 7 ต.ค. ด้วย",
+    },
+)
+STORM_DATES = tuple(sorted({day for event in STORM_EVENTS for day in event["dates"]}))
+MAGNUS_REVIEW_GAP_PP = 15.0  # จุดเปอร์เซ็นต์: เกณฑ์สอบทานจาก train ใน EDA 4.11 ไม่ใช่เกณฑ์ตัดแถว
+
 # ---- paths ----
 DATA_DIR = ROOT / "data"
 RAW_CSV = DATA_DIR / "raw" / "seoul+bike+sharing+demand" / "SeoulBikeData.csv"   # แตกมาจาก zip ของ UCI
