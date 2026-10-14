@@ -1,8 +1,15 @@
-# Seoul Bike Demand
+# Seoul Bike Demand — ชุดส่งโครงงาน Machine Learning
 
-> วิชา: **Machine Learning** · กำหนดส่ง **9 ต.ค. 2569**
+## เปิดไฟล์ใดก่อน
 
-## สมาชิก (เรียงตามรหัสนิสิต)
+1. `reports/report.pdf` — รายงานฉบับสมบูรณ์
+2. `slides/seoul-bike-presentation.html` — สไลด์นำเสนอ 18 หน้า เปิด offline ด้วย Edge/Chrome
+3. `notebooks/00_setup.ipynb`, `01_eda.ipynb`, `02_modeling.ipynb` — โค้ดพร้อม outputs จากการรันจริง
+4. `verification/submission-audit.md` — ตารางสอบทานและหลักฐานทดสอบ
+
+ข้อมูล raw, processed และรายการวัน train/test **แนบครบแล้ว** ไม่ต้องดาวน์โหลดเพิ่มเพื่อรัน Notebook. แตก ZIP ก่อนรัน; ภายในมีโฟลเดอร์ `seoul-bike-demand` ชั้นเดียว.
+
+## สมาชิก
 
 | รหัสนิสิต | ชื่อ-นามสกุล |
 |---|---|
@@ -10,94 +17,95 @@
 | 6730300591 | นาย ศุภวิชญ์ ไชยานุศักดิ์ |
 | 6730300850 | นาย พัฒนเดช มะหิเมือง |
 
-## ปัญหา
+## โจทย์และข้อมูล
 
-**Regression** — ทำนาย **จำนวนจักรยานที่ถูกเช่าในชั่วโมงนั้น (คัน/ชั่วโมง)** ของทั้งระบบ Seoul Bike
-จากสภาพอากาศและเวลา (ข้อมูลที่รู้ล่วงหน้าได้จากพยากรณ์อากาศ + ปฏิทิน)
+ทำนายจำนวนจักรยานที่ถูกเช่าในชั่วโมงนั้นของ Seoul Bike ทั้งเมือง จากอากาศ ปฏิทิน และฝน 3 ชั่วโมงก่อนหน้าภายในวันเดียวกัน. Target เป็นจำนวนนับไม่ติดลบ (จำนวนเต็ม); ใช้ **regression** ประมาณยอดเช่าเชิงปริมาณ. Prediction อาจเป็นทศนิยม ปัดเฉพาะตอนแสดงตัวอย่าง.
 
-- ประโยชน์: ผู้ให้บริการวางแผนจำนวนจักรยานที่ต้องพร้อมใช้ และจัดคนกระจายจักรยานล่วงหน้าในชั่วโมงที่ความต้องการสูง
-- เมตริกหลัก: **MAE** (คัน/ชม.) · รอง: MSE, RMSE, R² — เหตุผลใน `notebooks/02_modeling.ipynb` ขั้น 1
-- ขอบเขต: ระบบเปิด นอกช่วงพายุที่กำหนดจากประกาศ KMA ล่วงหน้าสำหรับเขตเมืองหลวง; ระดับทั้งเมือง (ไม่ใช่รายสถานี) กฎเดียวกันทั้ง train/test
-- ชนิดงาน: ตัดสินใจใช้ **regression** (`config.TASK = "regression"`) เพราะ target ของ dataset เป็นจำนวนจักรยานเชิงปริมาณ ทำนายได้ตรงๆ โดยไม่ต้องตั้ง threshold เอง
+ขอบเขตหลัก: ระบบเปิดและนอกวันผลกระทบพายุจากประกาศ KMA ล่วงหน้าใน `config.py`; กฎเดียวกันทั้ง train/test. ใช้ MAE (คัน/ชม.) เป็นหลัก และรายงาน MSE, RMSE, R².
 
-## Dataset
+Seoul Bike Sharing Demand [Dataset]. (2020). UCI Machine Learning Repository id 560, [DOI](https://doi.org/10.24432/C5F62R), [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). Raw 8,760 ×14 ไม่มี missing; processed เพิ่มช่องความชื้นว่าง 9 ค่าเพื่อการเรียนตามที่อาจารย์อนุญาต. ดู `data/README.md`.
 
-- **Seoul Bike Sharing Demand** — UCI Machine Learning Repository, id 560
-  https://archive.ics.uci.edu/dataset/560/seoul+bike+sharing+demand
-- ข้อมูลรายชั่วโมง ~8,760 แถว (1 ปี), target `Rented Bike Count`
-- รายละเอียด/จำนวนจริง: ดู [data/README.md](data/README.md)
+## ติดตั้งและเปิด Notebook — Windows PowerShell
 
-### Attribution
+ทดสอบจริงวันที่ 14 ต.ค. 2569 บน **Windows 11, Python 3.13.11 (64-bit)**. ติดตั้ง Python 3.13 ก่อน; หาก `py -3.13` หาไม่พบ ใช้ path ของ `python.exe` รุ่น 3.13 แทน. ติดตั้ง dependencies ต้องใช้อินเทอร์เน็ตหรือ pip cache.
 
-Seoul Bike Sharing Demand [Dataset]. (2020). UCI Machine Learning Repository. https://doi.org/10.24432/C5F62R
-Licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+เปิดโฟลเดอร์ที่แตก ZIP ซึ่งมี `README.md`, `config.py`, `requirements.txt` ใน File Explorer → คลิก address bar → พิมพ์ `powershell` → Enter. Windows 11 ใช้คลิกขวา → **Open in Terminal** ได้. ทุกคำสั่งต่อไปนี้รันจากโฟลเดอร์นี้.
 
-## การแบ่งข้อมูล
-
-แบ่ง train/test **ตามวัน** (ไม่ใช่ตามแถว) — ชั่วโมงติดกันในวันเดียวกันคล้ายกันมาก
-ถ้าสุ่มทีละแถว ข้อมูลวันเดียวกันจะรั่วไปทั้งสองฝั่ง ผลจะดูดีเกินจริง
-
-## วิธีรัน
-
-```bash
+```powershell
 py -3.13 -m venv .venv
-.venv\Scripts\activate          # Windows
-pip install -r requirements.txt
-jupyter notebook notebooks/
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pip check
+.\.venv\Scripts\python.exe -m ipykernel install --sys-prefix --name seoul-bike --display-name "Python (Seoul Bike)"
+.\.venv\Scripts\python.exe -m notebook notebooks
 ```
 
-รัน notebook ตามลำดับ `00_setup` → `01_eda` → `02_modeling`
-(`scripts/make_dataset.py` สร้าง `data/processed/*.csv` และ `01_eda` ขั้น 3 สร้าง `data/splits/*.csv` — ทั้งสองอย่าง commit ไว้แล้ว notebook จึงรันได้ทันที)
+เรียก Python ของ `.venv` โดยตรง จึงไม่ต้อง activate และไม่ติดปัญหา ExecutionPolicy. `pip check` ต้องแสดง `No broken requirements found.`
 
-## โครงสร้าง
+เปิด Notebook แล้วเลือก **Kernel → Change Kernel → Python (Seoul Bike)**. รันตามลำดับ `00_setup` → `01_eda` → `02_modeling`; แต่ละไฟล์เลือก **Kernel → Restart Kernel and Run All Cells** (บางหน้าจอชื่อ Restart Kernel & Run All) และบันทึกเมื่อจบ. `01_eda` ตรวจวัน split ที่แนบและสร้างใหม่เฉพาะเมื่อยังไม่มีไฟล์.
 
-```
-config.py            ค่าคงที่ทั้งหมด (RANDOM_STATE, path, TASK)
-data/raw/            ไฟล์ CSV ต้นฉบับ
-data/processed/      dataset ที่ทุก notebook ใช้ (config.DATA_CSV)
-scripts/             make_dataset.py สร้าง data/processed/ จาก data/raw/
-data/splits/         รายการวัน train/test
-notebooks/00_setup   ตรวจ environment + กติกากลุ่ม (ขั้น 0)
-notebooks/01_eda     โหลด/ตรวจข้อมูล, split ตามวัน, EDA บน train (ขั้น 2–4)
-notebooks/02_modeling  นิยามปัญหา, feature engineering, Pipeline, FS, PCA, baseline, เทียบ/tune โมเดล, test (ขั้น 1, 5–13)
-figures/             รูปที่ใช้ในรายงานและสไลด์
-reports/             รายงาน (report.html → report.pdf)
-slides/              สไลด์นำเสนอ 18 หน้า · บทพูด · ภาพรวมทีละขั้น (HTML)
+หรือรันอัตโนมัติจาก kernel ใหม่ทุกไฟล์:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\run_notebooks.py
 ```
 
-## ผลหลัก
+สคริปต์ลงทะเบียน kernel ใน `.venv` เอง เก็บ outputs กลับใน Notebook, กราฟใน `figures/`, logs/tables ใน `verification/`. รอบอ้างอิง: setup **1.5 s**, EDA **10.9 s**, modeling **225.0 s** รวมประมาณ **4 นาที** ไม่รวมติดตั้ง. เวลาขึ้นกับเครื่อง thread และโหลดขณะรัน.
 
-CV = 5-fold `GroupKFold` (group = วัน) บน train · เลือกโมเดลด้วย CV แล้วประเมิน test/sensitivity ในขั้น 13 · MAE มีหน่วยคัน/ชม.
+## ผลสำคัญที่ควรเห็น
 
-| โมเดล (หลัง tune) | selector / จำนวนคอลัมน์ | CV MAE ± fold std |
-|---|---|---|
-| Baseline เวลา (hour × วันทำงาน/วันหยุด) | - | 398.4 ± 10.9 |
-| Linear Regression + log1p(y) | ทุก 59 | 205.86 ± 9.97 |
-| kNN + log1p(y), k=15, distance | MI 10/37 | 176.83 ± 10.39 |
-| Random Forest, 300 trees | ทุก 36 | 117.77 ± 4.12 |
-| **HistGradientBoosting** | **MI 36/36 (เก็บทุกคอลัมน์)** | **104.86 ± 3.96** |
+| รายการ | ผลรอบอ้างอิง |
+|---|---|
+| split ก่อนกรอง | train 7,008 ชั่วโมง/292 วัน; test 1,752 ชั่วโมง/73 วัน |
+| EDA ระบบเปิด ก่อนกรองพายุ | train 6,768 ชั่วโมง/282 วัน |
+| หลัง scope | train 6,672 ชั่วโมง/278 วัน; test 1,656 ชั่วโมง/69 วัน |
+| X ก่อน preprocess | 18 คอลัมน์ รวม `rain_prev_3h` |
+| หลัง preprocess | Linear 59; kNN 37; RF/HGB 36 |
+| FS บน default | Linear RFE40/59: 262.26; kNN MI10/37: 179.15; RF/HGB ชุดย่อยไม่ชนะทั้งหมด |
+| PCA | 14 PC ≥90%, 19 PC ≥95%; PCA15 ช่วย kNN cyclic 191.9 →184.1 แต่ไม่ช่วย Linear |
+| baseline เวลา | CV MAE 398.4 |
+| tuned finalists CV MAE ±std | Linear log 205.86±9.97; kNN log 176.83±10.39; RF 117.77±4.12; **HGB 104.86±3.96** |
+| test ของ HGB | **MAE 91.46**, MSE 22,219.3, RMSE 149.06, R² 0.938 |
+| รวมวันพายุ ด้วยโมเดลเดิม | 1,697 ชั่วโมง/71 วัน: MAE 95.48; พายุ 41 ชั่วโมง MAE 257.65 |
+| prediction สมมติ | 2,960 /569 /2,233 /605 คัน/ชม. |
+| HGB fit /latency รอบอ้างอิง | 1.827 s /5.55 ms ต่อ 1 แถว (median 30 ครั้ง) |
 
-- **test ในขอบเขต (1,656 ชั่วโมง / 69 วัน):** MAE **91.46** · MSE 22,219.3 · RMSE 149.06 · R² **0.938**
-- **รวมวันพายุกลับมา (1,697 ชั่วโมง / 71 วัน):** MAE **95.48** · RMSE 163.91 · R² 0.925; ใช้ final_model เดิม ไม่ fit เพิ่ม วันพายุ 41 ชั่วโมงมี MAE 257.65
-- ขอบเขต: ตัดระบบปิดก่อน แล้ววันที่ 2 ก.ค., 23–24 ส.ค., 5–7 ต.ค. 2018 ตามช่วงคาดการณ์ฝน/ลมบนบกในเขตเมืองหลวงจาก KMA ไม่อ้างว่าทุกวันมี formal Seoul typhoon warning หรือเป็นวันขึ้นฝั่ง วันที่ 1 ก.ค. เก็บไว้เป็นบริบทมรสุม แหล่งอ้างอิงอยู่ใน `config.STORM_EVENTS` และรายงาน
-- ไฟล์วัน split เดิม 292/73 วัน; กรองแล้ว train 6,672 ชั่วโมง / 278 วัน ไม่เปลี่ยน `data/splits/`
-- Sensor rules: humidity=0 → NaN; เมื่อ Magnus gap >15 จุดเปอร์เซ็นต์ และ T/Td เป็น 0 เพียงตัวเดียว แก้เฉพาะคอลัมน์นั้นเป็น NaN (สงสัยเซนเซอร์; อนุมาน) train NaN: humidity17, dew point5, temp1 เติม median ภายใน Pipeline
-- `rain_prev_3h`: ฝน 3 ชั่วโมงก่อนหน้าในวันเดียวกัน ไม่รวมปัจจุบัน/ไม่ข้ามวัน; ชั่วโมงภายในวันหาย → NaN HGB paired CV ไม่มี/มี feature = 112.15 ±4.23 / 109.18 ±2.93 ดีขึ้นครบ5foldsจึงเก็บ
-- Feature selection ทดลองตามแต่ละโมเดล: Linear F/MI/RFE(Ridge)/Lasso; kNN MI; RF/HGB MI/RFE(RF proxy)/SelectFromModel(RF proxy) MI10 ช่วย kNN 12.79 คัน; ชุดย่อยไม่ช่วยต้นไม้ใน default CV ส่ง selector configuration เข้า tuning และเรียนใหม่ภายใน folds HGB MI36 ยังเก็บทุกคอลัมน์
-- PCA จาก 37 คอลัมน์ (hour cyclic): 14 PC ≥90%; 19 PC ≥95% kNN PCA15 ได้ MAE184.1 แต่รุ่นสุดท้ายชนะด้วย MI10
-- HGB: learning_rate0.1, max_iter200, max_leaf_nodes63, min_samples_leaf5, l2_regularization1.0 · รอบสุดท้าย fit1.786s / predict5.63ms ต่อแถวบนเครื่องนี้
+ผู้ชนะ: `HistGradientBoostingRegressor(learning_rate=0.1, max_iter=200, max_leaf_nodes=63, min_samples_leaf=5, l2_regularization=1.0, random_state=42)`; hour raw, `SelectKBest(mutual_info_regression, k=36)` เก็บทั้งหมด 36/36. Pipeline รวม preprocessing/selector; สาธิต prediction ใน Notebook ไม่แนบโมเดลเก่า.
 
-## ข้อจำกัด
+## เปิดเอกสารและสไลด์ offline
 
-- ฝนตกใน test ในขอบเขตมี89ชั่วโมง MAE143.0 หรือ83.2%ของยอดเฉลี่ย; rain historyช่วยCVแต่ยังไม่แก้ข้อจำกัดนี้ทั้งหมด
-- วันหยุดยาวและวันที่อธิบายไม่ได้ยังเก็บไว้ ไม่ลบเพราะ residualใหญ่ กฎพายุครอบคลุมเฉพาะ6วันที่ระบุ ไม่ใช่ภัยธรรมชาติทุกชนิด
-- ประเมินด้วยอากาศที่วัดจริง ยังไม่รวมความผิดพลาดของ weather forecast เมื่อใช้ล่วงหน้าต้องมีประวัติฝน/forecastสำหรับช่วงก่อนชั่วโมงนั้นและประกาศขอบเขตที่พร้อมณเวลาทำนาย
-- ข้อมูล1ปี เมืองเดียว ยอดรวมทั้งเมือง; splitสุ่มวันไม่วัดการพยากรณ์ข้ามปี CVใช้เลือกconfigurationจึงอาจมี selection bias
-- การขยาย search spaceด้วยselectorเปลี่ยนชุดพารามิเตอร์ที่สุ่ม จึงไม่สรุปว่าFSเพียงอย่างเดียวทำให้ tunedRF/HGBดีขึ้น foldstdไม่ใช่confidence intervalของส่วนต่าง
+- ดับเบิลคลิก `reports/report.pdf` หรือเปิด `reports/report.html` ใน Edge/Chrome. HTML ใช้รูปใน `figures/` ต้องเก็บโครงสร้างโฟลเดอร์ครบ.
+- สไลด์: `slides/seoul-bike-presentation.html` → **← /→**, Home/End, คลิกครึ่งซ้าย/ขวา หรือปุ่มขั้นด้านล่าง; F11 เต็มจอ. รอเลขนับประมาณ 2 วินาทีให้จบ. หน้า 17 กดปุ่มสถานการณ์ทั้ง 4 ชุด.
+- ภาพรวม: `slides/seoul-bike-overview.html` → **← /→**, **M** กลับแผนที่, คลิกจุดขั้น; ปุ่ม **โหมดอ่าน/โหมดสไลด์** เปลี่ยนการแสดงผล.
+- บทพูด: `slides/speaker-script.html` → แถบผู้พูด A/B/C และถาม-ตอบ; มีตัวจับเวลา. HTML ใช้ JavaScript ในเครื่องและฟอนต์ Leelawadee UI/Tahoma บน Windows ไม่โหลดฟอนต์/ไลบรารีภายนอก.
 
-## เอกสารฉบับส่ง
+## สร้าง processed dataset และ PDF ซ้ำ
 
-- `reports/report.html` → `reports/report.pdf` (23หน้า): `python reports/build_pdf.py`
-- `slides/seoul-bike-presentation.html` (18หน้า), `slides/seoul-bike-overview.html` (28หน้า)
-- `slides/speaker-script.html`: บทพูด9:00, A3:25 / B2:25 / C3:10 และQ&Aอ้างตารางรายงานฉบับล่าสุด
-- รายละเอียดการทดลองและoutputs: `notebooks/02_modeling.ipynb` ขั้น7–13; ไม่มีไฟล์โมเดลใหม่ในcommit
+```powershell
+.\.venv\Scripts\python.exe scripts\make_dataset.py
+.\.venv\Scripts\python.exe scripts\run_notebooks.py
+.\.venv\Scripts\python.exe scripts\sync_documents.py
+.\.venv\Scripts\python.exe reports\build_pdf.py
+```
+
+`make_dataset.py` ใช้ raw CSV และ seed 42 ทำช่องความชื้นว่าง 9 จาก 17 ช่องที่เป็น 0; ส่วนอื่นเหมือน raw ทุก byte. หลังรันใหม่ `sync_documents.py` ปรับตารางเวลา รูปฝัง และคำอธิบายเวลาใน Notebook จาก `verification/results.json`; หากเปลี่ยน configuration ต้องตรวจตัวเลขเนื้อหาอื่นใหม่ด้วยตาราง audit. `build_pdf.py` ใช้ Edge/Chrome ด้วยโปรไฟล์ชั่วคราวแยก ไม่ต้องติดตั้งแพ็กเกจเพิ่ม.
+
+## ข้อจำกัดและ policy คะแนน
+
+เลือก configuration ด้วย 5-fold GroupKFold ตามวันบน train; learned steps อยู่ใน Pipeline. **Holdout เดิมเคยใช้หลาย revision**; รอบสุดท้ายตรึง configuration จาก train CV ก่อนประเมิน แต่ยังมีความเสี่ยงจากการใช้ holdout ซ้ำ ควรยืนยันด้วยข้อมูลใหม่.
+
+CV/train MAE ใช้ค่าก่อน clip; test/sensitivity/สถานการณ์ clip ค่าติดลบเป็น 0. Test ถูก clip 15 แถว: MAE ก่อน clip 91.65 หลัง clip 91.46. อ่านคะแนนพร้อม policy และสัดส่วนฤดู (test Winter 33.3%, train 24.1%); ไม่ใช้คะแนนคู่นี้ยืนยันว่าไม่มี overfitting.
+
+ฝนตกใน test 89 ชั่วโมง: MAE 143.0 หรือ 83.2% ของยอดเฉลี่ย (ไม่ใช่ MAPE). ตัวอย่างฝนเปลี่ยนอากาศหลายตัวพร้อมกัน จึงเปรียบเทียบ **ชุดสถานการณ์** ไม่ใช่ผลเชิงสาเหตุของฝนอย่างเดียว. ข้อมูลปีเดียว เมืองเดียว split สุ่มวัน และใช้อากาศที่วัดจริง ยังไม่ทดสอบ forecast error หรือข้ามปี.
+
+## ปัญหาที่พบจริงระหว่างทดสอบ
+
+- Kernel/เวอร์ชันผิด: เลือก Python (Seoul Bike), ตรวจ `sys.executable` แล้วติดตั้งผ่าน Python ของ `.venv`; setup จะ assert เวอร์ชัน.
+- CSV อ่าน UTF-8 ไม่ได้: ใช้ `config.RAW_ENCODING="cp1252"`, `DATE_FORMAT="%d/%m/%Y"`.
+- สคริปต์พิมพ์ไทยผ่าน pipe บน Windows เคยเกิด `UnicodeEncodeError`: แก้ stdout/stderr เป็น UTF-8 แล้ว และทดสอบ pipe จริง.
+- Windows sandbox เคยให้ `Access is denied` ตอนสร้าง temporary kernelspec: ข้อจำกัด sandbox ของเครื่องตรวจ; terminal ปกติรันผ่าน. kernel อยู่ใน `.venv` ของโฟลเดอร์ ZIP ที่แตกใหม่ ไม่ต้องอาศัย checkout เดิม.
+- รอบอ้างอิงพบ `joblib resource_tracker KeyError` ตอนปิด kernel หลังงานขนาน: ทุก cell ผ่านและไม่มี Notebook error; เป็นข้อความ cleanup ใน log. ตรวจ cell traceback และ `execution.json` ก่อนตัดสินว่าการรันล้มเหลว.
+- สร้าง PDF ไม่พบ browser: ติดตั้ง Edge/Chrome หรือเปิด HTML แล้ว Print → Save as PDF; PDF สำเร็จรูปแนบไว้แล้ว.
+
+## โครงสร้างชุดส่ง
+
+`config.py`, `requirements.txt`, `notebooks/`, `data/`, `scripts/`, `figures/`, `reports/`, `slides/`, `verification/` (ผลและหลักฐาน). ไม่รวม `.git`, `.venv`, worktrees, cache, ไฟล์ทดลอง หรือ `models/model.joblib` รุ่นเก่า.

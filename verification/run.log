@@ -1,0 +1,358 @@
+Installed kernelspec seoul-bike in C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\share\jupyter\kernels\seoul-bike
+START 00_setup
+C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\zmq\_future.py:718: RuntimeWarning: Proactor event loop does not implement add_reader family of methods required for zmq. Registering an additional selector thread for add_reader support via tornado. Use `asyncio.set_event_loop_policy(WindowsSelectorEventLoopPolicy())` to avoid this warning.
+  self._get_loop()
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+  cell 2: # ขั้น 0 — ตรวจ environment: ทุกคนในกลุ่มต้องได้ผลเหมือนกัน จึงต้องใช้ไลบรารีเวอร์ชันเดียวกับ requir
+  cell 5: # ค่าคงที่ทั้งหมดอยู่ที่ config.py ที่เดียว → ทุก notebook ใช้ seed, สัดส่วน test และ path ชุดเดียวก
+PASS 00_setup: 1.5 s
+START 01_eda
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+  cell 2: # Setup — import ไลบรารี + config และตั้งค่าการแสดงผล
+  cell 4: # ขั้น 2.1 — ตรวจไฟล์ก่อนโหลดจริง: ถ้าเดา encoding หรือรูปแบบวันที่ผิด ข้อมูลจะเพี้ยนโดยไม่มี error
+  cell 7: # ขั้น 2.2 — โหลดด้วย encoding ที่ตรวจแล้ว และเปลี่ยนชื่อคอลัมน์เป็น snake_case เพื่อให้อ้างถึงง่ายท
+  cell 10: # ชนิดข้อมูลและจำนวนค่าที่ไม่ว่างของแต่ละคอลัมน์
+  cell 13: # ขั้น 2.3 — ตรวจความครบถ้วน: ข้อมูลรายชั่วโมง 1 ปีต้องมี 365 วัน × 24 ชั่วโมง = 8,760 แถว ไม่มีซ้ำ 
+  cell 16: # ขั้น 2.4 — ค่าที่เป็นไปได้ของคอลัมน์หมวดหมู่ (ใช้วางแผน encoding และหาค่าแปลก)
+  cell 20: # ขั้น 3 — แบ่ง train/test "ตามวัน" ก่อนทำ EDA ทุกอย่าง
+  cell 23: # ขั้น 3.2 — ตรวจว่า split ใช้ได้: ไฟล์ที่บันทึกอ่านกลับมาได้ตรง และ train/test มีฤดู/วันหยุดใกล้เคี
+  cell 26: # ขั้น 3.3 — เก็บเฉพาะ train แล้วลบ df ทิ้ง → EDA และการตัดสินใจทุกอย่างหลังจากนี้ไม่เห็น test
+  cell 30: # ขั้น 4.1 — สถิติเชิงพรรณนา: ดูช่วงค่า, ค่ากลาง และค่าที่เป็นไปไม่ได้ทางกายภาพ
+  cell 33: # ขั้น 4.2 — distribution ของ target: เบ้แค่ไหน และมี outlier ตามเกณฑ์ IQR กี่แถว
+  cell 36: # ขั้น 4.3 — ยอด = 0 มาจากไหน: ถ้ามาจากชั่วโมงที่ระบบปิดทั้งหมด ก็เป็นกฎตายตัว ไม่ต้องให้โมเดลเรียน
+  cell 39: # ขั้น 4.4 — distribution หลังตัดชั่วโมงที่ระบบปิด (ขอบเขตของโมเดล = เฉพาะชั่วโมงที่ระบบเปิด)
+  cell 42: # ขั้น 4.5 — รูปแบบรายชั่วโมงแยกประเภทวัน: ใช้เลือกวิธี encode ชั่วโมงและสร้าง feature วันหยุด
+  cell 45: # ขั้น 4.6 — ยอดเฉลี่ยตามวันในสัปดาห์: ดูว่าต้องเก็บ day_of_week หรือแค่ "วันทำงาน/วันหยุด" ก็พอ
+  cell 48: # ขั้น 4.7 — ฤดูและอุณหภูมิ: ความสัมพันธ์กับยอดเช่าเป็นเส้นตรงหรือโค้ง (มีผลต่อการเลือกโมเดล)
+  cell 51: # ขั้น 4.8 — ฝนและหิมะเป็น 0 เกือบตลอด (zero-inflated) → เทียบ "มี vs ไม่มี" สำคัญกว่าดูปริมาณ
+  cell 54: # ขั้น 4.9 — correlation: หาคู่ feature ที่ซ้ำซ้อนกัน (|r| > 0.8) และ feature ที่สัมพันธ์กับ target 
+  cell 57: # ขั้น 4.10 — นับ outlier ทุกคอลัมน์ด้วยเกณฑ์ IQR (Q1 − 1.5·IQR, Q3 + 1.5·IQR)
+  cell 60: # ขั้น 4.10 (ต่อ) — ความชื้น 0% เป็นไปไม่ได้ในอากาศจริง → ตรวจด้วยฟิสิกส์ว่าเป็นค่าผิดของเซนเซอร์หรื
+  cell 63: # ขั้น 4.11 A — ตรวจฟิสิกส์รายแถวบน train เท่านั้น เพื่อหาค่าที่ IQR ไม่พบโดยไม่ลบแถวทั้งแถว
+  cell 66: # ขั้น 4.11 B — ทำนาย OOF แยกวันบน train เพื่อสอบทานบริบทที่อากาศรายชั่วโมงอธิบายไม่ได้ ไม่ใช่โมเดลส
+  cell 69: # ขั้น 4.11 C — จัดกลุ่มวันให้สอบทานด้วยบริบทภายนอกและข้อมูล train โดยไม่ใช้กลุ่มเหล่านี้ลบข้อมูล
+PASS 01_eda: 10.9 s
+C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\nbformat\validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  _validate(nbdict, ref, version, version_minor, relax_add_props)
+START 02_modeling
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+  cell 2: # Setup — import ไลบรารี + config (ค่าคงที่ชุดเดียวกับ 01_eda) และตั้งค่าการแสดงผล
+  cell 4: # ขั้น 5.1 — โหลดข้อมูลแล้วแยก train/test ตาม "รายการวัน" ที่ 01_eda บันทึกไว้
+  cell 7: # ขั้น 5.2 — ใช้กฎเซนเซอร์รายแถวและวันพายุจากประกาศภายนอกเหมือนกันทั้งสอง split เพื่อรักษาขอบเขตโดยไ
+  cell 10: # ขั้น 5.3 — สร้างปฏิทินและฝนย้อนหลังภายในวัน โดยไม่ใช้ target เพื่อเพิ่มบริบทที่อากาศชั่วโมงเดียวไม
+  cell 13: # ขั้น 5.4 — พิสูจน์ว่า sin/cos ทำให้ 23:00 กับ 0:00 อยู่ใกล้กันจริง (ตัวเลขดิบ 0–23 บอกว่าห่างกัน 2
+  cell 16: # ขั้น 5.5 — กำหนด target y = จำนวนจักรยานที่ถูกเช่าต่อชั่วโมง (regression)
+  cell 19: # ขั้น 5.6 — ประกอบ X, y, groups และตรวจ leakage ก่อนเข้าโมเดล
+  cell 22: # ขั้น 6.1 — แบ่งคอลัมน์ตามวิธี preprocess ที่ต้องใช้ (ตัวเลข → impute + scale · หมวดหมู่ → one-hot)
+  cell 25: # ขั้น 6.2 — ฟังก์ชันสร้าง preprocessor และ Pipeline
+  cell 28: # ขั้น 6.3 — ลอง fit preprocessor บน train แล้วตรวจผล: ไม่มี NaN เหลือ, one-hot ถูก, ตัวเลขถูก stand
+  cell 31: # ขั้น 6.4 — พิสูจน์ว่า Pipeline + GroupKFold ไม่รั่ว โดยจำลองสิ่งที่ cross_validate ทำทีละ fold
+  cell 34: # ขั้น 5.3.1 — เทียบ HGB ด้วย folds เดียวกันบน train เพื่อเลือกฝนย้อนหลัง โดยไม่ใช้ผล test หรือปรับพ
+  cell 38: # ขั้น 7.0 — วัดจุดอ้างอิงของแต่ละโมเดลผ่าน Pipeline และ folds เดียวกัน เพื่อเปรียบเทียบ FS อย่างตรง
+  cell 41: # ขั้น 7.1 — Filter: ให้คะแนน feature ทีละตัวด้วยสถิติ แล้วเก็บ k ตัวที่คะแนนสูงสุด
+  cell 43: # ขั้น 7.1 (ต่อ) — ดูว่าแต่ละวิธีจัด feature ไหนเป็น 10 อันดับแรก
+  cell 46: # ขั้น 7.2 — Wrapper (RFE): fit โมเดล → ตัด feature ที่ |coefficient| เล็กสุดทีละ 2 ตัว → fit ใหม่ ว
+  cell 49: # ขั้น 7.3 — Embedded (Lasso): L1 penalty ดัน coefficient ของ feature ที่ไม่ช่วยให้เป็น 0 พอดี
+  cell 52: # ขั้น 7.4 — รวมผล FS แยกโมเดลและ clone selector ไป tuning เพื่อให้เลือกจาก train CV โดยไม่ส่ง fitte
+  cell 55: # ขั้น 8.1 — PCA (feature extraction): สร้างแกนใหม่ (PC) ที่เป็นผลรวมเชิงเส้นของ feature เดิม เรียงต
+  cell 58: # ขั้น 8.2 — ตีความ PC1–PC3 จาก loading (น้ำหนักของ feature เดิมในแต่ละ PC): ขนาดบอกว่ามีส่วนมากแค่ไ
+  cell 61: # ขั้น 8.3 — PCA ช่วยโมเดลไหม: ใส่ PCA ในช่อง select ของ Pipeline (fit ใหม่ทุก fold) แล้วเทียบ CV MA
+  cell 64: # ขั้น 9 — Baseline: วัดว่าการทายแบบง่ายที่สุดคลาดเท่าไร เพื่อเป็นเกณฑ์ขั้นต่ำที่โมเดลจริงต้องชนะ
+  cell 67: # ขั้น 10 — ใช้ผล CV default จากขั้น 7.0 เทียบ 4 ตระกูลกับ baseline เพื่อคงจุดอ้างอิงก่อน tuning
+  cell 70: # ขั้น 10 (ต่อ) — กราฟ MAE ± std ของ baseline (เทา) เทียบกับ 4 โมเดล (น้ำเงิน) → เห็นว่าทุกโมเดลชนะ 
+  cell 73: # ขั้น 11 — Hyperparameter tuning ทีละโมเดลด้วย CV บน train (GroupKFold + groups, เลือกด้วย MAE) · t
+  cell 76: # ขั้น 12 — เลือกโมเดลสุดท้าย: เทียบตัวที่ดีที่สุดของแต่ละตระกูลทั้งความแม่น (CV MAE, เกณฑ์หลัก) และ
+  cell 79: # ขั้น 12 (ต่อ) — ตั้ง final_model = Pipeline ที่ CV MAE ต่ำสุด (เลือกจาก CV เท่านั้น ยังไม่ได้ดู te
+  cell 82: # ขั้น 13.1 — ประเมิน test หลังเลือกโมเดลและ selector ด้วย train CV ของรอบนี้ โดยไม่ใช้ผล test ย้อนเ
+  cell 85: # ขั้น 13.1.1 — ประเมินทั้งใน/นอก scope ด้วยโมเดลที่ตรึงจาก CV เพื่อรายงานความไว โดยไม่ fit หรือเลือ
+  cell 88: # ขั้น 13.2 — Error analysis แยกกลุ่ม: โมเดลพลาดตรงไหน (ฤดู / ประเภทวัน / ฝน)
+  cell 91: # ขั้น 13.3 — กราฟวินิจฉัย: (ซ้าย) ค่าจริง vs ค่าทำนาย (กลาง) residual (ขวา) MAE รายชั่วโมง
+  cell 94: # ขั้น 13.4 — 10 ชั่วโมงที่ทายพลาดมากที่สุด พร้อมสภาพอากาศและประเภทวัน → หาสาเหตุที่ feature ไม่ครอบ
+  cell 97: # ขั้น 13.5 — ทำนายข้อมูลใหม่ (สมมติ): ใส่ข้อมูลรูปแบบเดียวกับข้อมูลดิบ → add_features() → final_mod
+  cell 100: from scripts.export_results import save_evidence
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_6fdc70b6b71b404ebbe232ac9335f6c7_c20a76435ff44fa083146f18e85caaf6'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_79a56e120b534df3841e6b4d1d18924e'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_c3b9ce899ffc48d5bdc09dd2342d8e9a_de08b648f0ac4eb6bb31c68f75baccbb'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_bbf032278a31450e898fd4de8996d5ee'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_8fc88c5d6b19402781f66c99967270bc_6e38fbc758a94a7aaac9b48bb919b8b6'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_af2522c08d824d8494112b7af72171c9'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_46dd3e4557534550a7487cd8b486291c_0be98a08e2f9465e80dcfd5e298149e1'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_369dccb5999b4c4e9cc8700819135117'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_48b4e5773c8e415b89baa66fc07f4d42_10989652901a493fac6c08608399f361'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_9e96e409008f45058f8429ae8b630984'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_a6dd801aa19a4fffad44ea2182847796_be82ec67e88f4930b728a26d54a86fa9'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_296f72edb1934014881877354145b3a8'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_99da948c04ee4abba4bddbc499f1d64c_71e005820ba4433eb49ee9ef44243339'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_59a60b2f6cba4afe88e6b8ad8ea00bec'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7727082cda3945aeb2fd2dd48f046de5_97ffcc1ee5e245ecbff2005b09ae29cd'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_918eaaa472d44f558bcb4406a8975652'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_dcfea48a38884a8ea0ea960f01d84fcc_e45166d3d3bf4a3f81310d7f698e0509'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_e40a90f5f50d402db33a7f9ebe5b05e3'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_0e5d49b95ff942f8b5a041ceefcdfee6_1cf1928c99364bf5bbb9c9fe819d144b'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_3594a4b307fd44c3b8cded29c1e44e2f'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7cc209491e6b4479af38db9328dba2f3_6c63339803dc4f60847c679d812bf47c'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_6b3cb91ea8ff4d1289c4c4ebccee0c33'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_a440ee3654384966be16798bf7bf2b7d_e842f9a7cb2c4987aa35b1c4b38392e8'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_d537ec9943c94d86acab3f1a4e464700'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_bf6cf8027f4a4ff491cef8c30f383d0c_738141ea0623479e82c90a4fb03636d9'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_b40e2195f8184a3aa1cd73624cbe266e'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_c627134207ed492394e3d05592993c51_b9329f9002b6440e935cb3458fca45cb'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_242340a44e01482db5b5c32d4056aca3'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_769dac7d44b141a4a55138596dc0c3ad_46377a15e1bf471cb5e3178fc18f69cb'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_0231d78fe0a44a1982740ba5c593226d'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_9f3d1cacb9b94f8ab1d92d227e8d746a_83958dc3b01949dead1e71022bf7a354'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_e2befdcc87d042ac998fcc2f5ff0c777'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7adb10a091eb45b6813368c09ee253dc_56716b9a574b410d98436c65a7a73079'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_a4f068f42e9343d48bcbdcd1bf318974'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_4b77c02e173c418893c36574362b45bb_578d1d0e127f4fe6a9db495dceb72bec'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_8b51d2a942cd4a5dbd006dd1e62129dd'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_82ac1bd8b0c54b33b4b0817d7434099e_9da1378cf9f9452da16e787601fc9289'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_26d6a714c8a94884b8f2efcf22c74289'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_b27e0da7459540cfb4b4c863116a85a8_0a1461a2c0e7441f8d1cf61754594370'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_4e8e3816ac60458ba4efa2e6d0aa1c44'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_5df815de7ffc467d9656491f63260845_e918bd7945714c9db498c33ebad2ae51'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_23c91077050b48d1a041531f09fc80de'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_55968bfdc8274ba29c4aa108caa8cafc_721ff87b774948ddb4201f74d09e1fa9'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_877d85407b4f449588677183574a4de3'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_ed02d8648a734d63a9e83da482e66d5e_c226f32365f54354b22b8359c1a899c3'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_953792293f1148f8abb0ae3b59756c28'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_4834afa7bd264b7780b958facbd04b2f_a6faab2d473e4e139b0680d3c37b3ea5'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_a24dff9714044e2bb5503e85bf006ff9'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_074904e34bc34ee1b7e7586ed0740b58_c5ec5bab36c64a7385e643ae711004d2'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_0237dfe606a74dd48339e8c9473b827f'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_3630e4e9104849a0aaab52ea89a68e9d_9dca7b43254a4e04a93ce9e4de6988a1'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_9e91a0f9972d45799e89c46011a6fb90'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_cb4e2862f64d44de992da512f9ec6a36_adcfe7d9f5cd48668d2e836c59a3d29c'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_60f4b29314f5496494431f3d4050fa8a'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_1e563fb39a95404e9bdaeedc40de3459_8ba1236e34674973b3bf778b1af18e88'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_5dceaef478874645a511d735d0bbb7ba'
+Traceback (most recent call last):
+  File "C:\Users\Public\Documents\project_ml_ds\seoul-bike-demand\.claude\worktrees\seoul-bike-demand-audit-e92f32\.venv\Lib\site-packages\joblib\externals\loky\backend\resource_tracker.py", line 386, in main
+    del cache[rtype][name]
+        ~~~~~~~~~~~~^^^^^^
+KeyError: 'C:\\Users\\Sh\\AppData\\Local\\Temp\\joblib_memmapping_folder_34696_7b1e455c0e6c4ad8a1a8a39f236e6998_3df79cbac8ba44da80ba4e6a7ed7cff4'
+PASS 02_modeling: 225.0 s

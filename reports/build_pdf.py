@@ -10,6 +10,10 @@ import sys
 import tempfile
 from pathlib import Path
 
+# stdout ผ่าน pipe บน Windows ต้องรองรับข้อความไทยโดยไม่พึ่ง code page
+sys.stdout.reconfigure(encoding="utf-8")
+sys.stderr.reconfigure(encoding="utf-8")
+
 HERE = Path(__file__).resolve().parent
 HTML = HERE / "report.html"
 PDF = HERE / "report.pdf"

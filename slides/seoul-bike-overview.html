@@ -5,9 +5,6 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>Seoul Bike Demand — ภาพรวมโปรเจกต์</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 <style>
 /* ===========================================
    THEME TOKENS — Notebook Tabs palette (cream paper on dark frame, pastel tabs)
@@ -18,7 +15,7 @@
   --paper:#f8f6f1; --card:#fffdf8; --ink:#1d1c1a; --soft:#4a4740; --rule:#e3ddd0;
   --mint:#98d4bb; --butter:#ffe6a7; --sky:#a8d8ea; --lav:#c7b8ea; --pink:#f4b8c5;
   --mint-d:#2f7d5b; --butter-d:#8a6a12; --sky-d:#2a6f8c; --lav-d:#5d4a94; --pink-d:#a33b58;
-  --font:'IBM Plex Sans Thai Looped',sans-serif;
+  --font:'Leelawadee UI',Tahoma,sans-serif;
 }
 
 /* ===========================================
@@ -319,7 +316,7 @@ html:not(.read) section.slide:nth-of-type(10) .card p,html:not(.read) section.sl
 <li>เจอ <code>SeoulBikeData.csv</code> (604,166 bytes) และโฟลเดอร์ <code>data/splits</code>, <code>figures</code>, <code>reports</code></li></ul></div>
 <div class="card"><h3>รู้อะไร</h3><ul>
 <li>ต้องใช้ <b>pandas 2.3.3</b> ไม่ใช่ 3.x เพราะ Windows Smart App Control บล็อก DLL ของ pandas 3 บนเครื่องนี้</li>
-<li>ตรวจแล้วว่า <code>01_eda</code> และ <code>02_modeling</code>รอบนี้ใช้ Python 3.13.11 และเวอร์ชันตาม requirements.txt รัน notebook พร้อม outputs ไม่รัน 00_setup ใหม่</li></ul>
+<li>ตรวจแล้วว่า <code>01_eda</code> และ <code>02_modeling</code>รอบนี้ใช้ Python 3.13.11 และเวอร์ชันตาม requirements.txt รัน notebook พร้อม outputs รัน 00_setup ใหม่ด้วย kernel ใหม่ครบแล้ว</li></ul>
 <h3 style="margin-top:12px">ประโยชน์</h3><p>เครื่องของทุกคนมีไลบรารีเวอร์ชันเดียวกันและหาไฟล์ข้อมูลเจอ → ผลของ notebook อื่น reproduce ได้ตรงกันทั้ง 3 เครื่อง</p></div>
 <div class="card"><h3>กติกากลุ่ม (0.3)</h3><ul>
 <li>แบ่งงาน: A ขั้น 2–4 (<code>01_eda</code>) · B ขั้น 5–8 · C ขั้น 9–12 (<code>02_modeling</code>)</li>
@@ -575,7 +572,7 @@ html:not(.read) section.slide:nth-of-type(10) .card p,html:not(.read) section.sl
 <section class="slide" data-ph="prep" data-step="6">
 <div class="paper">
 <div class="strip"></div>
-<header class="hdr"><div class="roundel">6</div><div class="tt"><h2>Pipeline (2/2) — หลักฐาน GroupKFold</h2><div class="sub">02_modeling · 6.4–6.5 · GroupKFold(5) + groups · รายงานตาราง 5.3</div></div>
+<header class="hdr"><div class="roundel">6</div><div class="tt"><h2>Pipeline (2/2) — หลักฐาน GroupKFold</h2><div class="sub">02_modeling · 6.4–6.5 · GroupKFold(5) + groups · รายงานตาราง 5.4</div></div>
 <div class="next"><small>สถานีถัดไป</small>ขั้น 7 · Feature selection</div></header>
 <div class="body dense" style="grid-template-columns:1fr 1fr"><div class="card"><h3>6.4 ค่าที่fitในแต่ละfold</h3><table class="tbl sm"><thead><tr><th>fold</th><th>trainวัน</th><th>valวัน</th><th>ซ้ำ</th><th>meanT</th><th>medianRH</th></tr></thead><tbody><tr><td>0</td><td>222</td><td>56</td><td>0</td><td>13.345</td><td>57.0</td></tr><tr><td>1</td><td>222</td><td>56</td><td>0</td><td>13.265</td><td>57.0</td></tr><tr><td>2</td><td>222</td><td>56</td><td>0</td><td>13.288</td><td>57.0</td></tr><tr><td>3</td><td>223</td><td>55</td><td>0</td><td>13.208</td><td>58.0</td></tr><tr><td>4</td><td>223</td><td>55</td><td>0</td><td>13.295</td><td>57.0</td></tr></tbody></table><p>val mean_y 737–815 คัน วันต่างกันแต่ละfold ค่าmeanT 13.208–13.345 เรียนใหม่ตามtraining fold</p></div><div class="card"><h3>6.5 เทียบ KFold ธรรมดา</h3><p>fold0 validationมี277วัน และซ้ำกับtrain277วัน แต่GroupKFoldได้0ทุกfold</p><p>ทุก cv_report/GridSearchCV/RandomizedSearchCV ส่ง <code>groups=groups_train</code>; validationไม่ช่วยfitmedian,scaler,encoder,selectorหรือPCA</p></div><div class="card"><h3>ขอบเขตไม่ใช่การfit</h3><p>functioning_dayและSTORM_DATESกรองด้วยกฎที่กำหนดไว้ ใช้เหมือนกันtrain/test ค่าที่learnedจริงยังอยู่ในPipeline; residualไม่เป็นกฎตัดวัน</p></div><div class="card"><h3>ปิดtestระหว่างเลือก</h3><p>ขั้น7–12เลือกด้วยtrain CV ขั้น13ใช้testหลังตรึง ไม่กลับมาเลือกconfigurationจากtest การวิเคราะห์sensitivityใช้โมเดลเดิมไม่fitใหม่</p></div></div>
 </div>
@@ -640,14 +637,14 @@ html:not(.read) section.slide:nth-of-type(10) .card p,html:not(.read) section.sl
 <div class="strip"></div>
 <header class="hdr"><div class="roundel">12</div><div class="tt"><h2>เลือกโมเดล + CLO4 — ผู้ชนะจาก CV</h2><div class="sub">02_modeling · ขั้น12 · สไลด์14 · รายงานตาราง10.1</div></div>
 <div class="next"><small>สถานีถัดไป</small>ขั้น 13 · ประเมิน test หลังเลือกด้วย CV</div></header>
-<div class="body dense" style="grid-template-columns:1fr 1fr"><div class="card wide" style="grid-column:1/-1"><h3>FinalistsรอบRunAllสุดท้าย</h3><table class="tbl sm"><thead><tr><th>โมเดล</th><th>selector(n)</th><th>CVMAE±std</th><th>fit s</th><th>ms/แถว</th></tr></thead><tbody><tr class="best"><td>HGB</td><td>SelectKBest (36)</td><td>104.9 ± 4.0</td><td>1.786</td><td>5.63</td></tr><tr><td>RF</td><td>passthrough (36)</td><td>117.8 ± 4.1</td><td>5.924</td><td>15.12</td></tr><tr><td>kNN + log1p(y)</td><td>SelectKBest (10)</td><td>176.8 ± 10.4</td><td>1.102</td><td>3.32</td></tr><tr><td>Linear + log1p(y)</td><td>passthrough (59)</td><td>205.9 ± 10.0</td><td>0.026</td><td>3.53</td></tr></tbody></table></div><div class="card"><h3>HGBที่เลือก</h3><p><b>MI36/36</b>; hourraw lr=.1, iter200, leaves63, minleaf5, l2=1 ได้CV104.86±3.96 เลือกก่อนดูtest Fitบนtrain6,672ชั่วโมง/278วัน</p></div><div class="card"><h3>ต้นทุนและข้อจำกัด</h3><p>latencyรวมpreprocess วัด1แถวบนเครื่องนี้ เวลาเปลี่ยนตามรอบและthread ไม่ใช่productionbenchmark kNNใช้trainหาระยะ Linearคูณcoefficient ไม่มีไฟล์โมเดลใหม่</p></div></div>
+<div class="body dense" style="grid-template-columns:1fr 1fr"><div class="card wide" style="grid-column:1/-1"><h3>FinalistsรอบRunAllสุดท้าย</h3><table class="tbl sm"><thead><tr><th>โมเดล</th><th>selector(n)</th><th>CVMAE±std</th><th>fit s</th><th>ms/แถว</th></tr></thead><tbody><tr class="best"><td>HGB</td><td>SelectKBest (36)</td><td>104.9 ± 4.0</td><td>1.827</td><td>5.55</td></tr><tr><td>RF</td><td>passthrough (36)</td><td>117.8 ± 4.1</td><td>5.944</td><td>15.51</td></tr><tr><td>kNN + log1p(y)</td><td>SelectKBest (10)</td><td>176.8 ± 10.4</td><td>1.161</td><td>3.30</td></tr><tr><td>Linear + log1p(y)</td><td>passthrough (59)</td><td>205.9 ± 10.0</td><td>0.026</td><td>4.10</td></tr></tbody></table></div><div class="card"><h3>HGBที่เลือก</h3><p><b>MI36/36</b>; hourraw lr=.1, iter200, leaves63, minleaf5, l2=1 ได้CV104.86±3.96 เลือกก่อนดูtest Fitบนtrain6,672ชั่วโมง/278วัน</p></div><div class="card"><h3>ต้นทุนและข้อจำกัด</h3><p>latencyรวมpreprocess วัด1แถวบนเครื่องนี้ เวลาเปลี่ยนตามรอบและthread ไม่ใช่productionbenchmark kNNใช้trainหาระยะ Linearคูณcoefficient ไม่มีไฟล์โมเดลใหม่</p></div></div>
 </div>
 </section>
 <!-- ===================== STEP 13a ===================== -->
 <section class="slide" data-ph="test" data-step="13">
 <div class="paper">
 <div class="strip"></div>
-<header class="hdr"><div class="roundel">13</div><div class="tt"><h2>Test + storm sensitivity (1/4)</h2><div class="sub">02_modeling · 13.1 + sensitivity · fittedfinal_modelเดิม · รายงาน11.1/11.4</div></div>
+<header class="hdr"><div class="roundel">13</div><div class="tt"><h2>Test + storm sensitivity (1/4)</h2><div class="sub">02_modeling · 13.1 + sensitivity · fittedfinal_modelเดิม · รายงาน11.1/11.2</div></div>
 <div class="next"><small>หน้าถัดไป</small>ขั้น 13 · Error analysis</div></header>
 <div class="body dense" style="grid-template-columns:1fr 1fr"><div class="card"><h3>ในขอบเขต1,656ชั่วโมง/69วัน</h3><table class="tbl sm"><thead><tr><th>เมตริก</th><th>ผล</th></tr></thead><tbody><tr><td>MAE</td><td>91.46</td></tr><tr><td>MSE</td><td>22,219.3</td></tr><tr><td>RMSE</td><td>149.06</td></tr><tr><td>R²</td><td>0.938</td></tr></tbody></table><p>clipติดลบ15แถว; CVผู้ชนะ104.86±3.96 ไม่ย้อนปรับจากtest</p></div><div class="card"><h3>รวมวันพายุกลับมา ไม่fitเพิ่ม</h3><table class="tbl sm"><thead><tr><th>ขอบเขต</th><th>ชม.</th><th>MAE</th><th>RMSE</th></tr></thead><tbody><tr><td>ในขอบเขต</td><td>1,656</td><td>91.46</td><td>149.06</td></tr><tr><td>วันพายุ (ระบบเปิด)</td><td>41</td><td>257.65</td><td>463.14</td></tr><tr><td>รวมทุกชั่วโมงที่เปิด</td><td>1,697</td><td>95.48</td><td>163.91</td></tr></tbody></table><p>23ส.ค.24ชั่วโมง;6ต.ค.17ชั่วโมง วันพายุรวม41MAE257.65 Predictionชั่วโมงปกติตรงกับการประเมินหลัก</p></div><div class="card"><h3>ข้อมูลที่ต่างกัน</h3><p>testWinter33.3%;train24.1% mean_ytest615.0;train760.3 คะแนนเป็นคันอาจต่ำลงจากองค์ประกอบวัน (อนุมาน) ไม่พิสูจน์ว่าไม่มีoverfit</p></div><div class="card"><h3>Historyในวันปิดบางส่วน</h3><p>6ต.ค.07–09ขาดประวัติ3แถว เพราะกรองชั่วโมงปิด00–06ตามcontract ให้imputerที่fitบนtrainเติม ไม่ใช้ข้อมูลจากวันอื่น</p></div></div>
 </div>
@@ -683,9 +680,9 @@ html:not(.read) section.slide:nth-of-type(10) .card p,html:not(.read) section.sl
 <section class="slide" data-ph="test" data-step="-1">
 <div class="paper">
 <div class="strip"></div>
-<header class="hdr"><div class="roundel">✓</div><div class="tt"><h2>สรุปทั้งโปรเจกต์</h2><div class="sub">สไลด์18 · รายงาน14–15/ภาคผนวก · เอกสารทุกชุดตรงกับnotebook outputs</div></div>
+<header class="hdr"><div class="roundel">✓</div><div class="tt"><h2>สรุปทั้งโปรเจกต์</h2><div class="sub">สไลด์18 · รายงาน14–15/ภาคผนวก · holdoutเดิมใช้หลายrevision; ตรึงก่อนประเมิน; CVก่อนclip/testหลังclip</div></div>
 <div class="next" data-jump="map" style="cursor:pointer"><small>กลับ</small>หน้าแผนที่ (M)</div></header>
-<div class="body dense" style="grid-template-columns:1fr 1fr"><div class="card"><h3>ผลล่าสุด</h3><table class="tbl sm"><thead><tr><th>หัวข้อ</th><th>ผล</th></tr></thead><tbody><tr><td>Final model</td><td>HGB + MI36/36</td></tr><tr><td>CV MAE</td><td>104.86±3.96</td></tr><tr><td>Testในขอบเขต</td><td>91.46;R²0.938 (1,656ชั่วโมง)</td></tr><tr><td>รวมวันพายุ</td><td>95.48 (1,697ชั่วโมง);ไม่refit</td></tr><tr><td>เทียบbaselineเวลา</td><td>CVMAEลด73.7%</td></tr></tbody></table></div><div class="card"><h3>สิ่งที่เปลี่ยน</h3><p>กฎพายุจากKMAใช้ทั้งtrain/test;ซ่อมค่าขัดMagnus;เพิ่มsame-dayrainhistoryหลังCV;FSตามแต่ละโมเดลรวมเข้าtuning;เปรียบเทียบscopeผลจริง</p></div><div class="card"><h3>ข้อจำกัด</h3><p>ระบบเปิด และอยู่นอกวันผลกระทบพายุที่ระบุจากประกาศ KMA ล่วงหน้าสำหรับเขตเมืองหลวง</p><p>1ปีเมืองเดียว อากาศที่วัดจริง ฝน/เทศกาลยังคลาด ไม่วัดforecasterrorหรือข้ามปี ต้องมีhistoryณเวลาใช้งาน</p></div><div class="card"><h3>หลักฐานส่ง</h3><p>02_modeling33codecellsRunAllครบ outputsเรียง1–33;ไฟล์splitเดิม รายงาน23หน้า สไลด์18หน้า บทพูด9นาที ภาพรวม28หน้า ไม่มีโมเดลใหม่</p></div></div>
+<div class="body dense" style="grid-template-columns:1fr 1fr"><div class="card"><h3>ผลล่าสุด</h3><table class="tbl sm"><thead><tr><th>หัวข้อ</th><th>ผล</th></tr></thead><tbody><tr><td>Final model</td><td>HGB + MI36/36</td></tr><tr><td>CV MAE</td><td>104.86±3.96</td></tr><tr><td>Testในขอบเขต</td><td>91.46;R²0.938 (1,656ชั่วโมง)</td></tr><tr><td>รวมวันพายุ</td><td>95.48 (1,697ชั่วโมง);ไม่refit</td></tr><tr><td>เทียบbaselineเวลา</td><td>CVMAEลด73.7%</td></tr></tbody></table></div><div class="card"><h3>สิ่งที่เปลี่ยน</h3><p>กฎพายุจากKMAใช้ทั้งtrain/test;ซ่อมค่าขัดMagnus;เพิ่มsame-dayrainhistoryหลังCV;FSตามแต่ละโมเดลรวมเข้าtuning;เปรียบเทียบscopeผลจริง</p></div><div class="card"><h3>ข้อจำกัด</h3><p>ระบบเปิด และอยู่นอกวันผลกระทบพายุที่ระบุจากประกาศ KMA ล่วงหน้าสำหรับเขตเมืองหลวง</p><p>1ปีเมืองเดียว อากาศที่วัดจริง ฝน/เทศกาลยังคลาด ไม่วัดforecasterrorหรือข้ามปี ต้องมีhistoryณเวลาใช้งาน</p></div><div class="card"><h3>หลักฐานส่ง</h3><p>02_modeling34codecellsRunAllครบ outputsเรียง1–34;ไฟล์splitเดิม รายงาน23หน้า สไลด์18หน้า บทพูด9นาที ภาพรวม28หน้า ไม่มีโมเดลใหม่</p></div></div>
 </div>
 </section>
 </main>

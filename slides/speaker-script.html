@@ -5,9 +5,6 @@
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>บทพูด — Seoul Bike Demand</title>
-<link href="https://fonts.googleapis.com" rel="preconnect"/>
-<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai+Looped:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
 <style>
 /* Speaker script — same palette as the deck. Reads on a phone or iPad (sticky bar: speaker tabs,
    rehearsal timer, text size) and still prints as one document. */
@@ -16,7 +13,7 @@
 :root[data-theme="dark"]{--cream:#16211a;--ink:#e8efe6;--soft:#b2c4b6;--rule:#2e3d33;--pink:#f07aa3}
 *{box-sizing:border-box}
 html{-webkit-text-size-adjust:100%}
-body{margin:0;background:var(--cream);color:var(--ink);font:400 18px/1.7 'IBM Plex Sans Thai Looped',sans-serif}
+body{margin:0;background:var(--cream);color:var(--ink);font:400 18px/1.7 'Leelawadee UI',Tahoma,sans-serif}
 main{max-width:860px;margin:0 auto;padding:24px 16px 80px;font-size:var(--fs)}
 h1{font-size:1.67em;margin:0;line-height:1.3}
 .sub{color:var(--soft);margin-top:4px}
@@ -44,11 +41,11 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 .bar{position:sticky;top:0;z-index:5;background:var(--cream);border-bottom:1.5px solid var(--rule);padding:8px 16px;font-size:15px}
 .bar>div{max-width:860px;margin:0 auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .tabs{display:flex;gap:4px;flex:1 1 100%;overflow-x:auto}
-.tabs button,.tools button{font:600 15px 'IBM Plex Sans Thai Looped',sans-serif;color:var(--ink);background:none;border:1.5px solid var(--rule);border-radius:999px;padding:4px 12px;cursor:pointer;white-space:nowrap}
+.tabs button,.tools button{font:600 15px 'Leelawadee UI',Tahoma,sans-serif;color:var(--ink);background:none;border:1.5px solid var(--rule);border-radius:999px;padding:4px 12px;cursor:pointer;white-space:nowrap}
 .tabs button.on{background:var(--tab);border-color:var(--tab);color:var(--tabtx,#1f3326)}
 .tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;flex:1 1 100%}
 .tb{display:flex;flex-direction:column;margin-right:auto}
-.clock{font:700 22px/1.1 'IBM Plex Sans Thai Looped',sans-serif;font-variant-numeric:tabular-nums;min-width:3.2em}
+.clock{font:700 22px/1.1 'Leelawadee UI',Tahoma,sans-serif;font-variant-numeric:tabular-nums;min-width:3.2em}
 .clock.over{color:var(--pink)}
 .goal{color:var(--soft);font-size:12px;line-height:1.3;white-space:nowrap}
 [hidden]{display:none!important}
@@ -92,7 +89,7 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <tr><td>12</td><td>Baseline + เทียบ 4 โมเดล</td><td>C</td><td class="n">0:35</td></tr>
 <tr><td>13</td><td>รายละเอียด: ตารางโมเดลเต็ม + MSE</td><td>C</td><td class="n">0:25</td></tr>
 <tr><td>14</td><td>Tuning + เลือกโมเดล</td><td>C</td><td class="n">0:25</td></tr>
-<tr><td>15</td><td>ผล test ครั้งเดียว</td><td>C</td><td class="n">0:35</td></tr>
+<tr><td>15</td><td>ผล test หลังตรึงโมเดล</td><td>C</td><td class="n">0:35</td></tr>
 <tr><td>16</td><td>รายละเอียด: ชั่วโมงที่ทายพลาด</td><td>C</td><td class="n">0:25</td></tr>
 <tr><td>17</td><td>ทำนายข้อมูลใหม่ (กดปุ่ม)</td><td>C</td><td class="n">0:45</td></tr>
 <tr><td>18</td><td>สรุป + ถาม-ตอบ</td><td>A</td><td class="n">0:30</td></tr>
@@ -105,7 +102,7 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <h2 style="--who:var(--a)">ผู้พูด A · นาย ชญานิน ตลับเงิน — หน้า 1–6 และ 18 · ข้อมูล, split, EDA และสรุป</h2>
 <div class="page"><h3>หน้า 1 · ปก <span>0:10</span></h3><p>สวัสดีครับ โครงงานเราทำนายยอดเช่าจักรยานรายชั่วโมงของระบบ Seoul Bike ทั้งเมือง ใช้สภาพอากาศและปฏิทิน เพื่อช่วยเตรียมจักรยานและคนขนย้ายครับ ขอบเขตคือระบบเปิดนอกช่วงพายุที่กำหนดจากประกาศล่วงหน้า</p></div>
 <div class="page"><h3>หน้า 2 · โจทย์ + เมตริก <span>0:30</span></h3><p>เป้าหมายเป็นจำนวนคันต่อชั่วโมง จึงใช้ regression ครับ กราฟนี้คือ train ระบบเปิดก่อนกรองพายุ ยอดเบ้ขวา ค่าเฉลี่ย 756.8 มากกว่ามัธยฐาน 582.5 ใช้ MAE เป็นหลักเพราะอ่านเป็นจำนวนคันที่คลาดเฉลี่ยได้ และรายงาน MSE RMSE R² ประกอบ</p></div>
-<div class="page"><h3>หน้า 3 · โหลดและตรวจข้อมูล <span>0:30</span></h3><p>ข้อมูลมี 8,760 ชั่วโมงและ 14 คอลัมน์ ก่อนโหลดเราตรวจ byte องศาเป็น B0 จึงใช้ cp1252 วันที่ส่วนแรกขึ้นถึง 31 จึงระบุวัน/เดือน/ปี ไม่ให้ pandas เดา ผลคือครบ 365 วัน วันละ 24 ชั่วโมง ไม่มีแถวซ้ำ มี missing ความชื้น 9 ค่าครับ</p><p class="cue">ชี้ encoding และ format</p></div>
+<div class="page"><h3>หน้า 3 · โหลดและตรวจข้อมูล <span>0:30</span></h3><p>ข้อมูลมี 8,760 ชั่วโมงและ 14 คอลัมน์ ก่อนโหลดเราตรวจ byte องศาเป็น B0 จึงใช้ cp1252 วันที่ส่วนแรกขึ้นถึง 31 จึงระบุวัน/เดือน/ปี ไม่ให้ pandas เดา ผลคือครบ 365 วัน วันละ 24 ชั่วโมง ไม่มีแถวซ้ำ มี raw ไม่มี missing; processed เพิ่มความชื้นว่าง 9 ค่าเพื่อการเรียนครับ</p><p class="cue">ชี้ encoding และ format</p></div>
 <div class="page"><h3>หน้า 4 · Split ตามวัน <span>0:40</span></h3><p>ชั่วโมงในวันเดียวกันคล้ายกัน ถ้าสุ่มทีละชั่วโมงจะมีวันเดียวกันอยู่ทั้ง train และ test เราจึงแบ่งตามวันด้วย GroupShuffleSplit ได้ train 292 วัน test 73 วัน บันทึกรายการไว้ ทุก notebook ใช้วันชุดเดิม และไม่สุ่มใหม่หลังเห็นผลครับ</p><p class="cue">ชี้ groups=date และรายการวันที่บันทึก</p></div>
 <div class="page"><h3>หน้า 5 · EDA <span>0:40</span></h3><p>EDA ใช้ train เท่านั้น วันทำงานมีพีค 8 โมงเช้าและ 6 โมงเย็น อุณหภูมิสัมพันธ์แบบโค้งคว่ำ และมีฝนยอดเฉลี่ยต่ำกว่าไม่มีฝนมาก เราจึงเก็บอากาศ ชั่วโมงและประเภทวัน ตัวเลข EDA นี้ยังอยู่ก่อนกรองวันพายุครับ</p></div>
 <div class="page"><h3>หน้า 6 · รายละเอียด: correlation + outlier <span>0:25</span></h3><p>IQR ของฝนและหิมะเป็นศูนย์ จึงใช้ลบทุกค่าบวกไม่ได้ เราตรวจ Magnus เพิ่ม พบความชื้นศูนย์ 8 แถว และ dew point 5 กับ temp 1 แถวที่ขัดกับค่าร่วมกัน จึงสงสัยเซนเซอร์ ส่วน OOF รายวันพบ 21 วัน ใช้ตรวจบริบท ไม่ใช้ residual ลบวันครับ</p></div>
@@ -124,16 +121,17 @@ h2{margin:36px 0 6px;font-size:1.33em;line-height:1.4;padding:6px 14px;border-ra
 <div class="page"><h3>หน้า 12 · Baseline + เทียบ 4 โมเดล <span>0:35</span></h3><p>Baseline เวลาใช้ค่าเฉลี่ยของชั่วโมงและประเภทวัน ไม่ใช้อากาศ ได้ MAE 398.4 ทุกโมเดลชนะ HGB default ดีที่สุดที่ 109.2 ส่วน RF gap 82.5 ใหญ่ที่สุด บ่งชี้ fit train มาก Linear มี error สูงทั้ง train และ CV เราอ่าน gap ร่วมกับ error ครับ</p></div>
 <div class="page"><h3>หน้า 13 · รายละเอียด: ตารางโมเดลเต็ม + MSE <span>0:25</span></h3><p>ตารางเต็มมี MAE MSE RMSE R² และ fold std ครับ MSE หน่วยคันยกกำลังสอง จึงอ่านคู่กับ RMSE gap คือ CV ลบ train MAE ใช้บอกลักษณะการ fit แต่ค่าเดียวไม่พิสูจน์ว่า overfit หรือ underfit</p></div>
 <div class="page"><h3>หน้า 14 · Tuning + เลือกโมเดล <span>0:25</span></h3><p>Tune พารามิเตอร์พร้อม selector ด้วย train CV HGB ได้ 104.86 บวกลบ 3.96 ดีที่สุด ใช้ MI36 จาก 36 คอลัมน์ จึงยังเก็บทั้งหมด kNN finalist เป็น log กับ MI10 ตารางเวลาเป็นค่าจากการรันล่าสุดบนเครื่องนี้ครับ</p></div>
-<div class="page"><h3>หน้า 15 · ผล test + sensitivity <span>0:35</span></h3><p>หลังตรึงโมเดล ประเมิน test ในขอบเขต 1,656 ชั่วโมง ได้ MAE 91.46 RMSE 149.06 R² 0.938 รวมวันพายุกลับมาด้วยโมเดลเดิม ไม่ฝึกเพิ่ม ได้ MAE 95.48 ฝนยังเป็นจุดอ่อน คลาด 83.2% ของยอดเฉลี่ย ส่วน test มีฤดูหนาวมากกว่า train จึงอาจช่วยให้ error เป็นคันต่ำลงครับ</p><p class="cue">ชี้ทั้งคะแนนในขอบเขตและแถวรวมวันพายุ</p></div>
+<div class="page"><h3>หน้า 15 · ผล test + sensitivity <span>0:35</span></h3><p>Holdout เดิมเคยใช้หลาย revision; รอบนี้ตรึงโมเดลก่อนประเมิน test ในขอบเขต 1,656 ชั่วโมง ได้ MAE 91.46 RMSE 149.06 R² 0.938 รวมวันพายุกลับมาด้วยโมเดลเดิม ไม่ฝึกเพิ่ม ได้ MAE 95.48 ฝนยังเป็นจุดอ่อน คลาด 83.2% ของยอดเฉลี่ย ส่วน test มีฤดูหนาวมากกว่า train จึงอาจช่วยให้ error เป็นคันต่ำลงครับ</p><p class="cue">ชี้ทั้งคะแนนในขอบเขตและแถวรวมวันพายุ</p></div>
 <div class="page"><h3>หน้า 16 · รายละเอียด: ชั่วโมงที่ทายพลาด <span>0:25</span></h3><p>8 ใน 10 ชั่วโมงทายเกิน แถวแรก 24 กันยายน 6 โมงเย็นจริง 1,237 ทาย 2,120 ส่วน 23 สิงหาคมหายไปเพราะ scope จากประกาศ KMA ไม่ใช่โมเดลเรียนวันนั้นเก่งขึ้น คะแนนวันพายุแสดงแยก 41 ชั่วโมง MAE 257.65 ครับ</p></div>
 <div class="page"><h3>หน้า 17 · ทำนายข้อมูลใหม่ <span>0:45</span></h3><p>ข้อมูลใหม่ผ่าน add_features และ fitted Pipeline เดิม ทุกสถานการณ์สมมติว่าฝนสามชั่วโมงก่อนหน้าเป็นศูนย์ครับ พุธเย็นอากาศดีทาย 2,960 ชุดอากาศฝนตกทาย 569 เสาร์เย็น 2,233 และเช้าฤดูหนาว 605 แถวฝนเปลี่ยนอุณหภูมิ ความชื้นและอากาศอื่นด้วย จึงเป็นผลของชุดสถานการณ์ ไม่ใช่ผลเชิงสาเหตุของฝนอย่างเดียวครับ</p><p class="cue">กดปุ่มทั้ง 4 สถานการณ์; ชี้ฝนก่อนหน้า 3h</p></div>
 </section>
 <section data-who="Q">
 <h2 style="--who:var(--q)">ถาม-ตอบ · ถ้าโดนถาม เปิดหน้านี้</h2>
 <p class="note">"หน้า" = สไลด์นำเสนอ · "รายงานตาราง" = <code>reports/report.pdf</code> ฉบับ 23 หน้า ใช้เปิดเมื่อกรรมการขอดูตัวเลขเต็ม</p>
-<dl class="qa"><dt>baseline คำนวณยังไง</dt><dd>หน้า13; รายงานตาราง8.1 Dummy mean/median และค่าเฉลี่ย hour×day type48กลุ่ม เรียนจากtraining fold</dd><dt>MAE / MSE อยู่ไหน</dt><dd>หน้า13/15; รายงาน8.1/11.1 MSEหน่วยคัน² RMSEหน่วยคัน/ชม. R²ไม่ใช่accuracy</dd><dt>รู้ได้อย่างไรว่าไม่มีข้อมูลรั่ว</dt><dd>หน้า9; รายงาน5.3/ภาคผนวกก วันซ้ำ0ทุกfold ทุกsearchส่งgroups; learnedstepsอยู่ในPipeline ไม่เลือกจากtest</dd><dt>ทำ FS กับ HGB จริงไหม</dt><dd>หน้า10–11; รายงาน6.1/6.2 ทดลองMI, RFE(RF proxy), SelectFromModel(RF proxy) HGBไม่มีfeature_importances_โดยตรง รุ่นชนะtuningใช้MI36/36จึงเก็บทุกคอลัมน์</dd><dt>RFE / Lasso ได้อะไร</dt><dd>รายงาน6.2/6.3 LinearRFE40/59ได้262.26 Lassoalpha.3เหลือ52ได้262.45; kNNMI10ช่วย12.79คัน ส่วนต้นไม้ชุดย่อยไม่ชนะ</dd><dt>ตัดวันพายุเพราะ test error ใหญ่หรือไม่</dt><dd>หน้า7/15; รายงาน5.4/11.4 วันมาจากKMAก่อนเหตุการณ์ ใช้train/testเหมือนกัน ไม่ตัดresidual รวมพายุกลับมาMAE95.48โดยไม่refit</dd><dt>ทุกวันเป็นวันประกาศเตือนไต้ฝุ่นในโซลหรือไม่</dt><dd>รายงาน5.1/อ้างอิงKMA เป็นช่วงผลกระทบฝน/ลมบนบกเขตเมืองหลวงจากประกาศล่วงหน้า ไม่อ้างว่าแต่ละวันมีformalSeoulwarningหรือlandfall 1ก.ค.ยังเก็บเป็นมรสุม</dd><dt>ทำไม test MAE ต่ำกว่า CV</dt><dd>หน้า15; รายงาน11.1/11.2 หลังscope testWinter33.3% train24.1% mean_y615.0vs760.3 องค์ประกอบวันอาจทำให้errorเป็นคันต่ำลง (อนุมาน) ไม่พิสูจน์ว่าไม่มีoverfit</dd><dt>ชั่วโมงไหนพลาดหนัก</dt><dd>หน้า16; รายงาน11.3 แถวแรก24ก.ย.18:00error+883 23ส.ค.หายจากworstเพราะscope ไม่ใช่ทายดีขึ้น</dd><dt>Magnus และ missing จัดการอย่างไร</dt><dd>หน้า6–7; รายงาน4.3/4.4/4.5/5.1 humidity0จำนวน8แถว→NaNรวมmissingเดิมเป็น17 Magnusgap&gt;15และT/Tdศูนย์ตัวเดียวแก้เฉพาะค่านั้น trainTd5/T1 ไม่ลบแถว ให้imputerเรียนmedianในfold</dd><dt>rain_prev_3h รั่วข้ามวันไหม</dt><dd>หน้า7; รายงาน5.2/5.4 ใช้h−1,h−2,h−3ในวันเดียวกัน 00:00=0 ชั่วโมงหายภายในวัน→NaN pairedCV112.15→109.18</dd><dt>ฝนทำให้ยอดลด81%จริงไหม</dt><dd>หน้า17; รายงาน12.1 เป็นpredictionชุดสถานการณ์ เปลี่ยนT/RH/dew/solar/visibilityด้วย และตั้งpriorrain0ทุกแถว ไม่ใช่causalestimate</dd></dl>
+<dl class="qa"><dt>baseline คำนวณยังไง</dt><dd>หน้า13; รายงานตาราง8.1 Dummy mean/median และค่าเฉลี่ย hour×day type48กลุ่ม เรียนจากtraining fold</dd><dt>MAE / MSE อยู่ไหน</dt><dd>หน้า13/15; รายงาน8.1/11.1 MSEหน่วยคัน² RMSEหน่วยคัน/ชม. R²ไม่ใช่accuracy</dd><dt>รู้ได้อย่างไรว่าไม่มีข้อมูลรั่ว</dt><dd>หน้า9; รายงาน5.4/ภาคผนวกก วันซ้ำ0ทุกfold ทุกsearchส่งgroups; learnedstepsอยู่ในPipeline ไม่เลือกจากtest</dd><dt>ทำ FS กับ HGB จริงไหม</dt><dd>หน้า10–11; รายงาน6.1/6.2 ทดลองMI, RFE(RF proxy), SelectFromModel(RF proxy) HGBไม่มีfeature_importances_โดยตรง รุ่นชนะtuningใช้MI36/36จึงเก็บทุกคอลัมน์</dd><dt>RFE / Lasso ได้อะไร</dt><dd>รายงาน6.2/6.3 LinearRFE40/59ได้262.26 Lassoalpha.3เหลือ52ได้262.45; kNNMI10ช่วย12.79คัน ส่วนต้นไม้ชุดย่อยไม่ชนะ</dd><dt>ตัดวันพายุเพราะ test error ใหญ่หรือไม่</dt><dd>หน้า7/15; รายงาน5.1/11.2 วันมาจากKMAก่อนเหตุการณ์ ใช้train/testเหมือนกัน ไม่ตัดresidual รวมพายุกลับมาMAE95.48โดยไม่refit</dd><dt>ทุกวันเป็นวันประกาศเตือนไต้ฝุ่นในโซลหรือไม่</dt><dd>รายงาน5.1/อ้างอิงKMA เป็นช่วงผลกระทบฝน/ลมบนบกเขตเมืองหลวงจากประกาศล่วงหน้า ไม่อ้างว่าแต่ละวันมีformalSeoulwarningหรือlandfall 1ก.ค.ยังเก็บเป็นมรสุม</dd><dt>ทำไม test MAE ต่ำกว่า CV</dt><dd>หน้า15; รายงาน11.1/11.3 หลังscope testWinter33.3% train24.1% mean_y615.0vs760.3 องค์ประกอบวันอาจทำให้errorเป็นคันต่ำลง (อนุมาน) ไม่พิสูจน์ว่าไม่มีoverfit</dd><dt>ชั่วโมงไหนพลาดหนัก</dt><dd>หน้า16; รายงาน11.4 แถวแรก24ก.ย.18:00error+883 23ส.ค.หายจากworstเพราะscope ไม่ใช่ทายดีขึ้น</dd><dt>Magnus และ missing จัดการอย่างไร</dt><dd>หน้า6–7; รายงาน4.3/4.4/4.5/5.1 humidity0จำนวน8แถว→NaNรวมmissingเดิมเป็น17 Magnusgap&gt;15และT/Tdศูนย์ตัวเดียวแก้เฉพาะค่านั้น trainTd5/T1 ไม่ลบแถว ให้imputerเรียนmedianในfold</dd><dt>rain_prev_3h รั่วข้ามวันไหม</dt><dd>หน้า7; รายงาน5.2/5.4 ใช้h−1,h−2,h−3ในวันเดียวกัน 00:00=0 ชั่วโมงหายภายในวัน→NaN pairedCV112.15→109.18</dd><dt>ฝนทำให้ยอดลด81%จริงไหม</dt><dd>หน้า17; รายงาน12.1 เป็นpredictionชุดสถานการณ์ เปลี่ยนT/RH/dew/solar/visibilityด้วย และตั้งpriorrain0ทุกแถว ไม่ใช่causalestimate</dd></dl>
 </section>
 </main>
+<details><summary>ใช้ holdout ซ้ำ และ clip ต่างจาก CV หรือไม่</summary><p>Holdout เดิมใช้หลาย revision แล้ว รอบสุดท้ายตรึง configuration จาก train CV ก่อนประเมิน; ยังต้องยืนยันด้วยข้อมูลใหม่. CV/train MAE ก่อน clip ส่วน test/sensitivity/input สมมติ clip ≥0; test มี 15 แถวที่ถูก clip จึงอ่านคะแนนพร้อม policy นี้</p></details>
 <script>
 // Choices (tab, text size, ticked pages) are kept per device; the page works the same without storage.
 const store = {

@@ -1,0 +1,166 @@
+﻿check,passed,actual,expected
+raw dimensions,True,"[8760, 14]","[8760, 14]"
+raw no missing,True,,
+processed nine missing,True,,
+input 18 features,True,,
+00_setup.ipynb sequence,True,,
+00_setup.ipynb no errors,True,,
+01_eda.ipynb sequence,True,,
+01_eda.ipynb no errors,True,,
+02_modeling.ipynb sequence,True,,
+02_modeling.ipynb no errors,True,,
+reports\report.html table 11 row 0,True,"[0.0, 222.0, 56.0, 0.0, 13.345, 57.0, 741.24]","[0, 222, 56, 0, 13.345, 57.0, 741.24]"
+reports\report.html table 11 row 1,True,"[1.0, 222.0, 56.0, 0.0, 13.265, 57.0, 814.811]","[1, 222, 56, 0, 13.265, 57.0, 814.811]"
+reports\report.html table 11 row 2,True,"[2.0, 222.0, 56.0, 0.0, 13.288, 57.0, 741.305]","[2, 222, 56, 0, 13.288, 57.0, 741.305]"
+reports\report.html table 11 row 3,True,"[3.0, 223.0, 55.0, 0.0, 13.208, 58.0, 766.535]","[3, 223, 55, 0, 13.208, 58.0, 766.535]"
+reports\report.html table 11 row 4,True,"[4.0, 223.0, 55.0, 0.0, 13.295, 57.0, 737.402]","[4, 223, 55, 0, 13.295, 57.0, 737.402]"
+reports\report.html table 13 row 0,True,"[262.5, 3.7, 262.5, 3.7, 262.5, 3.7, 262.3, 2.9, 262.5, 3.7]","[262.5000933406, 3.721546199, 262.5000933406, 3.721546199, 262.5000933406, 3.721546199, 262.2552086791, 2.8973077443, 262.4547783561, 3.7096139257]"
+reports\report.html table 13 row 1,True,"[191.9, 7.4, 179.1, 9.0]","[191.9350519481, 7.4172381556, 179.1471352814, 8.9646790886]"
+reports\report.html table 13 row 2,True,"[119.1, 4.5, 119.1, 4.5, 119.1, 4.5, 122.2, 4.4]","[119.0960700487, 4.5236801733, 119.0960700487, 4.5236801733, 119.0960700487, 4.5236801733, 122.2490844697, 4.3937319885]"
+reports\report.html table 13 row 3,True,"[109.2, 2.9, 109.2, 2.9, 109.2, 2.9, 114.0, 2.2]","[109.1834032928, 2.927368659, 109.1834032928, 2.927368659, 109.1834032928, 2.927368659, 113.989755346, 2.169029396]"
+reports\report.html table 17 row 0,True,"[311.3, 358.7, 338.3, 324.6, 327.1, 313.8]","[311.3, 358.7, 338.3, 324.6, 327.1, 313.8]"
+reports\report.html table 17 row 1,True,"[191.9, 199.3, 190.6, 184.1, 206.0, 193.6]","[191.9, 199.3, 190.6, 184.1, 206.0, 193.6]"
+reports\report.html table 18 row 0,True,"[527.6, 11.8, 423684.0, 650.7, -0.003, 527.3]","[527.593, 11.824, 423684.064, 650.667, -0.003, 527.318]"
+reports\report.html table 18 row 1,True,"[512.6, 14.1, 453973.0, 673.4, -0.074, 512.2]","[512.57, 14.054, 453973.267, 673.352, -0.074, 512.157]"
+reports\report.html table 18 row 2,True,"[398.4, 10.9, 267639.0, 517.2, 0.365, 394.0]","[398.402, 10.855, 267639.271, 517.155, 0.365, 394.011]"
+reports\report.html table 18 row 3,True,"[262.5, 3.7, 117602.0, 342.9, 0.721, 257.3, 5.2]","[262.5000933406, 3.721546199, 117601.5449895921, 342.8787217536, 0.7211508273, 257.3340074796, 5.166085861]"
+reports\report.html table 18 row 4,True,"[191.9, 7.4, 81643.0, 285.5, 0.806, 151.9, 40.1]","[191.9350519481, 7.4172381556, 81642.7922337662, 285.5103484329, 0.8063240661, 151.8681311356, 40.0669208124]"
+reports\report.html table 18 row 5,True,"[119.1, 4.5, 38279.0, 195.2, 0.909, 36.6, 82.5]","[119.0960700487, 4.5236801733, 38279.353059692, 195.2372523633, 0.9091669178, 36.5667670846, 82.5293029641]"
+reports\report.html table 18 row 6,True,"[109.2, 2.9, 32321.0, 179.6, 0.923, 66.8, 42.4]","[109.1834032928, 2.927368659, 32321.2265034839, 179.5940252125, 0.9232362085, 66.8154519187, 42.3679513741]"
+reports\report.html table 20 row 0,True,"[104.9, 4.0, 1.827, 5.55]","[104.8601904347, 3.9589046766, 1.8272177, 5.5465500009]"
+reports\report.html table 20 row 1,True,"[117.8, 4.1, 5.944, 15.51]","[117.7697234372, 4.1154672786, 5.9439814, 15.5080999994]"
+reports\report.html table 20 row 2,True,"[176.8, 10.4, 1.161, 3.3]","[176.832948899, 10.3850223353, 1.1605098, 3.301499999]"
+reports\report.html table 20 row 3,True,"[205.9, 10.0, 0.026, 4.1]","[205.8553342525, 9.9716604717, 0.026357, 4.1035499999]"
+reports\report.html table 22 row 0,True,"[1656.0, 69.0, 91.46, 149.06, 0.938]","[1656, 69, 91.4626230977, 149.0613026044, 0.9375436789]"
+reports\report.html table 22 row 1,True,"[41.0, 2.0, 257.65, 463.14, 0.38]","[41, 2, 257.6489484391, 463.1437051879, 0.3798658628]"
+reports\report.html table 22 row 2,True,"[1697.0, 71.0, 95.48, 163.91, 0.925]","[1697, 71, 95.4777317241, 163.9050921911, 0.9245714876]"
+reports\report.html table 23 row 0,True,"[408.0, 799.8, 124.1, 37.8, 15.5]","[408, 799.8, 124.1, 37.8, 15.5]"
+reports\report.html table 23 row 1,True,"[336.0, 596.0, 91.3, 13.4, 15.3]","[336, 596.0, 91.3, 13.4, 15.3]"
+reports\report.html table 23 row 2,True,"[360.0, 1041.7, 116.8, -1.7, 11.2]","[360, 1041.7, 116.8, -1.7, 11.2]"
+reports\report.html table 23 row 3,True,"[552.0, 211.7, 51.0, 2.8, 24.1]","[552, 211.7, 51.0, 2.8, 24.1]"
+reports\report.html table 23 row 4,True,"[1104.0, 681.7, 98.0, 8.5, 14.4]","[1104, 681.7, 98.0, 8.5, 14.4]"
+reports\report.html table 23 row 5,True,"[552.0, 481.6, 78.3, 20.9, 16.3]","[552, 481.6, 78.3, 20.9, 16.3]"
+reports\report.html table 23 row 6,True,"[89.0, 171.9, 143.0, 62.1, 83.2]","[89, 171.9, 143.0, 62.1, 83.2]"
+reports\report.html table 23 row 7,True,"[1567.0, 640.2, 88.5, 9.8, 13.8]","[1567, 640.2, 88.5, 9.8, 13.8]"
+reports\report.html table 24 row 0,True,"[18.0, 20.3, 35.0, 0.0, 1237.0, 2120.0, 883.0]","[18, 20.3, 35.0, 0.0, 1237, 2120, 883]"
+reports\report.html table 24 row 1,True,"[7.0, 20.9, 66.0, 0.0, 451.0, 1284.0, 833.0]","[7, 20.9, 66.0, 0.0, 451, 1284, 833]"
+reports\report.html table 24 row 2,True,"[22.0, 12.4, 96.0, 0.0, 14.0, 824.0, 810.0]","[22, 12.4, 96.0, 0.0, 14, 824, 810]"
+reports\report.html table 24 row 3,True,"[8.0, 20.7, 73.0, 0.2, 670.0, 1459.0, 789.0]","[8, 20.7, 73.0, 0.2, 670, 1459, 789]"
+reports\report.html table 24 row 4,True,"[21.0, 10.6, 70.0, 0.0, 542.0, 1319.0, 777.0]","[21, 10.6, 70.0, 0.0, 542, 1319, 777]"
+reports\report.html table 24 row 5,True,"[19.0, 12.6, 93.0, 0.0, 131.0, 900.0, 769.0]","[19, 12.6, 93.0, 0.0, 131, 900, 769]"
+reports\report.html table 24 row 6,True,"[18.0, 29.3, 27.0, 0.0, 3365.0, 2599.0, -766.0]","[18, 29.3, 27.0, 0.0, 3365, 2599, -766]"
+reports\report.html table 24 row 7,True,"[8.0, 10.6, 89.0, 0.0, 148.0, 913.0, 765.0]","[8, 10.6, 89.0, 0.0, 148, 913, 765]"
+reports\report.html table 24 row 8,True,"[19.0, 12.8, 97.0, 0.0, 19.0, 781.0, 762.0]","[19, 12.8, 97.0, 0.0, 19, 781, 762]"
+reports\report.html table 24 row 9,True,"[8.0, 10.3, 86.0, 0.0, 1284.0, 534.0, -750.0]","[8, 10.3, 86.0, 0.0, 1284, 534, -750]"
+reports\report.html image ../figures/04_target_operating_hours.png,True,,
+reports\report.html image ../figures/04_hourly_by_daytype.png,True,,
+reports\report.html image ../figures/04_season_temperature.png,True,,
+reports\report.html image ../figures/04_rainfall.png,True,,
+reports\report.html image ../figures/04_correlation.png,True,,
+reports\report.html image ../figures/04_daily_outlier_review.png,True,,
+reports\report.html image ../figures/05_hour_cyclic.png,True,,
+reports\report.html image ../figures/07_model_feature_selection.png,True,,
+reports\report.html image ../figures/08_pca_variance.png,True,,
+reports\report.html image ../figures/10_model_comparison.png,True,,
+reports\report.html image ../figures/13_test_errors.png,True,,
+reports\report.html no CDN fonts,True,,
+reports\report.html obsolete จำนวนนับต่อเนื่อง,True,,
+reports\report.html obsolete ผล test ครั้งเดียว,True,,
+slides\seoul-bike-overview.html table 10 row 0,True,"[0.0, 222.0, 56.0, 0.0, 13.345, 57.0]","[0, 222, 56, 0, 13.345, 57.0]"
+slides\seoul-bike-overview.html table 10 row 1,True,"[1.0, 222.0, 56.0, 0.0, 13.265, 57.0]","[1, 222, 56, 0, 13.265, 57.0]"
+slides\seoul-bike-overview.html table 10 row 2,True,"[2.0, 222.0, 56.0, 0.0, 13.288, 57.0]","[2, 222, 56, 0, 13.288, 57.0]"
+slides\seoul-bike-overview.html table 10 row 3,True,"[3.0, 223.0, 55.0, 0.0, 13.208, 58.0]","[3, 223, 55, 0, 13.208, 58.0]"
+slides\seoul-bike-overview.html table 10 row 4,True,"[4.0, 223.0, 55.0, 0.0, 13.295, 57.0]","[4, 223, 55, 0, 13.295, 57.0]"
+slides\seoul-bike-overview.html table 11 row 0,True,"[262.5, 3.7, 262.5, 3.7, 262.5, 3.7, 262.3, 2.9, 262.5, 3.7]","[262.5000933406, 3.721546199, 262.5000933406, 3.721546199, 262.5000933406, 3.721546199, 262.2552086791, 2.8973077443, 262.4547783561, 3.7096139257]"
+slides\seoul-bike-overview.html table 11 row 1,True,"[191.9, 7.4, 179.1, 9.0]","[191.9350519481, 7.4172381556, 179.1471352814, 8.9646790886]"
+slides\seoul-bike-overview.html table 11 row 2,True,"[119.1, 4.5, 119.1, 4.5, 119.1, 4.5, 122.2, 4.4]","[119.0960700487, 4.5236801733, 119.0960700487, 4.5236801733, 119.0960700487, 4.5236801733, 122.2490844697, 4.3937319885]"
+slides\seoul-bike-overview.html table 11 row 3,True,"[109.2, 2.9, 109.2, 2.9, 109.2, 2.9, 114.0, 2.2]","[109.1834032928, 2.927368659, 109.1834032928, 2.927368659, 109.1834032928, 2.927368659, 113.989755346, 2.169029396]"
+slides\seoul-bike-overview.html table 13 row 0,True,"[311.3, 358.7, 338.3, 324.6, 327.1, 313.8]","[311.3, 358.7, 338.3, 324.6, 327.1, 313.8]"
+slides\seoul-bike-overview.html table 13 row 1,True,"[191.9, 199.3, 190.6, 184.1, 206.0, 193.6]","[191.9, 199.3, 190.6, 184.1, 206.0, 193.6]"
+slides\seoul-bike-overview.html table 14 row 0,True,"[527.6, 11.8, 423684.0, 650.7, -0.003]","[527.593, 11.824, 423684.064, 650.667, -0.003]"
+slides\seoul-bike-overview.html table 14 row 1,True,"[512.6, 14.1, 453973.0, 673.4, -0.074]","[512.57, 14.054, 453973.267, 673.352, -0.074]"
+slides\seoul-bike-overview.html table 14 row 2,True,"[398.4, 10.9, 267639.0, 517.2, 0.365]","[398.402, 10.855, 267639.271, 517.155, 0.365]"
+slides\seoul-bike-overview.html table 17 row 0,True,"[104.9, 4.0, 1.827, 5.55]","[104.8601904347, 3.9589046766, 1.8272177, 5.5465500009]"
+slides\seoul-bike-overview.html table 17 row 1,True,"[117.8, 4.1, 5.944, 15.51]","[117.7697234372, 4.1154672786, 5.9439814, 15.5080999994]"
+slides\seoul-bike-overview.html table 17 row 2,True,"[176.8, 10.4, 1.161, 3.3]","[176.832948899, 10.3850223353, 1.1605098, 3.301499999]"
+slides\seoul-bike-overview.html table 17 row 3,True,"[205.9, 10.0, 0.026, 4.1]","[205.8553342525, 9.9716604717, 0.026357, 4.1035499999]"
+slides\seoul-bike-overview.html table 19 row 0,True,"[1656.0, 91.46, 149.06]","[1656, 91.4626230977, 149.0613026044]"
+slides\seoul-bike-overview.html table 19 row 1,True,"[41.0, 257.65, 463.14]","[41, 257.6489484391, 463.1437051879]"
+slides\seoul-bike-overview.html table 19 row 2,True,"[1697.0, 95.48, 163.91]","[1697, 95.4777317241, 163.9050921911]"
+slides\seoul-bike-overview.html table 20 row 0,True,"[408.0, 799.8, 124.1, 37.8, 15.5]","[408, 799.8, 124.1, 37.8, 15.5]"
+slides\seoul-bike-overview.html table 20 row 1,True,"[336.0, 596.0, 91.3, 13.4, 15.3]","[336, 596.0, 91.3, 13.4, 15.3]"
+slides\seoul-bike-overview.html table 20 row 2,True,"[360.0, 1041.7, 116.8, -1.7, 11.2]","[360, 1041.7, 116.8, -1.7, 11.2]"
+slides\seoul-bike-overview.html table 20 row 3,True,"[552.0, 211.7, 51.0, 2.8, 24.1]","[552, 211.7, 51.0, 2.8, 24.1]"
+slides\seoul-bike-overview.html table 20 row 4,True,"[1104.0, 681.7, 98.0, 8.5, 14.4]","[1104, 681.7, 98.0, 8.5, 14.4]"
+slides\seoul-bike-overview.html table 20 row 5,True,"[552.0, 481.6, 78.3, 20.9, 16.3]","[552, 481.6, 78.3, 20.9, 16.3]"
+slides\seoul-bike-overview.html table 20 row 6,True,"[89.0, 171.9, 143.0, 62.1, 83.2]","[89, 171.9, 143.0, 62.1, 83.2]"
+slides\seoul-bike-overview.html table 20 row 7,True,"[1567.0, 640.2, 88.5, 9.8, 13.8]","[1567, 640.2, 88.5, 9.8, 13.8]"
+slides\seoul-bike-overview.html table 21 row 0,True,"[18.0, 20.3, 35.0, 0.0, 1237.0, 2120.0, 883.0]","[18, 20.3, 35.0, 0.0, 1237, 2120, 883]"
+slides\seoul-bike-overview.html table 21 row 1,True,"[7.0, 20.9, 66.0, 0.0, 451.0, 1284.0, 833.0]","[7, 20.9, 66.0, 0.0, 451, 1284, 833]"
+slides\seoul-bike-overview.html table 21 row 2,True,"[22.0, 12.4, 96.0, 0.0, 14.0, 824.0, 810.0]","[22, 12.4, 96.0, 0.0, 14, 824, 810]"
+slides\seoul-bike-overview.html table 21 row 3,True,"[8.0, 20.7, 73.0, 0.2, 670.0, 1459.0, 789.0]","[8, 20.7, 73.0, 0.2, 670, 1459, 789]"
+slides\seoul-bike-overview.html table 21 row 4,True,"[21.0, 10.6, 70.0, 0.0, 542.0, 1319.0, 777.0]","[21, 10.6, 70.0, 0.0, 542, 1319, 777]"
+slides\seoul-bike-overview.html table 21 row 5,True,"[19.0, 12.6, 93.0, 0.0, 131.0, 900.0, 769.0]","[19, 12.6, 93.0, 0.0, 131, 900, 769]"
+slides\seoul-bike-overview.html table 21 row 6,True,"[18.0, 29.3, 27.0, 0.0, 3365.0, 2599.0, -766.0]","[18, 29.3, 27.0, 0.0, 3365, 2599, -766]"
+slides\seoul-bike-overview.html table 21 row 7,True,"[8.0, 10.6, 89.0, 0.0, 148.0, 913.0, 765.0]","[8, 10.6, 89.0, 0.0, 148, 913, 765]"
+slides\seoul-bike-overview.html table 21 row 8,True,"[19.0, 12.8, 97.0, 0.0, 19.0, 781.0, 762.0]","[19, 12.8, 97.0, 0.0, 19, 781, 762]"
+slides\seoul-bike-overview.html table 21 row 9,True,"[8.0, 10.3, 86.0, 0.0, 1284.0, 534.0, -750.0]","[8, 10.3, 86.0, 0.0, 1284, 534, -750]"
+slides\seoul-bike-overview.html embedded ยอดเช่าเฉลี่ยรายชั่วโมงแยกประเภทวัน,True,,
+slides\seoul-bike-overview.html embedded ยอดเช่าตามฤดูและอุณหภูมิ,True,,
+slides\seoul-bike-overview.html embedded ยอดเช่าตามปริมาณฝน,True,,
+slides\seoul-bike-overview.html embedded Hour cyclic encoding,True,,
+slides\seoul-bike-overview.html embedded CV MAE by model and selector (± fold std),True,,
+slides\seoul-bike-overview.html embedded 37 preprocessed columns (hour cyclic),True,,
+slides\seoul-bike-overview.html embedded Default CV MAE ± fold std,True,,
+slides\seoul-bike-overview.html embedded In-scope test errors,True,,
+slides\seoul-bike-overview.html no CDN fonts,True,,
+slides\seoul-bike-overview.html obsolete จำนวนนับต่อเนื่อง,True,,
+slides\seoul-bike-overview.html obsolete ผล test ครั้งเดียว,True,,
+slides\seoul-bike-presentation.html table 6 row 0,True,"[0.0, 222.0, 56.0, 0.0, 13.345, 57.0, 741.24]","[0, 222, 56, 0, 13.345, 57.0, 741.24]"
+slides\seoul-bike-presentation.html table 6 row 1,True,"[1.0, 222.0, 56.0, 0.0, 13.265, 57.0, 814.811]","[1, 222, 56, 0, 13.265, 57.0, 814.811]"
+slides\seoul-bike-presentation.html table 6 row 2,True,"[2.0, 222.0, 56.0, 0.0, 13.288, 57.0, 741.305]","[2, 222, 56, 0, 13.288, 57.0, 741.305]"
+slides\seoul-bike-presentation.html table 6 row 3,True,"[3.0, 223.0, 55.0, 0.0, 13.208, 58.0, 766.535]","[3, 223, 55, 0, 13.208, 58.0, 766.535]"
+slides\seoul-bike-presentation.html table 6 row 4,True,"[4.0, 223.0, 55.0, 0.0, 13.295, 57.0, 737.402]","[4, 223, 55, 0, 13.295, 57.0, 737.402]"
+slides\seoul-bike-presentation.html table 9 row 0,True,"[262.5, 3.7, 262.5, 3.7, 262.5, 3.7, 262.3, 2.9, 262.5, 3.7]","[262.5000933406, 3.721546199, 262.5000933406, 3.721546199, 262.5000933406, 3.721546199, 262.2552086791, 2.8973077443, 262.4547783561, 3.7096139257]"
+slides\seoul-bike-presentation.html table 9 row 1,True,"[191.9, 7.4, 179.1, 9.0]","[191.9350519481, 7.4172381556, 179.1471352814, 8.9646790886]"
+slides\seoul-bike-presentation.html table 9 row 2,True,"[119.1, 4.5, 119.1, 4.5, 119.1, 4.5, 122.2, 4.4]","[119.0960700487, 4.5236801733, 119.0960700487, 4.5236801733, 119.0960700487, 4.5236801733, 122.2490844697, 4.3937319885]"
+slides\seoul-bike-presentation.html table 9 row 3,True,"[109.2, 2.9, 109.2, 2.9, 109.2, 2.9, 114.0, 2.2]","[109.1834032928, 2.927368659, 109.1834032928, 2.927368659, 109.1834032928, 2.927368659, 113.989755346, 2.169029396]"
+slides\seoul-bike-presentation.html table 11 row 0,True,"[527.6, 11.8, 423684.0, 650.7, -0.003, 527.3]","[527.593, 11.824, 423684.064, 650.667, -0.003, 527.318]"
+slides\seoul-bike-presentation.html table 11 row 1,True,"[512.6, 14.1, 453973.0, 673.4, -0.074, 512.2]","[512.57, 14.054, 453973.267, 673.352, -0.074, 512.157]"
+slides\seoul-bike-presentation.html table 11 row 2,True,"[398.4, 10.9, 267639.0, 517.2, 0.365, 394.0]","[398.402, 10.855, 267639.271, 517.155, 0.365, 394.011]"
+slides\seoul-bike-presentation.html table 11 row 3,True,"[262.5, 3.7, 117602.0, 342.9, 0.721, 257.3, 5.2]","[262.5000933406, 3.721546199, 117601.5449895921, 342.8787217536, 0.7211508273, 257.3340074796, 5.166085861]"
+slides\seoul-bike-presentation.html table 11 row 4,True,"[191.9, 7.4, 81643.0, 285.5, 0.806, 151.9, 40.1]","[191.9350519481, 7.4172381556, 81642.7922337662, 285.5103484329, 0.8063240661, 151.8681311356, 40.0669208124]"
+slides\seoul-bike-presentation.html table 11 row 5,True,"[119.1, 4.5, 38279.0, 195.2, 0.909, 36.6, 82.5]","[119.0960700487, 4.5236801733, 38279.353059692, 195.2372523633, 0.9091669178, 36.5667670846, 82.5293029641]"
+slides\seoul-bike-presentation.html table 11 row 6,True,"[109.2, 2.9, 32321.0, 179.6, 0.923, 66.8, 42.4]","[109.1834032928, 2.927368659, 32321.2265034839, 179.5940252125, 0.9232362085, 66.8154519187, 42.3679513741]"
+slides\seoul-bike-presentation.html table 12 row 0,True,"[104.9, 4.0, 1.827, 5.55]","[104.8601904347, 3.9589046766, 1.8272177, 5.5465500009]"
+slides\seoul-bike-presentation.html table 12 row 1,True,"[117.8, 4.1, 5.944, 15.51]","[117.7697234372, 4.1154672786, 5.9439814, 15.5080999994]"
+slides\seoul-bike-presentation.html table 12 row 2,True,"[176.8, 10.4, 1.161, 3.3]","[176.832948899, 10.3850223353, 1.1605098, 3.301499999]"
+slides\seoul-bike-presentation.html table 12 row 3,True,"[205.9, 10.0, 0.026, 4.1]","[205.8553342525, 9.9716604717, 0.026357, 4.1035499999]"
+slides\seoul-bike-presentation.html table 13 row 0,True,"[1656.0, 91.46, 149.06, 0.938]","[1656, 91.4626230977, 149.0613026044, 0.9375436789]"
+slides\seoul-bike-presentation.html table 13 row 1,True,"[41.0, 257.65, 463.14, 0.38]","[41, 257.6489484391, 463.1437051879, 0.3798658628]"
+slides\seoul-bike-presentation.html table 13 row 2,True,"[1697.0, 95.48, 163.91, 0.925]","[1697, 95.4777317241, 163.9050921911, 0.9245714876]"
+slides\seoul-bike-presentation.html table 15 row 0,True,"[18.0, 20.3, 35.0, 0.0, 1237.0, 2120.0, 883.0]","[18, 20.3, 35.0, 0.0, 1237, 2120, 883]"
+slides\seoul-bike-presentation.html table 15 row 1,True,"[7.0, 20.9, 66.0, 0.0, 451.0, 1284.0, 833.0]","[7, 20.9, 66.0, 0.0, 451, 1284, 833]"
+slides\seoul-bike-presentation.html table 15 row 2,True,"[22.0, 12.4, 96.0, 0.0, 14.0, 824.0, 810.0]","[22, 12.4, 96.0, 0.0, 14, 824, 810]"
+slides\seoul-bike-presentation.html table 15 row 3,True,"[8.0, 20.7, 73.0, 0.2, 670.0, 1459.0, 789.0]","[8, 20.7, 73.0, 0.2, 670, 1459, 789]"
+slides\seoul-bike-presentation.html table 15 row 4,True,"[21.0, 10.6, 70.0, 0.0, 542.0, 1319.0, 777.0]","[21, 10.6, 70.0, 0.0, 542, 1319, 777]"
+slides\seoul-bike-presentation.html table 15 row 5,True,"[19.0, 12.6, 93.0, 0.0, 131.0, 900.0, 769.0]","[19, 12.6, 93.0, 0.0, 131, 900, 769]"
+slides\seoul-bike-presentation.html table 15 row 6,True,"[18.0, 29.3, 27.0, 0.0, 3365.0, 2599.0, -766.0]","[18, 29.3, 27.0, 0.0, 3365, 2599, -766]"
+slides\seoul-bike-presentation.html table 15 row 7,True,"[8.0, 10.6, 89.0, 0.0, 148.0, 913.0, 765.0]","[8, 10.6, 89.0, 0.0, 148, 913, 765]"
+slides\seoul-bike-presentation.html table 15 row 8,True,"[19.0, 12.8, 97.0, 0.0, 19.0, 781.0, 762.0]","[19, 12.8, 97.0, 0.0, 19, 781, 762]"
+slides\seoul-bike-presentation.html table 15 row 9,True,"[8.0, 10.3, 86.0, 0.0, 1284.0, 534.0, -750.0]","[8, 10.3, 86.0, 0.0, 1284, 534, -750]"
+slides\seoul-bike-presentation.html no CDN fonts,True,,
+slides\seoul-bike-presentation.html obsolete จำนวนนับต่อเนื่อง,True,,
+slides\seoul-bike-presentation.html obsolete ผล test ครั้งเดียว,True,,
+slides\speaker-script.html no CDN fonts,True,,
+slides\speaker-script.html obsolete จำนวนนับต่อเนื่อง,True,,
+slides\speaker-script.html obsolete ผล test ครั้งเดียว,True,,
+JS histogram,True,,
+JS hourly weekday,True,,
+JS hourly weekend,True,,
+JS hourly holiday,True,,
+JS model bars,True,,
+JS scenario predictions,True,,
+JS test calendar,True,,
+JS temperature bins,True,,
+JS rainfall bins,True,,

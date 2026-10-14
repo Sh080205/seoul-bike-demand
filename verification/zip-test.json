@@ -1,0 +1,28 @@
+{
+  "status": "passed",
+  "independent_environment": true,
+  "python": "3.13.11",
+  "notebooks": [
+    {
+      "name": "00_setup",
+      "seconds": 2.8271648999980243,
+      "code_cells": 2,
+      "status": "passed"
+    },
+    {
+      "name": "01_eda",
+      "seconds": 14.668758300002082,
+      "code_cells": 23,
+      "status": "passed"
+    },
+    {
+      "name": "02_modeling",
+      "seconds": 219.81078440000056,
+      "code_cells": 34,
+      "status": "passed"
+    }
+  ],
+  "reference_metrics_match": true,
+  "differences": [],
+  "time_policy": "Second run timings are validation only; delivered reports and notebooks retain the first reference run."
+}

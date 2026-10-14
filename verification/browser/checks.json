@@ -1,0 +1,400 @@
+[
+  {
+    "name": "seoul-bike-presentation",
+    "slideCount": 18,
+    "errors": [],
+    "failed": [],
+    "slides": [
+      {
+        "page": "1",
+        "title": "Seoul\nBike\nDemand",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "Machine Learning Project\nSeoul\nBike\nDemand\nสมาชิก\nนาย ศุภวิชญ์ ไชยานุศักดิ์\n6730300591\nนาย พัฒนเดช มะหิเมือง\n6730300850\nนาย ชญานิน ตลับเงิน\n6330300160\n\nทำนายว่า แต่ละชั่วโมง จะมีคนเช่าจักรยานในโซล กี่คัน จากพยากรณ์อากาศและปฏิทิน\n\n8,760\nชั่วโมง · ธ.ค. 2017 – พ.ย. 2018\n91.5\ntest MAE ในขอบเขต\n0.938\ntest R²\nข้อมูล\n\nSeoul Bike Sharing Demand · UCI id 560 · CC BY 4.0\ninput: อากาศ 8 ตัว + ชั่วโมง วัน เดือน ฤดู วันหยุด\n\nใช้ทำอะไร\n\nวางแผนจำนวนจักรยานที่ต้องพร้อมใช้ และจัดคนกระจายจักรยานล่วงหน้าในชั่วโมงที่คาดว่ามีคนเช่ามาก\n\nข้อมูล 0–4\nเตรียม 5–6\nคัดฟีเจอร์ 7–8\nโมเดล 9–12\nทดสอบ 13\nขั้น 00 · Setup · ทุกเครื่องใช้ Python 3.13.11 และไลบรารี 11 ตัวตรงเวอร์ชันใน requirements.txt (เช่น pandas 2.3.3 · scikit-learn 1.9.1) · RANDOM_STATE = 42"
+      },
+      {
+        "page": "2",
+        "title": "โจทย์ + เมตริก",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "01\nโจทย์ + เมตริก\nทายยอดเช่า คัน/ชม. ของทั้งเมือง → regression\ninput รู้ล่วงหน้าได้: พยากรณ์อากาศ + ปฏิทิน · ไม่ใช้ lag\nยอดเช่าเบ้ขวา mean 756.8 > median 582.5 → ใช้ MAE\nใช้กับระบบเปิดนอกช่วงพายุที่กำหนดจาก KMA\nผู้พูด A · ชญานิน ตลับเงิน\nยอดเช่าต่อชั่วโมง · train เฉพาะชั่วโมงที่ระบบเปิด (6,768 แถว)\n0\n1,000\n2,000\n3,000\nคัน/ชม.\nmedian 582.5\nmean 756.8\nทำนายอะไร\n\nrented_bike_count = จำนวนจักรยานที่ถูกเช่าในชั่วโมงนั้น · 1 แถว = 1 ชั่วโมงของทั้งระบบ · label มากับ dataset\n\nวัดผลด้วย\n\nMAE (หลัก) = ทายคลาดเฉลี่ยกี่คัน · RMSE ดู error ก้อนใหญ่ · MSE มีหน่วยคัน² · R² = % ความแปรปรวนที่อธิบายได้"
+      },
+      {
+        "page": "3",
+        "title": "โหลดและตรวจข้อมูล",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "02\nโหลดและตรวจข้อมูล\nไฟล์เก็บ ° เป็น byte \\xb0 → utf-8 อ่านไม่ได้ ใช้ cp1252\nวันที่เป็น วัน/เดือน/ปี → ระบุ format เอง ไม่ให้ pandas เดา\n8,760 แถว × 14 คอลัมน์ · ไม่มีแถวซ้ำ · missing 9 ค่า ในความชื้น\nทุกวันมีครบ 24 ชั่วโมง → ใช้ \"วัน\" เป็นหน่วย split ได้\nผู้พูด A · ชญานิน ตลับเงิน\nตรวจไฟล์ก่อนโหลดจริง · ถ้าเดาผิด ข้อมูลเพี้ยนโดยไม่มี error\n01_eda · 2.2 · ค่าจาก config.py\ndf = pd.read_csv(DATA_CSV, encoding=\"cp1252\")\ndf[\"date\"] = pd.to_datetime(df[\"date\"], format=\"%d/%m/%Y\")\n2.1 ลองอ่านหัวตาราง 3 encoding\nutf-8 ✗\tUnicodeDecodeError ที่ byte \\xb0\ncp1252 ✓\tTemperature(°C)\nlatin-1\tTemperature(°C)\n2.1 รูปแบบวันที่\nส่วนที่ 1\t1–31\t→ วัน\nส่วนที่ 2\t1–12\t→ เดือน\nส่วนที่ 3\t2017–2018\t→ ปี\n\n01/12/2017 = 1 ธ.ค. 2017 ไม่ใช่ 12 ม.ค.\n\n2.3 ตรวจความครบ (assert ทุกข้อ)\n8,760 แถว × 14 คอลัมน์\nmissing 9 ค่า (humidity_pct)\nแถวซ้ำ 0 · ซ้ำที่ (date, hour) 0\n2017-12-01 ถึง 2018-11-30 = 365 วัน\nทุกวันมีชั่วโมง 0–23 ครบ"
+      },
+      {
+        "page": "4",
+        "title": "Split ตามวัน",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "03\nSplit ตามวัน\nทั้ง 24 ชั่วโมงของ วันเดียวกัน อยู่ฝั่งเดียวเสมอ\nถ้าสุ่มทีละชั่วโมง 14:00 อยู่ train แต่ 15:00 อยู่ test → ข้อมูลรั่ว\ntrain 292 วัน (7,008 แถว) · test 73 วัน (1,752 แถว)\nบันทึกรายการวันลงไฟล์ → ทุก notebook ใช้วัน test ชุดเดียวกัน\nผู้พูด A · ชญานิน ตลับเงิน\ntrain 292 วัน\ntest 73 วัน\n1 ช่อง = 1 วัน · ธ.ค. 2017 → พ.ย. 2018\n01_eda · 3.1\ngss = GroupShuffleSplit(test_size=0.2, random_state=42)\ntrain_idx, test_idx = next(gss.split(df, groups=df[\"date\"]))\nเทียบ 3 วิธี\nสุ่มทีละวัน ✓\ttest มีครบทุกฤดู\nตัดตามเวลา\tข้อมูล 1 ปี → test มีแค่ 1–2 ฤดู\nสุ่มทีละชั่วโมง ✗\tข้อมูลรั่ว\nตรวจ split (ดูแค่โครงสร้าง ไม่ดูยอด)\ntest มีครบ 4 ฤดู\nWinter: test 31.5% · train 22.9%\nวันหยุด: test 6 · train 12\n\nไม่สุ่มใหม่หลังเห็นตัวเลข = ไม่เลือก test ด้วยมือ"
+      },
+      {
+        "page": "5",
+        "title": "EDA บน train",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "04\nEDA บน train\nวันทำงานมี 2 พีค 8:00 (~1,381) และ 18:00 (~1,810)\nอุณหภูมิเป็น โค้งคว่ำ ยอดสูงสุดช่วง 25–30 °C\nมีฝน ยอดเฉลี่ยตกจาก 795 → 164 คัน/ชม.\nทุกการตัดสินใจมาจาก train เท่านั้น\nผู้พูด A · ชญานิน ตลับเงิน\nยอดเช่าเฉลี่ยรายชั่วโมง แยกประเภทวัน\n0\n500\n1,000\n1,500\n0:00\n3:00\n6:00\n9:00\n12:00\n15:00\n18:00\n21:00\nวันทำงาน\nเสาร์–อาทิตย์\nวันหยุดนักขัตฤกษ์\n8:00 · 1,381\n18:00 · 1,810\nอุณหภูมิ (ค่าเฉลี่ยช่วงละ 5 °C)\n−15\n−10\n−5\n0\n5\n10\n15\n20\n25\n30\n1,258\n35\n40\nปริมาณฝน (มม./ชม.)\n0\n795\n(0,1]\n223\n(1,5]\n106\n>5\n78\ntemp – dew point r = 0.911 (คู่เดียวที่ > 0.8)\nIQR เป็นจุดตรวจ; เซนเซอร์และพายุใช้กฎเฉพาะ\nฤดูหนาวเฉลี่ย 230 · ฤดูร้อน 1,037"
+      },
+      {
+        "page": "6",
+        "title": "ขั้น 04 · ผู้พูด A (ชญานิน) · ลงรายละเอียด\nOutlier: แยกค่าที่สงสัยจากบริบทระดับวัน",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ขั้น 04 · ผู้พูด A (ชญานิน) · ลงรายละเอียด\nOutlier: แยกค่าที่สงสัยจากบริบทระดับวัน\nIQR และ correlation\nตัวแปร\tแถว IQR\tการตัดสินใจ\nฝน\t413\tเก็บ (IQR=0)\nหิมะ\t296\tเก็บ (IQR=0)\nลม\t110\tเก็บเหตุการณ์จริง\nยอดเช่า\t95\tไม่ตัดจากค่าที่สูง\n\ntemp–dew point r=0.911 → ให้ CV เลือก selector ไม่ตัดคอลัมน์ด้วยมือ\n\nMagnus: ค่าขัดแย้งบน train\n\nRH=0% 8 แถวไม่สอดคล้องกับ T/Td → humidity เป็น NaN\n\nช่องว่าง >15 จุด + T/Td เป็น 0 เพียงตัวเดียว: dew point 5 แถว, temp 1 แถว → เฉพาะค่านั้นเป็น NaN (สงสัยเซนเซอร์; อนุมาน)\n\nไม่ลบแถว ไม่แปลงทุกค่า 0°C และไม่แก้เมื่อทั้งสองค่าเป็น 0\n\nDaily OOF เป็นเครื่องมือตรวจ train\n\nHGB default + feature ดิบ 12 ตัว + GroupKFold → IQR ของ log(actual/pred) รายวัน พบ 21/282 วัน: พายุ/มรสุม 3, ฝน 9, วันหยุด 2, ไม่ทราบสาเหตุ 7\n\nไม่ใช้ residual ลบวัน ฝนหนัก/วันหยุด/วันไม่ทราบสาเหตุเก็บไว้ รายการพายุเลือกจากประกาศ KMA ล่วงหน้า: Prapiroon: 2 ก.ค.; Soulik: 23–24 ส.ค.; Kong-rey: 5–7 ต.ค. 2018\n\nอ่านผลให้ตรงขอบเขต\n\nEDA หน้านี้ใช้ train ระบบเปิด 6,768 แถวก่อนกรองพายุ; Pipeline สุดท้ายใช้ 6,672 แถว วันที่ 1 ก.ค. ยังเก็บเป็นบริบทมรสุม ข้อมูลที่ไม่มีหลักฐาน เช่น PM2.5 ไม่ใช่คำอธิบายที่ยืนยันแล้ว"
+      },
+      {
+        "page": "7",
+        "title": "ขอบเขต + ประวัติฝน",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "05\nขอบเขต + ประวัติฝน\nกฎพายุจาก KMA ล่วงหน้า ใช้เหมือนกันทั้ง train/test\nระบบเปิด + นอกช่วงพายุ: train 6,672 · test 1,656 ชั่วโมง\nค่าที่สงสัย → NaN; ให้ median ใน Pipeline เติม\nเพิ่ม rain_prev_3h หลัง CV แบบคู่ดีขึ้นครบ 5 folds\nผู้พูด B · ศุภวิชญ์ ไชยานุศักดิ์\nScope rule เดียวกันทั้งสองฝั่ง\nชุด\tเดิม\tระบบเปิด\tในขอบเขต\ntrain\t7,008\t6,768\t6,672 (278 วัน)\ntest\t1,752\t1,697\t1,656 (69 วัน)\n\nตัดพายุเพิ่ม train 96 / test 41 ชั่วโมง ไม่เปลี่ยนไฟล์ split\n\nวันและค่าที่แก้\n\nPrapiroon: 2 ก.ค.; Soulik: 23–24 ส.ค.; Kong-rey: 5–7 ต.ค. 2018\n\ntrain NaN: humidity 17 (missing 9 + 0% 8), dew point 5, temp 1 ไม่ใช้ residual เป็นกฎตัดวัน\n\nประวัติฝนที่ไม่ข้ามวัน\n\nrain_prev_3h = ผลรวมฝนที่ชั่วโมง h-1, h-2, h-3 ภายในวันเดียวกัน; ไม่รวมฝนชั่วโมงปัจจุบัน ไม่ข้ามเที่ยงคืน\n\n00:00=0; 01:00/02:00 ใช้ส่วนที่มี; ชั่วโมงหายภายในวัน → NaN\n\nHGB default\tCV MAE ± std\nไม่มีประวัติฝน\t112.15 ± 4.23\nมี rain_prev_3h\t109.18 ± 2.93\nX มี 18 คอลัมน์ก่อน preprocess · ไม่ใช้ lag ของยอดเช่า · ต้องมีประวัติฝน ณ เวลาใช้งาน"
+      },
+      {
+        "page": "8",
+        "title": "Pipeline + GroupKFold",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "06\nPipeline + GroupKFold\nimputer · scaler · one-hot อยู่ใน Pipeline\nCV fit ใหม่บน training fold ทุกรอบ → validation ไม่รั่ว\nGroupKFold: วันซ้ำ train–val = 0 ทุก fold\nKFold ธรรมดา: ซ้ำ 277 / 277 วัน\n\n1impute · scale · one-hot\nfit: เรียน median / mean / หมวด จาก training fold\ntransform: เติม NaN ใน validation ด้วยค่านั้น (fold 3 = 58)\n\n2ทั้งสามขั้นอยู่ใน Pipeline (\"pre\")\n\n3cross_validate fit ใหม่ทุกรอบ\nช่องเขียว = training fold ของรอบนั้น\n\nผู้พูด B · ศุภวิชญ์ ไชยานุศักดิ์\n02_modeling · 6.2, 6.4, 7.0\nnumeric = Pipeline([(\"impute\", SimpleImputer(strategy=\"median\")),\n                    (\"scale\", StandardScaler())])\npre = ColumnTransformer([\n    (\"num\", numeric, WEATHER_COLS + RAIN_HISTORY_COLS + hour_num + BINARY_COLS),\n    (\"cat\", OneHotEncoder(handle_unknown=\"ignore\"), CAT_COLS + hour_cat)])\npipe = Pipeline([(\"pre\", pre),\n                 (\"select\", select),   # FS / PCA\n                 (\"model\", model)])\ncv = GroupKFold(n_splits=5)\ncross_validate(pipe, X_train, y_train, groups=groups_train,\n               cv=cv, scoring=SCORING)\nGroupKFold 5 fold · ชมพู = validation (ทั้งวันอยู่ฝั่งเดียว)\nfold 0\nfold 1\nfold 2\nfold 3\nfold 4\n\nแต่ละ fold: train 222–223 วัน · validation 55–56 วัน\n\nGroupKFold ✓\n\nวันที่อยู่ทั้ง train และ validation = 0 วัน ทุก fold\n\nKFold ธรรมดา ✗\n\nvalidation fold 0 มี 277 วัน · ทั้ง 277 วัน มีชั่วโมงอื่นอยู่ใน train"
+      },
+      {
+        "page": "9",
+        "title": "ขั้น 06 · ผู้พูด B (ศุภวิชญ์) · ลงรายละเอียด\nหลักฐานราย fold: วันไม่ซ้ำ และเรียนค่าภายใน train",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ขั้น 06 · ผู้พูด B (ศุภวิชญ์) · ลงรายละเอียด\nหลักฐานราย fold: วันไม่ซ้ำ และเรียนค่าภายใน train\nGroupKFold 5 folds\nfold\tวัน train\tวัน val\tวันซ้ำ\tmean T\tmedian RH\tmean y val\n0\t222\t56\t0\t13.345\t57.0\t741.240\n1\t222\t56\t0\t13.265\t57.0\t814.811\n2\t222\t56\t0\t13.288\t57.0\t741.305\n3\t223\t55\t0\t13.208\t58.0\t766.535\n4\t223\t55\t0\t13.295\t57.0\t737.402\nสิ่งที่ต้องตรวจร่วมกัน\n\n0 วันซ้ำ ทุก fold; KFold ธรรมดา fold 0 ซ้ำ 277/277 วัน\n\nscaler mean T = 13.208–13.345 เปลี่ยนตาม training fold; imputer/encoder/selector/PCA fit ใน Pipeline ทุกครั้ง\n\nทุก CV/search ส่ง groups_train; rain history ใช้เฉพาะชั่วโมงก่อนหน้าในวันเดียวกัน; ไม่ใส่ target ใน X; เลือกโมเดลด้วย CV แล้วจึงประเมิน test ในขั้น 13\n\nอ่านตาราง\n\n1 แถวคือ 1 รอบ validation ของ GroupKFold วันใน validation ไม่ได้ใช้เรียน median หรือเลือกคอลัมน์ของรอบนั้น ตัวเลขส่วนนี้เป็นค่าที่ fit จาก training fold ของแต่ละรอบ ไม่ใช่ค่าจาก test"
+      },
+      {
+        "page": "10",
+        "title": "คัด feature ตามโมเดล",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "07–08\nคัด feature ตามโมเดล\nFilter / Wrapper / Embedded ใช้ตัวจัดอันดับที่เหมาะกับแต่ละโมเดล\nkNN: MI10 ลด MAE 191.9 → 179.1\nRF/HGB: ทุก 36 คอลัมน์ ชนะ/เสมอชุดย่อย\nLinear RFE40 ดีขึ้นเพียง 0.24 คัน\nผู้พูด B · ศุภวิชญ์ ไชยานุศักดิ์\nผลดีที่สุดในขั้น 7 (ค่า default)\nโมเดล\tวิธี / เก็บ\tCV MAE ± std\nLinear\tRFE (Ridge) 40 / 59\t262.26 ± 2.90\nkNN\tMI k=10 10 / 37\t179.15 ± 8.96\nRF\tทุกคอลัมน์ 36 / 36\t119.10 ± 4.52\nHGB\tทุกคอลัมน์ 36 / 36\t109.18 ± 2.93\nPCA แยกจากการเลือกคอลัมน์\n\n37 คอลัมน์ (hour cyclic): 14 PC ≥90%; 19 PC ≥95%\n\nโมเดล\tไม่มี PCA\tPCA15\nLinear cyclic\t311.3\t324.6\nkNN k=10\t191.9\t184.1\n\nลอง PCA15 ใน tuning ของ kNN ร่วมกับ MI10 และ passthrough\n\nSelector และ PCA อยู่ใน Pipeline · configuration จากขั้น 7 ต้อง clone ก่อนส่งเข้า tuning · chi² ใช้กับ target ต่อเนื่องนี้ไม่ได้"
+      },
+      {
+        "page": "11",
+        "title": "ขั้น 07–08 · ผู้พูด B (ศุภวิชญ์) · ลงรายละเอียด\nFeature selection: matrix ของทุกโมเดล",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ขั้น 07–08 · ผู้พูด B (ศุภวิชญ์) · ลงรายละเอียด\nFeature selection: matrix ของทุกโมเดล\nCV MAE ± fold std (ดีที่สุดใน grid ของแต่ละวิธี)\nโมเดล\tทุกคอลัมน์\tF\tMI\tRFE\tEmbedded\nLinear\t262.5 ± 3.7\t262.5 ± 3.7\t262.5 ± 3.7\t262.3 ± 2.9\t262.5 ± 3.7\nkNN\t191.9 ± 7.4\t-\t179.1 ± 9.0\t-\t-\nRF\t119.1 ± 4.5\t-\t119.1 ± 4.5\t119.1 ± 4.5\t122.2 ± 4.4\nHGB\t109.2 ± 2.9\t-\t109.2 ± 2.9\t109.2 ± 2.9\t114.0 ± 2.2\nตัวจัดอันดับ\n\nLinear: F/MI, RFE(Ridge), SelectFromModel(Lasso)\n\nkNN: MI (ไม่มี importance ในตัว)\n\nRF/HGB: MI, RFE(RF proxy), SelectFromModel(RF proxy); HGB ไม่มี feature_importances_ โดยตรง\n\nสิ่งที่ส่งเข้า tuning\n\npassthrough + candidate: Linear RFE40, kNN MI10, RF/HGB MI36\n\nMI36 ของ HGB เก็บ 36/36 ไม่ใช่หลักฐานว่าการตัด feature ช่วย HGB\n\nLinear RFE40 ต่างจาก baseline 0.24 คัน; fold std ไม่ใช่ผลทดสอบความแตกต่างทางสถิติ\n\nPCA และการแปลผล\n\nVariance PC1–PC5: 18.1%, 14.9%, 10.4%, 7.5%, 7.1% แกนที่ variance สูงไม่รับประกันว่าทำนาย y ดี kNN MI10 ชนะ PCA15 ใน default CV ส่วน Linear PCA แย่ลงทุกขนาดที่ทดลอง"
+      },
+      {
+        "page": "12",
+        "title": "Baseline + 4 โมเดล",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "09–10\nBaseline + 4 โมเดล\nBaseline เวลาอย่างเดียว 398.4 คัน/ชม.\nHGB default 109.2 ± 2.9 ดีที่สุด\nRF gap 82.5 ใหญ่ที่สุด; Linear ทั้ง train/CV error สูง\ngap ต้องอ่านร่วมกับ error; ไม่พิสูจน์ overfit ด้วยค่าเดียว\nผู้พูด C · พัฒนเดช มะหิเมือง\nCV MAE · 5-fold GroupKFold (ค่า default ทุก feature)\nDummy (mean)\n527.6\nDummy (median)\n512.6\nเวลาอย่างเดียว\n398.4\nLinear Regression\n262.5\nkNN\n191.9\nRandom Forest\n119.1\nHistGradientBoosting\n109.2\nเมตริกประกอบ\nโมเดล\thour\tMAE ± std\tRMSE\tR²\ttrain\tgap\nLinear\tonehot\t262.5 ± 3.7\t342.9\t0.721\t257.3\t5.2\nkNN\tcyclic\t191.9 ± 7.4\t285.5\t0.806\t151.9\t40.1\nRF\traw\t119.1 ± 4.5\t195.2\t0.909\t36.6\t82.5\nHGB\traw\t109.2 ± 2.9\t179.6\t0.923\t66.8\t42.4\nทุกตัวชนะ baseline เวลาใน split นี้ · MSE และตารางเต็มอยู่หน้าถัดไป"
+      },
+      {
+        "page": "13",
+        "title": "ขั้น 09–10 · ผู้พูด C (พัฒนเดช) · ลงรายละเอียด\nตารางโมเดลเต็ม: ค่าเฉลี่ย CV 5 folds",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ขั้น 09–10 · ผู้พูด C (พัฒนเดช) · ลงรายละเอียด\nตารางโมเดลเต็ม: ค่าเฉลี่ย CV 5 folds\nค่า default และ baseline\nโมเดล\tMAE\tstd\tMSE\tRMSE\tR²\ttrain\tgap\nDummy (mean)\t527.6\t11.8\t423,684\t650.7\t-0.003\t527.3\t-\nDummy (median)\t512.6\t14.1\t453,973\t673.4\t-0.074\t512.2\t-\nเวลาอย่างเดียว\t398.4\t10.9\t267,639\t517.2\t0.365\t394.0\t-\nLinear Regression\t262.5\t3.7\t117,602\t342.9\t0.721\t257.3\t5.2\nkNN\t191.9\t7.4\t81,643\t285.5\t0.806\t151.9\t40.1\nRandom Forest\t119.1\t4.5\t38,279\t195.2\t0.909\t36.6\t82.5\nHistGradientBoosting\t109.2\t2.9\t32,321\t179.6\t0.923\t66.8\t42.4\nหน่วยและวิธีอ่าน\n\nMAE/RMSE = คัน/ชม.; MSE = คัน²; R² ไม่ใช่ accuracy\n\ngap = CV MAE − MAE train; RF train 36.6 เทียบ CV 119.1 บ่งชี้ fit train มาก (อนุมาน) Linear gap 5.2 แต่ error สูงทั้งสองฝั่ง\n\nBaseline เวลา\n\nค่าเฉลี่ย hour × (วันทำงาน/วันหยุด) 48 กลุ่ม เรียนจาก training fold ไม่ใช้อากาศ\n\nCV MSE/RMSE เป็นค่าเฉลี่ยแยกแต่ละ fold จึงไม่เท่ากับ RMSE² พอดี"
+      },
+      {
+        "page": "14",
+        "title": "Tune + เลือก HGB",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [
+          {
+            "target": "104.86",
+            "actual": "104.86"
+          }
+        ],
+        "text": "11–12\nTune + เลือก HGB\nค้นพารามิเตอร์ พร้อม selector ใน Pipeline จาก train CV\nHGB 109.18 → 104.86 ± 3.96\nHGB MI36/36 ยังเก็บทุกคอลัมน์\nkNN finalist เป็น log1p + MI10 (k=15, distance)\nผู้พูด C · พัฒนเดช มะหิเมือง\n104.86\nCV MAE HGB หลัง tune\nFinalists + ทรัพยากรรอบล่าสุด\nโมเดล\tCV MAE ± std\tfit s\tms/แถว\nHGB\t104.9 ± 4.0\t1.827\t5.55\nRF\t117.8 ± 4.1\t5.944\t15.51\nkNN + log1p(y)\t176.8 ± 10.4\t1.161\t3.30\nLinear + log1p(y)\t205.9 ± 10.0\t0.026\t4.10\nHGB configuration\n\nlearning_rate=0.1, max_iter=200, max_leaf_nodes=63, min_samples_leaf=5, l2_regularization=1.0; hour raw; MI36\n\nRF: 300 trees, depth20, leaf1, features0.75; ทุก36 · Linear log: ทุก59\n\nRF สุ่ม 15/128 · HGB 30/960 · search space เปลี่ยนเมื่อเพิ่ม selector จึงไม่อ้างว่า FS เป็นเหตุเดียวที่ทำให้ tuned trees ดีขึ้น เวลาเป็นผลบนเครื่องนี้"
+      },
+      {
+        "page": "15",
+        "title": "ผล test + ขอบเขต",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [
+          {
+            "target": "91.46",
+            "actual": "91.46"
+          }
+        ],
+        "text": "13\nผล test + ขอบเขต\nholdout เดิมใช้หลาย revision; ตรึงจาก CV แล้วทดสอบ 1,656 ชั่วโมง/69 วัน\nในขอบเขต: MAE 91.46 · R² 0.938\nรวมวันพายุกลับมา: MAE 95.48 ไม่ refit\nฝนยังเป็นจุดอ่อน: MAE/ยอด 83.2%\nผู้พูด C · พัฒนเดช มะหิเมือง\n91.46\nMAE คัน/ชม.\n149.06\nRMSE คัน/ชม.\n0.938\nR²\nSensitivity ของ fitted final_model เดิม\nขอบเขต\tชม.\tMAE\tRMSE\tR²\nในขอบเขต\t1,656\t91.46\t149.06\t0.938\nวันพายุ (ระบบเปิด)\t41\t257.65\t463.14\t0.380\nรวมทุกชั่วโมงที่เปิด\t1,697\t95.48\t163.91\t0.925\nError ตามฤดู\nฤดู\tn\tยอด\tMAE\nAutumn\t408\t799.8\t124.1\nSpring\t336\t596.0\t91.3\nSummer\t360\t1,041.7\t116.8\nWinter\t552\t211.7\t51.0\nฝนและ distribution\n\nฝนตก 89 ชั่วโมง MAE 143.0 เทียบไม่มีฝน 88.5\n\ntest Winter 33.3%; train 24.1% อาจช่วยให้ MAE เป็นคันต่ำลง (อนุมาน) ไม่พิสูจน์ว่าไม่มี overfit\n\nMSE 22,219.3 คัน²; CV ก่อน clip; test clip ≥0 (15 แถว)"
+      },
+      {
+        "page": "16",
+        "title": "ขั้น 13 · ผู้พูด C (พัฒนเดช) · ลงรายละเอียด\nWorst 10 ของ test ในขอบเขต",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ขั้น 13 · ผู้พูด C (พัฒนเดช) · ลงรายละเอียด\nWorst 10 ของ test ในขอบเขต\nerror = ทาย − จริง; บวกคือทายเกิน\nวันที่\tชม.\t°C\tRH %\tฝน\tประเภท\tจริง\tทาย\terror\n2018-09-24\t18\t20.3\t35\t0.0\tวันหยุด\t1,237\t2,120\t+883\n2018-07-09\t7\t20.9\t66\t0.0\tวันทำงาน\t451\t1,284\t+833\n2018-11-08\t22\t12.4\t96\t0.0\tวันทำงาน\t14\t824\t+810\n2018-07-09\t8\t20.7\t73\t0.2\tวันทำงาน\t670\t1,459\t+789\n2018-10-26\t21\t10.6\t70\t0.0\tวันทำงาน\t542\t1,319\t+777\n2018-05-02\t19\t12.6\t93\t0.0\tวันทำงาน\t131\t900\t+769\n2018-06-22\t18\t29.3\t27\t0.0\tวันทำงาน\t3,365\t2,599\t-766\n2018-11-08\t8\t10.6\t89\t0.0\tวันทำงาน\t148\t913\t+765\n2018-11-08\t19\t12.8\t97\t0.0\tวันทำงาน\t19\t781\t+762\n2018-04-04\t8\t10.3\t86\t0.0\tวันทำงาน\t1,284\t534\t-750\nเหตุผลที่ 23 ส.ค. หายจากตาราง\n\nเพราะ scope rule ที่กำหนดจาก KMA ล่วงหน้า ไม่ใช่โมเดลทายวันนั้นดีขึ้น และไม่ตัดเพราะ residual ใหญ่ คะแนนวันพายุยังรายงานแยก: 41 ชั่วโมง MAE 257.65\n\nสิ่งที่เห็นและสิ่งที่ยังอธิบายไม่ได้\n\n8/10 แถวทายเกิน · 24 ก.ย. 18:00 จริง 1,237 ทาย 2,120 คลาด +883 · 8 พ.ย. มี 3 แถว ไม่ยืนยันสาเหตุที่ไม่มีหลักฐาน วันหยุดและวันอธิบายไม่ได้ยังเก็บอยู่ใน test"
+      },
+      {
+        "page": "17",
+        "title": "ทำนายข้อมูลใหม่",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "13\nทำนายข้อมูลใหม่\nข้อมูลใหม่ผ่าน add_features() ตัวเดียวกับตอนฝึก\nfinal_model รวม imputer + scaler + one-hot ไว้ในตัว\nชุดอากาศดี → ฝน: 2,960 → 569 (ลด ~81%)\nสมมติ rain_prev_3h = 0 มม. ทุกสถานการณ์\nผู้พูด C · พัฒนเดช มะหิเมือง\nข้อมูลดิบ\n→\nadd_features()\n→\nimpute · scale · one-hot\n→\nHGB\n→\nclip ≥ 0\n02_modeling · 13.5\nX_new = add_features(scenarios)[FEATURES]\npred  = np.clip(final_model.predict(X_new), 0, None)\nพุธ 18:00 อากาศดี\nพุธ 18:00 ฝนตก\nเสาร์ 18:00 อากาศดี\nพุธ 08:00 ฤดูหนาว\n2,960 คัน/ชม.\nพีคเย็นวันทำงาน + อากาศดี\ninput ของสถานการณ์นี้\nวันที่\t2018-06-13\nชั่วโมง\t18:00\nอุณหภูมิ\t24.0 °C\nความชื้น\t60%\ndew point\t15.8 °C\nฝนปัจจุบัน\t0.0 มม.\nฤดู\tSummer\nฝนก่อนหน้า 3h\t0.0 มม.\nแถวฝนเปลี่ยนอุณหภูมิ RH dew point แสงและทัศนวิสัยด้วย ตัวเลขนี้เป็นการทำนายชุดสถานการณ์ ไม่ใช่ผลเชิงสาเหตุของฝนอย่างเดียว"
+      },
+      {
+        "page": "18",
+        "title": "ผลลัพธ์และข้อจำกัด",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "13\nผลลัพธ์และข้อจำกัด\nHGB: CV 104.86 ± 3.96 · test MAE 91.46\nCV ลดจาก baseline เวลา 73.7%\nFS ช่วย kNN; HGB MI36 เก็บทุกคอลัมน์\nscope ภายนอก + CV ตามวัน + Pipeline\nผู้พูด A · ชญานิน ตลับเงิน\nสิ่งที่แก้จาก feedback\n\nพายุใช้ rule เดียวกัน train/test จาก KMA; ค่าที่สงสัยจาก Magnus เป็น NaN; rain history ผ่าน paired CV; ทดลอง FS ตามแต่ละโมเดลและส่งเข้า tuning; แสดง sensitivity รวมพายุ 95.48\n\nขอบเขตและข้อจำกัด\n\nระบบเปิด และอยู่นอกวันผลกระทบพายุที่ระบุจากประกาศ KMA ล่วงหน้าสำหรับเขตเมืองหลวง\n\nข้อมูลปีเดียว เมืองเดียว; ฝนและเทศกาลยังทายคลาด; split สุ่มวันไม่วัดการพยากรณ์ข้ามปี\n\nประเมินด้วยอากาศที่วัดจริง ยังไม่รวม error ของ weather forecast; ประวัติฝนต้องพร้อม ณ เวลาใช้งาน\n\nพัฒนาต่อ\n\nข้อมูลหลายปี + time holdout, ประวัติฝน/สภาพถนน, เทศกาล และการทดสอบ forecast input บนข้อมูลใหม่\n\nขอบคุณครับ · ถาม-ตอบ"
+      },
+      {
+        "navigation": {
+          "home": 0,
+          "next": 1,
+          "back": 0
+        }
+      }
+    ],
+    "scenarios": [
+      "2,960",
+      "569",
+      "2,233",
+      "605"
+    ]
+  },
+  {
+    "name": "seoul-bike-overview",
+    "slideCount": 28,
+    "errors": [],
+    "failed": [],
+    "slides": [
+      {
+        "title": "Seoul Bike Demand",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\nMachine Learning · ภาพรวมโปรเจกต์ทีละขั้น\nSeoul Bike Demand\n\nทำนายจำนวนจักรยานที่ถูกเช่าในแต่ละชั่วโมงของระบบ Seoul Bike ทั้งเมือง (คัน/ชม.) จากข้อมูลที่รู้ล่วงหน้าได้ คือพยากรณ์อากาศและปฏิทิน\n\n8,760\nชั่วโมง · 1 ธ.ค. 2017 – 30 พ.ย. 2018\nUCI id 560 · CC BY 4.0\n14 ขั้น\nใน 3 notebook\n00_setup · 01_eda · 02_modeling\n104.86 ± 3.96\nCV MAE (คัน/ชม.)\nHistGradientBoosting\n91.46\ntest MAE (คัน/ชม.) · R² 0.938\nประเมินหลังเลือกด้วย CV\n←→ เลื่อนหน้า · คลิกสถานีบนเส้นด้านบนเพื่อกระโดดไปขั้นนั้น · M หน้าแผนที่ · E แก้ข้อความ · F11 เต็มจอ (อ่านง่ายสุด)"
+      },
+      {
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\nสายข้อมูล\n00_setup · 01_eda · 02_modeling (ขั้น 1)\n0\nSetup\nเวอร์ชันไลบรารีตรงทุกเครื่อง\n1\nนิยามปัญหา\nregression · MAE เป็นเมตริกหลัก\n2\nโหลด + ตรวจข้อมูล\n8,760 × 14 · missing 9 · ไม่ซ้ำ\n3\nSplit ตามวัน\ntrain 292 วัน / test 73 วัน\n4\nEDA บน train\nIQR + Magnus + OOF รายวัน; ไม่ตัดจาก residual\nสายเตรียมข้อมูล\n02_modeling\n5\nFeature engineering\ntrain 6,672 × 18; เพิ่ม rain_prev_3h\n6\nPipeline\npreprocess ใน Pipeline + GroupKFold\nสายคัดฟีเจอร์\n02_modeling\n7\nFeature selection 3 แบบ\nMI10 ช่วย kNN; trees เก็บทุกคอลัมน์\n8\nPCA\n37 คอลัมน์; 14 PC ≥90%\nสายโมเดล\n02_modeling\n9\nBaseline\nเวลาอย่างเดียว MAE 398.4\n10\nเทียบ 4 โมเดล\nHGB default 109.18\n11\nTuning\nHGB 104.86 ±3.96\n12\nเลือกโมเดล + CLO4\nfinal_model = HGB MI36/36\nสายทดสอบ\n02_modeling\n13\nTest + sensitivity\nในขอบเขต MAE 91.46; รวมพายุ 95.48"
+      },
+      {
+        "title": "Setup — ตรวจสภาพแวดล้อม",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n0\nSetup — ตรวจสภาพแวดล้อม\n00_setup · 0.1–0.3 · ทุกคนในกลุ่มรันหลังติดตั้ง .venv ครั้งแรก · สไลด์หน้า 1 · รายงานหัวข้อ ภาคผนวก ข\nสถานีถัดไป\nขั้น 1 · นิยามปัญหา\nทำอะไร\nอ่านเวอร์ชันที่ pin ใน requirements.txt แล้วเทียบกับที่ติดตั้งจริงด้วย importlib.metadata (assert ถ้าไม่ตรง)\nimport config.py (ค่าคงที่กลาง) แล้วตรวจว่าไฟล์ CSV และโฟลเดอร์มีอยู่จริง\nผลลัพธ์\nPython 3.13.11 · ไลบรารี 11 ตัวขึ้น OK ทุกตัว เช่น pandas 2.3.3, scikit-learn 1.9.1, numpy 2.5.3\nRANDOM_STATE = 42 · TEST_FRAC = 0.2 · TASK = regression\nเจอ SeoulBikeData.csv (604,166 bytes) และโฟลเดอร์ data/splits, figures, reports\nรู้อะไร\nต้องใช้ pandas 2.3.3 ไม่ใช่ 3.x เพราะ Windows Smart App Control บล็อก DLL ของ pandas 3 บนเครื่องนี้\nตรวจแล้วว่า 01_eda และ 02_modelingรอบนี้ใช้ Python 3.13.11 และเวอร์ชันตาม requirements.txt รัน notebook พร้อม outputs รัน 00_setup ใหม่ด้วย kernel ใหม่ครบแล้ว\nประโยชน์\n\nเครื่องของทุกคนมีไลบรารีเวอร์ชันเดียวกันและหาไฟล์ข้อมูลเจอ → ผลของ notebook อื่น reproduce ได้ตรงกันทั้ง 3 เครื่อง\n\nกติกากลุ่ม (0.3)\nแบ่งงาน: A ขั้น 2–4 (01_eda) · B ขั้น 5–8 · C ขั้น 9–12 (02_modeling)\n1 ขั้น = 1 branch step/<เลข>-<ชื่อ> · เปิด PR ให้อีก 2 คนรีวิวก่อน merge\nห้ามแก้ notebook เดียวกันพร้อมกันคนละ branch (JSON merge ยาก)\nRestart & Run All ก่อน commit ทุกครั้ง · ตั้งใจเก็บ output ไว้ใน commit (ไม่ใช้ nbstripout) เป็นหลักฐานประกอบคำอธิบาย"
+      },
+      {
+        "title": "นิยามปัญหา",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n1\nนิยามปัญหา\n02_modeling · ส่วนหัว · 1 แถว = 1 ชั่วโมงของทั้งระบบ (ยอดรวมทุกสถานี) · สไลด์หน้า 2 · รายงานหัวข้อ 1\nสถานีถัดไป\nขั้น 2 · โหลดและตรวจข้อมูล\nโจทย์\nชนิดงาน\tRegression (config.TASK = \"regression\")\nทำนาย\trented_bike_count จำนวนจักรยานที่ถูกเช่าในชั่วโมงนั้น หน่วย คัน/ชม. (label มากับ dataset)\nใช้ทำอะไร\tผู้ให้บริการวางแผนจำนวนจักรยานที่ต้องพร้อมใช้ และจัดคนกระจายจักรยานล่วงหน้าในชั่วโมงที่คาดว่าจะมีคนเช่ามาก\ninput\tอากาศ (อุณหภูมิ ความชื้น ลม ทัศนวิสัย dew point แสงแดด ฝน หิมะ) + เวลา (ชั่วโมง วันในสัปดาห์ เดือน) + ฤดู + วันหยุด\nเมตริกหลัก\tMAE (คัน/ชม.)\nเมตริกรอง\tRMSE (คัน/ชม.) · MSE (คัน²) · R²\nทำไมเป็น regression\n\ntarget เป็นจำนวนจักรยานเชิงปริมาณ ทำนายตรงได้เลย ไม่ต้องตั้งเกณฑ์เอง · ค่าที่ได้ (กี่คัน) เอาไปวางแผนได้โดยตรง · ใช้โจทย์เดียวกับวิชา DS\n\nทำไม MAE เป็นเมตริกหลัก\nหน่วยเดียวกับ target อ่านตรงๆ ว่า \"ทายคลาดเฉลี่ยกี่คันต่อชั่วโมง\"\ntarget เบ้ขวา (mean 756.8 > median 582.5) · RMSE ยกกำลังสอง ชั่วโมงพีคไม่กี่ชั่วโมงจึงครอบงำ\nRMSE ใช้ดูว่ามี error ก้อนใหญ่ไหม · MSE มีหน่วยคัน² จึงรายงานตามโจทย์แต่อธิบายด้วย RMSE · R² บอก % ความแปรปรวนที่อธิบายได้\nขอบเขต + กฎหลัก\nใช้กับ ชั่วโมงที่ระบบเปิด เท่านั้น · input ทุกตัวรู้ล่วงหน้าได้ → ไม่ใช้ lag ของยอดเช่า\nไม่ใช่ time-series → split ตามวันแบบสุ่ม · ทำนายระดับเมือง ไม่ใช่รายสถานี\nทุกอย่างที่เรียนจากข้อมูลอยู่ใน Pipeline · เลือกโมเดลด้วย GroupKFold · ห้ามดู test จนเลือกเสร็จ"
+      },
+      {
+        "title": "โหลดและตรวจข้อมูล",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n2\nโหลดและตรวจข้อมูล\n01_eda · 2.1–2.4 · ใช้ทั้งชุด แต่ดูแค่โครงสร้าง ไม่ดูความสัมพันธ์กับ target · สไลด์หน้า 3 · รายงานหัวข้อ 2\nสถานีถัดไป\nขั้น 3 · Split ตามวัน\nทำอะไร\n2.1 อ่าน byte ดิบของหัวตาราง ลอง 3 encoding และดูช่วงค่าของแต่ละส่วนของวันที่\n2.2 โหลด · assert ชื่อคอลัมน์ · เปลี่ยนเป็น snake_case (Temperature(°C) → temp_c) · แปลงวันที่โดยระบุ format=\n2.3 ตรวจ missing value, แถวซ้ำ, ช่วงวัน, ชั่วโมงครบ 0–23 · 2.4 นับค่าของคอลัมน์หมวดหมู่\nผลลัพธ์\nตรวจ\tผล\nbyte ของ °\t\\xb0 → utf-8 อ่านไม่ได้ (UnicodeDecodeError) · cp1252 อ่านได้ถูก\nรูปแบบวันที่\tส่วนที่ 1 = 1–31 · ส่วนที่ 2 = 1–12 → dd/mm/yyyy (แถวแรก = 1 ธ.ค. 2017)\nขนาด\t8,760 แถว × 14 คอลัมน์ (365 วัน × 24 ชม.)\nmissing / แถวซ้ำ\t9 (ความชื้น · 19–28 พ.ค. 2018) / 0 · ซ้ำที่ (date, hour) = 0\nช่วงวัน\t2017-12-01 ถึง 2018-11-30 = 365 วัน · ทุกวันมี 24 แถว ชั่วโมง 0–23 ครบ\nseasons\tSpring 2,208 · Summer 2,208 · Autumn 2,184 · Winter 2,160\nholiday\tHoliday 432 แถว (18 วัน) · No Holiday 8,328\nfunctioning_day\tYes 8,465 · No 295 แถว (ชั่วโมงที่ระบบปิด)\nชนิดข้อมูล\tตัวเลข 10 คอลัมน์ · ข้อความ 3 (seasons, holiday, functioning_day)\nรู้อะไร → ประโยชน์ → ต่อไป\nถ้าปล่อยให้ pandas เดา อาจอ่าน ° เพี้ยนหรือสลับวัน/เดือนโดยไม่มี error · ค่าที่ตรวจได้บันทึกไว้ใน config.py\nข้อมูลสะอาดเชิงโครงสร้าง ทุกวันมี 24 แถว → ใช้ \"วันที่\" เป็นหน่วยของการ split ได้\nคอลัมน์ข้อความต้อง encode (ขั้น 5–6) · functioning_day = No ไปวิเคราะห์ในขั้น 4"
+      },
+      {
+        "title": "Split ตามวัน — ขั้นที่สำคัญที่สุด (1/2)",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n3\nSplit ตามวัน — ขั้นที่สำคัญที่สุด (1/2)\n01_eda · 3.1 · ทำก่อน EDA ทุกอย่าง · สไลด์หน้า 4 · รายงานหัวข้อ 3\nหน้าถัดไป\nขั้น 3 · ตรวจว่า split ใช้ได้\nทำไมห้ามสุ่มทีละแถว\n\nชั่วโมง 14:00 กับ 15:00 ของวันเดียวกันมีอากาศแทบเหมือนกันและยอดเช่าใกล้กัน ถ้า 14:00 อยู่ใน train และ 15:00 อยู่ใน test โมเดลแค่ \"จำ\" วันนั้นได้ → คะแนน test สูงเกินจริง = leakage แบบซ่อน · วิธีแก้คือให้ ทั้งวัน (24 ชม.) อยู่ฝั่งเดียวกันเสมอ โดยใช้วันที่เป็น groups\n\nเทียบ 3 วิธี\nวิธี\tข้อดี\tข้อเสีย\nGroupShuffleSplit (group = วันที่) ✓ เลือก\tสุ่มวันจากทั้งปี → test มีครบทุกฤดู\tไม่ได้จำลองการทำนายอนาคต\nตัดตามเวลา\tสมจริงเชิงเวลา\tข้อมูลมี 1 ปี → test มีแค่ 1–2 ฤดู\nสุ่มทีละแถว ✗\tง่าย\tleakage\n\nเหตุผล: โจทย์คือ \"อากาศ + เวลาแบบนี้ → เช่ากี่คัน\" ไม่ใช่ forecasting จึงต้องการ test ที่ครอบคลุมทุกฤดู\n\nทำอะไร\nเรียงตาม (date, hour) ก่อน → ผลการสุ่มเหมือนกันทุกเครื่อง\nGroupShuffleSplit(test_size=0.2, random_state=42) ส่ง groups=date\nassert ไม่มีวันอยู่สองฝั่ง และรวมครบ 365 วัน\nบันทึก รายการวัน ลง data/splits/train_dates.csv, test_dates.csv\nผลลัพธ์\n292 วัน\ntrain (80.0%) · 7,008 แถว\n73 วัน\ntest (20.0%) · 1,752 แถว"
+      },
+      {
+        "title": "Split ตามวัน — ตรวจว่าใช้ได้ (2/2)",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n3\nSplit ตามวัน — ตรวจว่าใช้ได้ (2/2)\n01_eda · 3.2–3.3 · ดูแค่โครงสร้างของ test (ฤดู/ประเภทวัน) ไม่ดูยอดเช่า · สไลด์หน้า 4 · รายงานหัวข้อ 3\nสถานีถัดไป\nขั้น 4 · EDA บน train\nผลลัพธ์\n\nไฟล์รายการวันโหลดกลับมาตรงกับค่าเดิมทุกวัน\n\nสัดส่วนแถวตามฤดู\ttest\ttrain\nAutumn\t27.4%\t24.3%\nSpring\t19.2%\t26.7%\nSummer\t21.9%\t26.0%\nWinter\t31.5%\t22.9%\n\ttest\ttrain\nจำนวนวัน\t73\t292\nวันหยุดนักขัตฤกษ์\t6\t12\nชั่วโมงที่ระบบปิด\t55\t240\n\n3.3 เก็บ train 7,008 แถว (292 วัน) แล้ว ลบ df ทิ้ง กันเผลอใช้ test ใน EDA\n\nรู้อะไร\ntest มี ครบ 4 ฤดู (การตัดตามเวลาทำไม่ได้) แต่ Winter มากกว่า train (31.5% vs 22.9%) และ Spring น้อยกว่า\nเป็นความแปรปรวนปกติของการสุ่ม 73 วัน · ไม่แก้ split หลังเห็นตัวเลข เพราะการสุ่มใหม่จนกว่าจะ \"สวย\" = เลือก test ด้วยมือ\nฤดูหนาวยอดต่ำ → MAE ของ test อาจต่ำกว่า CV เพราะสัดส่วนฤดู (อนุมาน) หลังใช้ scope สัดส่วนเปลี่ยน ต้องอ่านผลจริงในขั้น 13 (ขั้น 13)\nประโยชน์ → ต่อไป\nไฟล์รายการวันคือ \"สัญญา\" ว่า test คือ 73 วันนี้ตลอดโปรเจกต์ · 02_modeling โหลดไฟล์นี้ ไม่สุ่มใหม่ · repo วิชา DS ใช้ logic เดียวกันให้ได้วัน test ตรงกัน\nทุกกราฟและตัวเลขในขั้น 4 มาจาก train 7,008 แถวเท่านั้น"
+      },
+      {
+        "title": "EDA (1/5) — ยอดเช่าและชั่วโมงที่ระบบปิด",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n4\nEDA (1/5) — ยอดเช่าและชั่วโมงที่ระบบปิด\n01_eda · 4.1–4.4 · train เท่านั้น · รูปแบบ: โค้ดทำอะไร → เห็นอะไร → ตัดสินใจ · สไลด์หน้า 5–6 · รายงานหัวข้อ 4 · train ก่อน scope พายุ\nหน้าถัดไป\nEDA · ชั่วโมงและประเภทวัน\n4.1–4.2 สถิติ + การกระจาย\nยอดเช่า mean 730.86 · median 547 · min 0 · max 3,556 → เบ้ขวา (skewness 1.08)\nยอด = 0 มี 240 แถว (3.4%) · เกินหนวด boxplot (> 2,443.5) 102 แถว\nhumidity_pct min = 0% เป็นไปไม่ได้ทางกายภาพ → น่าจะเป็น outlier จากเซนเซอร์ (ตรวจใน 4.10)\nvisibility_10m สเกล 27–2,000 · ฝน/หิมะ Q3 = 0 · แสงแดด median 0.01 → ส่วนใหญ่เป็น 0\n4.3 functioning_day\nNo 240 แถว ยอด = 0 ทุกแถว (mean = min = max = 0)\nระบบปิด ทั้งวัน 10 วัน ช่วง เม.ย.–พ.ย. 2018\nแถวยอด 0 ทั้ง 240 แถว = แถวที่ระบบปิดทั้งหมด · ชั่วโมงที่เปิดไม่มียอด 0\nตัดสินใจ\n\nตัดแถว No ออก ทั้ง train และ test (กฎขอบเขต ไม่ได้เรียนค่าจากข้อมูล) · ถ้าเก็บไว้ โมเดลจะเรียนกฎ \"ปิด → 0\" ที่รู้อยู่แล้ว และดึง MAE ต่ำลงแบบไม่มีความหมาย\n\n4.4 หลังตัดชั่วโมงที่ปิด\nเหลือ 6,768 แถว (282 วัน) · min = 2 · ไม่มีค่า 0\nskewness 1.07 · mean 756.8 > median 582.5 ราว 30%\nlog1p(y) skewness = −0.80 → แก้เบ้ได้แต่ \"เกินไป\"\nตัดสินใจ\n\nเมตริกหลัก MAE · รอง RMSE, R² · โมเดลหลักไม่แปลง target · ลอง log1p กับโมเดลเชิงเส้นในขั้น 11 แล้วให้ CV ตัดสิน"
+      },
+      {
+        "title": "EDA (2/5) — ชั่วโมง × ประเภทวัน",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n4\nEDA (2/5) — ชั่วโมง × ประเภทวัน\n01_eda · 4.5–4.6 · train ชั่วโมงที่ระบบเปิด 6,768 แถว · สไลด์หน้า 5–6 · รายงานหัวข้อ 4 · train ก่อน scope พายุ\nหน้าถัดไป\nEDA · ฤดู อุณหภูมิ ฝน\nกราฟ 04_hourly_by_daytype · ค่าเฉลี่ยยอดเช่าต่อชั่วโมง แยก weekday / weekend / holiday\nเห็นอะไร\nวันทำงาน (191 วัน) มี 2 พีค: 8:00 ~1,381 คัน และสูงสุด 18:00 ~1,810 คัน (13:00 ~717) → ใช้เดินทางไปทำงาน\nเสาร์–อาทิตย์ (80 วัน) และวันหยุดนักขัตฤกษ์ (11 วัน) ไม่มีพีคเช้า สูงสุดที่ 17:00 (~1,238 / ~1,104) → ใช้พักผ่อน\nทุกประเภทต่ำสุดช่วง 4:00–5:00\n4.6 ค่าเฉลี่ยทั้งวัน จ.–อา.: 736 · 749 · 811 · 743 · 816 · 750 · 682 → ต่างกันน้อย ความต่างหลักคือ \"รูปร่าง\" ของเส้นรายชั่วโมง ไม่ใช่ \"ระดับ\"\nตัดสินใจ (ส่งไปขั้น 5)\nชั่วโมงไม่เป็นเส้นตรงและเป็นวงรอบ → สร้าง hour_sin, hour_cos และลอง one-hot กับโมเดลเชิงเส้น\nสร้าง is_weekend, is_holiday · สร้าง day_of_week ให้ feature selection ตัดสิน"
+      },
+      {
+        "title": "EDA (3/5) — ฤดู อุณหภูมิ ฝน หิมะ",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n4\nEDA (3/5) — ฤดู อุณหภูมิ ฝน หิมะ\n01_eda · 4.7–4.8 · สไลด์หน้า 5–6 · รายงานหัวข้อ 4 · train ก่อน scope พายุ\nหน้าถัดไป\nEDA · correlation และ outlier\n04_season_temperature · ซ้าย: boxplot ตามฤดู · ขวา: ยอดเช่า vs อุณหภูมิ + ค่าเฉลี่ยช่วงละ 5 °C\n4.7 เห็นอะไร\nค่าเฉลี่ยตามฤดู: Winter 230 · Spring 774 · Autumn 957 · Summer 1,037 · ยอดสูงสุดของฤดูหนาวแค่ 929\nยอดเพิ่มตามอุณหภูมิจนถึงช่วง 25–30 °C (เฉลี่ย 1,258) แล้วลดลง (30–35 °C: 1,145 · 35–40 °C: 912) → โค้งคว่ำ ไม่ใช่เส้นตรง\nตัดสินใจ\n\nคาดว่า Linear จะเสียเปรียบ tree/kNN · เก็บ seasons และ temp_c ไว้ทั้งคู่ ให้ขั้น 7 ตัดสิน\n\n04_rainfall · ยอดเช่าเฉลี่ยตามปริมาณฝน (มม./ชม.)\n4.8 เห็นอะไร\nฝน = 0 ใน 93.9% ของชั่วโมง · หิมะ = 0 ใน 95.6%\nมีฝน ยอดเฉลี่ยตกจาก 795 เหลือ 164 · ฝน (0,1] มม. = 223 · (1,5] = 106 · >5 = 78 → \"มีฝนหรือไม่\" สำคัญกว่าปริมาณ\nชั่วโมงหิมะ 182 ใกล้ค่าเฉลี่ยฤดูหนาว 230\nตัดสินใจ\n\nสร้าง is_raining · ไม่สร้าง is_snowing (ซ้ำกับฤดูหนาว)"
+      },
+      {
+        "title": "EDA (4/5) — Correlation, outlier, ความชื้น 0%",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n4\nEDA (4/5) — Correlation, outlier, ความชื้น 0%\n01_eda · 4.9–4.10 · สไลด์หน้า 5–6 · รายงานหัวข้อ 4 · train ก่อน scope พายุ\nหน้าถัดไป\nEDA · สรุปการตัดสินใจ\n4.9 Pearson correlation\nคู่เดียวที่ |r| > 0.8: temp_c – dew_point_c = 0.911\nr กับยอดเช่า: temp 0.55 · hour 0.44 · dew 0.38 · solar 0.28 · visibility 0.22 · humidity −0.22 · wind 0.16 · snow −0.15 · rain −0.13\nฝน/หิมะ r ต่ำทั้งที่ 4.8 เห็นผลแรง เพราะ Pearson วัดแค่เส้นตรง\nตัดสินใจ\n\nยังไม่ตัด dew_point_c ให้ขั้น 7 ตัดสิน · ตัวแปรอากาศซ้อนกัน = เหตุผลที่ลอง PCA (ขั้น 8)\n\n4.10 Outlier (กฎ IQR)\nคอลัมน์\tแถว\t%\nsolar_radiation_mj\t486\t7.18\nrainfall_mm\t413\t6.10\nsnowfall_cm\t296\t4.37\nwind_speed_ms\t110\t1.63\nrented_bike_count\t95\t1.40\nอีก 5 คอลัมน์\t0\t0\n\nฝน/หิมะมี IQR = 0 → ทุกชั่วโมงที่มีฝนกลายเป็น outlier · ค่าที่เกินอื่นๆ เป็นเหตุการณ์จริง (แดดจัด ลมแรง พีคเย็น)\n\nตัดสินใจ\n\nเก็บ IQR flags ที่เป็นเหตุการณ์จริง; ค่าที่สงสัยและพายุใช้กฎในขั้น 5StandardScaler เปลี่ยนสเกล ไม่ได้แก้ outlier\n\nความชื้น = 0% (outlier จากเซนเซอร์)\n8 แถว วันที่ 21, 22, 28 พ.ค. 2018 (ช่วงเดียวกับ missing value)\nคำนวณความชื้นย้อนกลับจากอุณหภูมิ + dew point ของแถวเดียวกันด้วย สูตร Magnus: แถวปกติคลาดจากค่าจริงเฉลี่ย 0.24 จุด\n8 แถวนี้คำนวณได้ 34.0–71.7% → ขัดกับข้อมูลในแถวเดียวกัน = outlier จากเซนเซอร์อ่านค่าผิด\nตัดสินใจ\n\nขั้น 5.2 แปลง 0 → NaN (กฎตายตัว ใช้กับ test ได้) รวมกับ missing 9 ค่าเป็น 17 แล้ว ขั้น 6.2 ให้ SimpleImputer(median) ใน Pipeline เติม"
+      },
+      {
+        "title": "EDA (5/5) — Diagnostics และสิ่งที่ส่งต่อ",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n4\nEDA (5/5) — Diagnostics และสิ่งที่ส่งต่อ\n01_eda · 4.11 + สรุปขั้น 4 · สไลด์หน้า 5–6 · รายงาน 4.5\nสถานีถัดไป\nขั้น 5 · Feature engineering\nผลบน train ก่อน scope\nประเด็น\tหลักฐาน\tการตัดสินใจ\nระบบปิด\t240 ชั่วโมง ยอด=0\tกรอง functioning_day=Yes\nhour × day type\tวันทำงานมีพีค 8/18\thour + ปฏิทินตามโมเดล\nอุณหภูมิ/ฤดู\tความสัมพันธ์ไม่เป็นเส้นตรง\tเก็บอากาศ/ฤดู/เดือน\nฝน/หิมะ IQR=0\tกฎ IQR flag ทุกค่าบวก\tเก็บเหตุการณ์จริง\nhumidity=0\t8 แถวขัด Magnus\thumidity → NaN\nT/Td ขัด Magnus\tdew point 5, temp 1\tค่าที่สงสัย → NaN\nDaily OOF\t21/282 วันถูก flag\tตรวจบริบท ไม่ใช้ลบวัน\nวันพายุ\tยืนยันช่วงจาก KMA ล่วงหน้า\tscope rule เดียวกัน train/test\nฝนต่อเนื่อง\tรายชั่วโมงอาจไม่ครอบคลุม\tทดสอบ rain_prev_3h ด้วย CV\nวันหยุด/ไม่ทราบสาเหตุ\tบริบทจริง ยังไม่พิสูจน์สาเหตุ\tเก็บ; ระบุข้อจำกัด\nOOF เป็นเครื่องมือตรวจ\n\nHGB default + feature ดิบ 12 ตัว + GroupKFold ไม่ใช่ Pipeline สุดท้าย ratio actual/pred รวมรายวัน แล้วตรวจ log-IQR ได้ 21 วัน (พายุ/มรสุม3, ฝน9, วันหยุด2, ไม่ทราบ7)\n\nMagnus และแหล่งภายนอก\n\nช่องว่าง RH >15 จุดเป็นเกณฑ์ตรวจ ไม่ใช่สเปกเซนเซอร์ สงสัยคอลัมน์ T/Td ที่เป็น0เพียงตัวเดียว (อนุมาน) พายุต้องอิงประกาศล่วงหน้า ไม่ใช้ residual เลือกวัน"
+      },
+      {
+        "title": "Feature engineering (1/2) — ขอบเขต + ประวัติฝน",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n5\nFeature engineering (1/2) — ขอบเขต + ประวัติฝน\n02_modeling · 5.1–5.3 · train/test ใช้ contract เดียวกัน · รายงาน 5\nหน้าถัดไป\nขั้น 5 · encoding ชั่วโมงและ X, y\n5.2 Scope จาก KMA\n\nระบบเปิด และอยู่นอกวันผลกระทบพายุที่ระบุจากประกาศ KMA ล่วงหน้าสำหรับเขตเมืองหลวง\n\nPrapiroon: 2 ก.ค.; Soulik: 23–24 ส.ค.; Kong-rey: 5–7 ต.ค. 2018\n\nชุด\tเดิม\tเปิด\tใน scope\ntrain\t7,008 /292วัน\t6,768 /282วัน\t6,672 /278วัน\ntest\t1,752 /73วัน\t1,697 /71วัน\t1,656 /69วัน\n\nไฟล์วันเดิม; train ตัดพายุเพิ่ม96ชั่วโมง, test41 ไม่ซ้ำ7ชั่วโมงปิดของ6ต.ค.\n\n5.3 rain_prev_3h\n\nrain_prev_3h = ผลรวมฝนที่ชั่วโมง h-1, h-2, h-3 ภายในวันเดียวกัน; ไม่รวมฝนชั่วโมงปัจจุบัน ไม่ข้ามเที่ยงคืน\n\n00:00=0, 01:00/02:00ใช้ชั่วโมงที่มี ก่อนเที่ยงคืนเป็นศูนย์ ชั่วโมงภายในวันหาย/ฝนขาด → NaN lookup ด้วย date/hour แม้แถวไม่เรียง\n\nHGB default\tCV MAE ± std\nไม่ใช้ประวัติฝน\t112.15 ±4.23\nใช้ rain_prev_3h\t109.18 ±2.93\n\nดีขึ้นครบ5folds จึงเก็บ; train599ค่าบวก ไม่มีประวัติขาด\n\nซ่อมเฉพาะค่าที่สงสัย\n\nhumidity0 → NaN; Magnus gap>15 และ T/Tdเป็น0ตัวเดียว → NaNของตัวนั้น ไม่ลบแถว ไม่แก้ทุก0°C train NaN: RH17, Td5, T1 ให้ median imputer ใน foldเติม\n\nFeature ปฏิทินและฝน\n\nhour_sin/cos, is_weekend, day_of_week, is_holiday, month, is_raining และ rain_prev_3h รวม8ตัวที่สร้างเพิ่ม Xก่อนpreprocess18คอลัมน์ ไม่ใช้ lagยอดเช่า"
+      },
+      {
+        "title": "Feature engineering (2/2) — ชั่วโมง และ X/y",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n5\nFeature engineering (2/2) — ชั่วโมง และ X/y\n02_modeling · 5.4–5.6 · สไลด์หน้า 7 · รายงาน 5\nสถานีถัดไป\nขั้น 6 · Preprocessing ใน Pipeline\nชั่วโมงบนวงกลม\nHour cyclic encoding\n\nระยะ23:00–00:00≈0.261 เท่ากับ00:00–01:00\n\nRepresentation ตามโมเดล\nโมเดล\thour\tหลังpreprocess\nLinear\tonehot\t59\nkNN\tcyclic\t37\nRF / HGB\traw\t36\n\nLinear ใช้ค่าของแต่ละชั่วโมงเพื่อรองรับ2พีค kNN ใช้ระยะบนวงกลม ต้นไม้แบ่งช่วงชั่วโมงหลายครั้งได้\n\nX_train 6,672 ×18; y_train เป็นยอดดิบ dateใช้groups ไม่เป็นfeature rented_bike_countไม่อยู่ในX\n\nประวัติฝนตอนทำนาย\n\nrain_prev_3h ต้องมีก่อนทำนาย หากให้ค่ามาแล้ว add_features เก็บค่านั้นไว้ ไม่คำนวณทับจากแถวสถานการณ์ที่กระจัดกระจาย\n\nLeak check\n\nวันtrain/testไม่ซ้ำ ไม่มี target-derived features กฎขอบเขตใช้ประกาศภายนอก ไม่คำนวณthresholdจากtest จำนวนหลังscopeตรงตาราง5.4"
+      },
+      {
+        "title": "Pipeline (1/2) — ทุกขั้นที่เรียนค่าอยู่ใน fold",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n6\nPipeline (1/2) — ทุกขั้นที่เรียนค่าอยู่ใน fold\n02_modeling · 6.1–6.3 · สไลด์หน้า 8–9 · รายงาน 5\nหน้าถัดไป\nขั้น 6 · พิสูจน์ว่าไม่รั่ว\nPreprocessing\n\nnumeric: SimpleImputer(median) → StandardScaler; cat: OneHotEncoder(handle_unknown=\"ignore\") อากาศ8ตัว + rain history +hour numeric + binary; ฤดู/เดือน/day_of_week +hour categorical ตามแบบโมเดล\n\nStandardScaler เปลี่ยนสเกลให้ Linear/kNN/PCA; ไม่ลบ outlier\n\nPipeline factory\n\npre → select → model make_pipeline(model, select=..., hour=...) ใช้ representationที่ตรงกับโมเดล selectรับpassthrough, selectorหรือPCA\n\nclone selector configurationก่อนtuning ไม่ส่งscores_/support_/estimator_ที่fitแล้วเข้าCV\n\nlog1p target\n\nTransformedTargetRegressor ครอบPipeline fit log1p(y) แล้วexpm1ตอนpredict MAEยังวัดคัน/ชม. fitทุกfoldใหม่\n\nเหตุผล\n\nถ้าเรียนmedian/scaler/selectorจากทั้งtrainก่อนCV validationจะช่วยกำหนดค่าที่ใช้ฝึก การใส่Pipelineทำให้fitบนtraining foldเท่านั้น และtransformvalidationด้วยค่านั้น"
+      },
+      {
+        "title": "Pipeline (2/2) — หลักฐาน GroupKFold",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n6\nPipeline (2/2) — หลักฐาน GroupKFold\n02_modeling · 6.4–6.5 · GroupKFold(5) + groups · รายงานตาราง 5.4\nสถานีถัดไป\nขั้น 7 · Feature selection\n6.4 ค่าที่fitในแต่ละfold\nfold\ttrainวัน\tvalวัน\tซ้ำ\tmeanT\tmedianRH\n0\t222\t56\t0\t13.345\t57.0\n1\t222\t56\t0\t13.265\t57.0\n2\t222\t56\t0\t13.288\t57.0\n3\t223\t55\t0\t13.208\t58.0\n4\t223\t55\t0\t13.295\t57.0\n\nval mean_y 737–815 คัน วันต่างกันแต่ละfold ค่าmeanT 13.208–13.345 เรียนใหม่ตามtraining fold\n\n6.5 เทียบ KFold ธรรมดา\n\nfold0 validationมี277วัน และซ้ำกับtrain277วัน แต่GroupKFoldได้0ทุกfold\n\nทุก cv_report/GridSearchCV/RandomizedSearchCV ส่ง groups=groups_train; validationไม่ช่วยfitmedian,scaler,encoder,selectorหรือPCA\n\nขอบเขตไม่ใช่การfit\n\nfunctioning_dayและSTORM_DATESกรองด้วยกฎที่กำหนดไว้ ใช้เหมือนกันtrain/test ค่าที่learnedจริงยังอยู่ในPipeline; residualไม่เป็นกฎตัดวัน\n\nปิดtestระหว่างเลือก\n\nขั้น7–12เลือกด้วยtrain CV ขั้น13ใช้testหลังตรึง ไม่กลับมาเลือกconfigurationจากtest การวิเคราะห์sensitivityใช้โมเดลเดิมไม่fitใหม่"
+      },
+      {
+        "title": "Feature selection (1/2) — ทดลองตามโมเดล",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n7\nFeature selection (1/2) — ทดลองตามโมเดล\n02_modeling · ขั้น7 · selectorในPipeline · สไลด์หน้า10–11 · รายงาน6\nหน้าถัดไป\nขั้น 7 · RFE, Lasso, สรุป\nCV MAE ± fold std\nโมเดล\tBaseline\tF\tMI\tRFE\tEmbedded\nLinear\t262.5 ± 3.7\t262.5 ± 3.7\t262.5 ± 3.7\t262.3 ± 2.9\t262.5 ± 3.7\nkNN\t191.9 ± 7.4\t-\t179.1 ± 9.0\t-\t-\nRF\t119.1 ± 4.5\t-\t119.1 ± 4.5\t119.1 ± 4.5\t122.2 ± 4.4\nHGB\t109.2 ± 2.9\t-\t109.2 ± 2.9\t109.2 ± 2.9\t114.0 ± 2.2\nFilter และเหตุผล\n\nF/MI สำหรับLinear; MIสำหรับkNN/RF/HGB คะแนนทีละfeatureแล้วSelectKBest Fวัดเส้นตรง MIจับความสัมพันธ์อื่นได้ chi²ไม่เหมาะกับregressionนี้\n\nWrapper / Embedded\n\nLinear: RFE(Ridge) / Lasso RFและHGB: RFE(RF proxy) / SelectFromModel(RF proxy) HGBไม่มีfeature_importances_ให้ใช้โดยตรง kNNไม่มีimportanceในตัวจึงลองMI"
+      },
+      {
+        "title": "Feature selection (2/2) — ผลและการส่งต่อ",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n7\nFeature selection (2/2) — ผลและการส่งต่อ\n02_modeling · ขั้น7 · สไลด์10–11 · รายงานตาราง6.1–6.3\nสถานีถัดไป\nขั้น 8 · PCA\nผลบนdefault models\nโมเดล\tวิธี\tเก็บ/ทั้งหมด\tMAE\nLinear\tRFE (Ridge)\t40 / 59\t262.26 ± 2.90\nkNN\tMI k=10\t10 / 37\t179.15 ± 8.96\nRF\tทุกคอลัมน์\t36 / 36\t119.10 ± 4.52\nHGB\tทุกคอลัมน์\t36 / 36\t109.18 ± 2.93\n\nkNNดีขึ้น12.79คัน Linearดีขึ้นเพียง0.24 RF/HGBชุดย่อยไม่ชนะทุกคอลัมน์\n\nกราฟทุกโมเดล\nCV MAE by model and selector (± fold std)\nส่ง configuration เข้า tuning\n\npassthrough+candidate: LinearRFE40, kNNMI10, RF/HGBMI36 Cloneก่อนใช้ทุกครั้ง HGBMI36เก็บ36/36 ไม่เรียกว่าลดfeature\n\nขอบเขตการค้น\n\nLinear F/MI/RFE:5,10,15,20,30,40,59; Lasso alpha .1,.3,1,3,10,30 (ชนะ.3เก็บ52) RF/HGB MI/RFE:12,24,36; embeddedthreshold .5*mean,mean,median kNNMI:10,20,30,37\n\nคะแนนCVใช้เลือกconfiguration; stdไม่ใช่confidence intervalของส่วนต่าง"
+      },
+      {
+        "title": "PCA — สร้างแกนใหม่ (ไม่ใช้ target)",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n8\nPCA — สร้างแกนใหม่ (ไม่ใช้ target)\n02_modeling · ขั้น8 · สไลด์10–11 · รายงาน7\nสถานีถัดไป\nขั้น 9 · Baseline\nVariance สะสม\n37 preprocessed columns (hour cyclic)\n\n14 PC ≥90%; 19 PC ≥95% fitแกนภายในtraining fold\n\nCV MAE\nโมเดล\tไม่มี\t5\t10\t15\t20\t25\nLinear\t311.3\t358.7\t338.3\t324.6\t327.1\t313.8\nkNN (k=10)\t191.9\t199.3\t190.6\t184.1\t206.0\t193.6\n\nLinearcyclic311.3ไม่ใช่Linearonehot262.5 PCAแย่ลงทุกขนาด kNNPCA15ดีขึ้น191.9→184.1 แต่MI10ได้179.1\n\nLoading\n\nPC1 variance18.1% RH+.51,dew+.36,is_raining+.34; PC2 14.9% temp+.55,solar+.45,dew+.43; PC3 10.4% rainfall+.46,is_raining+.41,rain_prev_3h+.41 การตีความกลุ่มเป็นการอนุมาน\n\nการตัดสินใจ\n\nvarianceสูงไม่รับประกันว่าทายyดี นำPCA15ไปเป็นcandidateของkNNร่วมกับpassthrough/MI10 รุ่นสุดท้ายชนะด้วยMI10"
+      },
+      {
+        "title": "Baseline — เกณฑ์เปรียบเทียบ",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n9\nBaseline — เกณฑ์เปรียบเทียบ\n02_modeling · ขั้น9 · สไลด์12–13 · รายงาน8\nสถานีถัดไป\nขั้น 10 · เทียบ 4 โมเดล\nผลจากGroupKFoldเดียวกัน\nBaseline\tMAE\tstd\tMSE\tRMSE\tR²\nDummy (mean)\t527.6\t11.8\t423,684\t650.7\t-0.003\nDummy (median)\t512.6\t14.1\t453,973\t673.4\t-0.074\nเวลาอย่างเดียว (hour × วันทำงาน/วันหยุด)\t398.4\t10.9\t267,639\t517.2\t0.365\nทำนายอย่างไร\n\nDummy mean/median:ค่าเดียวทุกแถว เรียนจากtraining fold เวลาอย่างเดียว:ค่าเฉลี่ยhour ×วันทำงาน/วันหยุด48กลุ่ม ไม่ใช้อากาศ; fallbackmeanเมื่อไม่มีกลุ่ม\n\nอ่านlossให้ถูก\n\nmedianเหมาะกับMAE meanเหมาะกับMSE จึงได้MAE median512.6ต่ำกว่าmean527.6 แต่RMSE673.4สูงกว่า650.7 ทุกโมเดลต้องชนะbaselineเวลา398.4"
+      },
+      {
+        "title": "เทียบ 4 โมเดล — ค่า default ทุก feature",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n10\nเทียบ 4 โมเดล — ค่า default ทุก feature\n02_modeling · ขั้น10 · สไลด์12–13 · รายงานตาราง8.1\nสถานีถัดไป\nขั้น 11 · Hyperparameter tuning\nผลบนtrain CV\nโมเดล\tCV MAE±std\ttrain\tgap\tR²\nLinear\t262.5 ±3.7\t257.3\t5.2\t0.721\nkNN\t191.9 ±7.4\t151.9\t40.1\t0.806\nRF\t119.1 ±4.5\t36.6\t82.5\t0.909\nHGB\t109.2 ±2.9\t66.8\t42.4\t0.923\n\nLinear onehot, kNNk10 cyclic, RF200treesraw, HGBdefaultraw ทุกตัวใช้featuresเดียวกันตามrepresentation\n\nกราฟ\nDefault CV MAE ± fold std\nการอ่านgap\n\ngap=CVMAE−trainMAE RF82.5ใหญ่ที่สุดบ่งชี้fittrainมาก Lineargap5.2แต่errorสูงทั้งtrain/CVสอดคล้องกับความยืดหยุ่นจำกัด (อนุมาน) gapเพียงค่าเดียวไม่พิสูจน์overfit/underfit\n\nการตัดสินใจ\n\nHGBdefault109.18ดีสุด แต่ยังtuneทุกตระกูลด้วยCVแล้วเลือกvariantที่ดีที่สุด testยังไม่ใช้เลือก เลือกrepresentationตามโมเดล"
+      },
+      {
+        "title": "Hyperparameter tuning — รวม selector ใน search",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n11\nHyperparameter tuning — รวม selector ใน search\n02_modeling · ขั้น11 · testยังไม่ใช้เลือก · สไลด์14 · รายงาน9\nสถานีถัดไป\nขั้น 12 · เลือกโมเดล + CLO4\nผลtuning\nโมเดล\tCV MAE±std\tconfiguration\nLinear Regression\t262.3 ±2.9\tRFE 40/59; Ridge จัดอันดับ\nLinear Regression + log1p(y)\t205.9 ±10.0\tpassthrough 59; TransformedTargetRegressor\nkNN\t177.1 ±8.8\tMI 10/37; k=10, distance\nkNN + log1p(y)\t176.8 ±10.4\tMI 10/37; k=15, distance\nRandom Forest\t117.8 ±4.1\t300 trees, depth=20, leaf=1, max_features=0.75; ทุก 36 คอลัมน์\nHistGradientBoosting\t104.9 ±4.0\tMI 36/36; lr=0.1, iter=200, leaves=63, min_leaf=5, l2=1.0\nHistGradientBoosting + log1p(y)\t107.3 ±7.2\tพารามิเตอร์และ selector เดียวกับ HGB; fit ใหม่ใน CV\nงบค้น\n\nLinear2+2; kNNraw42/log20; RFสุ่ม15/128; HGB30/960 HGBlog1configurationใช้params/selectorจากHGBแต่fitCVใหม่ ส่งgroupsทุกsearch\n\nตีความ\n\nHGBraw104.86ชนะlog107.31 kNNlog176.83ชนะraw177.10 แต่ส่วนต่างเล็ก comparedfoldstd searchspaceเปลี่ยนเมื่อเพิ่มselector ไม่แยกพิสูจน์ว่าFSเป็นเหตุเดียวที่tunedtreesดีขึ้น"
+      },
+      {
+        "title": "เลือกโมเดล + CLO4 — ผู้ชนะจาก CV",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n12\nเลือกโมเดล + CLO4 — ผู้ชนะจาก CV\n02_modeling · ขั้น12 · สไลด์14 · รายงานตาราง10.1\nสถานีถัดไป\nขั้น 13 · ประเมิน test หลังเลือกด้วย CV\nFinalistsรอบRunAllสุดท้าย\nโมเดล\tselector(n)\tCVMAE±std\tfit s\tms/แถว\nHGB\tSelectKBest (36)\t104.9 ± 4.0\t1.827\t5.55\nRF\tpassthrough (36)\t117.8 ± 4.1\t5.944\t15.51\nkNN + log1p(y)\tSelectKBest (10)\t176.8 ± 10.4\t1.161\t3.30\nLinear + log1p(y)\tpassthrough (59)\t205.9 ± 10.0\t0.026\t4.10\nHGBที่เลือก\n\nMI36/36; hourraw lr=.1, iter200, leaves63, minleaf5, l2=1 ได้CV104.86±3.96 เลือกก่อนดูtest Fitบนtrain6,672ชั่วโมง/278วัน\n\nต้นทุนและข้อจำกัด\n\nlatencyรวมpreprocess วัด1แถวบนเครื่องนี้ เวลาเปลี่ยนตามรอบและthread ไม่ใช่productionbenchmark kNNใช้trainหาระยะ Linearคูณcoefficient ไม่มีไฟล์โมเดลใหม่"
+      },
+      {
+        "title": "Test + storm sensitivity (1/4)",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n13\nTest + storm sensitivity (1/4)\n02_modeling · 13.1 + sensitivity · fittedfinal_modelเดิม · รายงาน11.1/11.2\nหน้าถัดไป\nขั้น 13 · Error analysis\nในขอบเขต1,656ชั่วโมง/69วัน\nเมตริก\tผล\nMAE\t91.46\nMSE\t22,219.3\nRMSE\t149.06\nR²\t0.938\n\nclipติดลบ15แถว; CVผู้ชนะ104.86±3.96 ไม่ย้อนปรับจากtest\n\nรวมวันพายุกลับมา ไม่fitเพิ่ม\nขอบเขต\tชม.\tMAE\tRMSE\nในขอบเขต\t1,656\t91.46\t149.06\nวันพายุ (ระบบเปิด)\t41\t257.65\t463.14\nรวมทุกชั่วโมงที่เปิด\t1,697\t95.48\t163.91\n\n23ส.ค.24ชั่วโมง;6ต.ค.17ชั่วโมง วันพายุรวม41MAE257.65 Predictionชั่วโมงปกติตรงกับการประเมินหลัก\n\nข้อมูลที่ต่างกัน\n\ntestWinter33.3%;train24.1% mean_ytest615.0;train760.3 คะแนนเป็นคันอาจต่ำลงจากองค์ประกอบวัน (อนุมาน) ไม่พิสูจน์ว่าไม่มีoverfit\n\nHistoryในวันปิดบางส่วน\n\n6ต.ค.07–09ขาดประวัติ3แถว เพราะกรองชั่วโมงปิด00–06ตามcontract ให้imputerที่fitบนtrainเติม ไม่ใช้ข้อมูลจากวันอื่น"
+      },
+      {
+        "title": "Error analysis แยกกลุ่ม (2/4)",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n13\nError analysis แยกกลุ่ม (2/4)\n02_modeling · 13.2–13.3 · error=pred−y · รายงานตาราง11.2\nหน้าถัดไป\nขั้น 13 · 10 ชั่วโมงที่พลาดมากสุด\nผลtestในขอบเขต\nกลุ่ม\tn\tยอด\tMAE\tbias\tMAE/ยอด\nAutumn\t408\t799.8\t124.1\t+37.8\t15.5%\nSpring\t336\t596.0\t91.3\t+13.4\t15.3%\nSummer\t360\t1,041.7\t116.8\t-1.7\t11.2%\nWinter\t552\t211.7\t51.0\t+2.8\t24.1%\nวันทำงาน\t1,104\t681.7\t98.0\t+8.5\t14.4%\nวันหยุด\t552\t481.6\t78.3\t+20.9\t16.3%\nฝนตก\t89\t171.9\t143.0\t+62.1\t83.2%\nไม่มีฝน\t1,567\t640.2\t88.5\t+9.8\t13.8%\nภาพรวม\nIn-scope test errors\n\nbiasรวม+12.6คัน/ชม. ฝนตก89ชั่วโมงMAE143.0 หรือ83.2%ของยอดเฉลี่ย ยังเป็นจุดอ่อน\n\nอ่านตามระดับยอด\n\nWinterMAE51.0แต่24.1%ของยอด Summer116.8แต่11.2% ค่าคลาดเป็นคันโตตามยอด จึงอ่านทั้งจำนวนและอัตราส่วน อัตรานี้ไม่ใช่MAPEรายแถว\n\nErrorรายชั่วโมง\n\n08:00MAE175.8;18:00MAE157.6 ชั่วโมงยอดสูงยังคลาดมาก การวิเคราะห์บอกจุดอ่อนสำหรับข้อมูลใหม่ ไม่กลับไปtuneจากtest"
+      },
+      {
+        "title": "Worst 10 ในขอบเขต (3/4)",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n13\nWorst 10 ในขอบเขต (3/4)\n02_modeling · 13.4 · สไลด์16 · รายงานตาราง11.3\nหน้าถัดไป\nขั้น 13 · ทายข้อมูลใหม่\nชั่วโมงที่|error|สูงสุด\nวันที่\tชม.\t°C\tRH\tฝน\tวัน\tจริง\tทาย\terror\n2018-09-24\t18\t20.3\t35\t0.0\tวันหยุด\t1,237\t2,120\t+883\n2018-07-09\t7\t20.9\t66\t0.0\tวันทำงาน\t451\t1,284\t+833\n2018-11-08\t22\t12.4\t96\t0.0\tวันทำงาน\t14\t824\t+810\n2018-07-09\t8\t20.7\t73\t0.2\tวันทำงาน\t670\t1,459\t+789\n2018-10-26\t21\t10.6\t70\t0.0\tวันทำงาน\t542\t1,319\t+777\n2018-05-02\t19\t12.6\t93\t0.0\tวันทำงาน\t131\t900\t+769\n2018-06-22\t18\t29.3\t27\t0.0\tวันทำงาน\t3,365\t2,599\t-766\n2018-11-08\t8\t10.6\t89\t0.0\tวันทำงาน\t148\t913\t+765\n2018-11-08\t19\t12.8\t97\t0.0\tวันทำงาน\t19\t781\t+762\n2018-04-04\t8\t10.3\t86\t0.0\tวันทำงาน\t1,284\t534\t-750\n23ส.ค.หายไปเพราะอะไร\n\nscopeจากKMAล่วงหน้า ไม่ใช่โมเดลเรียนวันนั้นดีขึ้น ไม่ตัดresidual วันพายุ41ชั่วโมงยังแสดงแยกMAE257.65 รวมเปิดระบบ1,697ชั่วโมงMAE95.48\n\nสิ่งที่ยังอธิบายไม่ได้\n\n8/10ทายเกิน 24ก.ย.18:00error+883;8พ.ย.มี3ชั่วโมง ไม่ยืนยันสาเหตุที่datasetไม่มีหลักฐาน วันหยุด/วันไม่ทราบสาเหตุเก็บอยู่ในชุดทดสอบ"
+      },
+      {
+        "title": "ทำนายข้อมูลใหม่: สถานการณ์สมมติ (4/4)",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n13\nทำนายข้อมูลใหม่: สถานการณ์สมมติ (4/4)\n02_modeling · 13.5 · สไลด์17 · รายงานตาราง12.1\nหน้าถัดไป\nสรุปทั้งโปรเจกต์\nPredictionจากPipelineเดิม\nสถานการณ์\train_prev3h\tทายคัน/ชม.\nพุธ 18:00 อากาศดี (24 °C, RH 60%)\t0.0\t2,960\nพุธ 18:00 ฝน 3 มม. (20 °C, RH 95%)\t0.0\t569\nเสาร์ 18:00 อากาศเหมือนแถวแรก\t0.0\t2,233\nพุธ 08:00 ฤดูหนาว (-3 °C)\t0.0\t605\n\nข้อมูลดิบ →add_features→FEATURES→final_model→clip≥0\n\nContractของinput\n\nทุกแถวสมมติว่า3ชั่วโมงก่อนหน้าไม่มีฝน จึงส่งrain_prev_3h=0มม.ไว้ให้add_featuresเก็บ ไม่สร้างhistoryจากสี่แถวที่ไม่ต่อเนื่อง\n\nเวลาใช้งานจริงต้องมีประวัติฝนที่พร้อมก่อนชั่วโมงทำนายหรือค่าforecastที่กำหนดไว้\n\nความหมายของชุดสถานการณ์\n\nแถวฝนเปลี่ยนT,RH,dewpoint,solarและvisibilityด้วย จึงลด2,960→569 (~81%)เป็นผลชุดinput ไม่พิสูจน์ผลเชิงสาเหตุของฝน\n\nใช้วางแผนระดับเมือง\n\nตัวเลขแสดงวิธีใช้Pipeline ไม่ใช่ยอดจริงของวันสมมติ และไม่บอกการกระจายรายสถานี ตรวจขอบเขตเปิดระบบ/พายุก่อนใช้ผล"
+      },
+      {
+        "title": "สรุปทั้งโปรเจกต์",
+        "overflow": [],
+        "missingImages": [],
+        "counters": [],
+        "text": "ข้อมูล\nเตรียม\nคัดฟีเจอร์\nโมเดล\nทดสอบ\n0\n1\n2\n3\n4\n5\n6\n7\n8\n9\n10\n11\n12\n13\n✓\nสรุปทั้งโปรเจกต์\nสไลด์18 · รายงาน14–15/ภาคผนวก · holdoutเดิมใช้หลายrevision; ตรึงก่อนประเมิน; CVก่อนclip/testหลังclip\nกลับ\nหน้าแผนที่ (M)\nผลล่าสุด\nหัวข้อ\tผล\nFinal model\tHGB + MI36/36\nCV MAE\t104.86±3.96\nTestในขอบเขต\t91.46;R²0.938 (1,656ชั่วโมง)\nรวมวันพายุ\t95.48 (1,697ชั่วโมง);ไม่refit\nเทียบbaselineเวลา\tCVMAEลด73.7%\nสิ่งที่เปลี่ยน\n\nกฎพายุจากKMAใช้ทั้งtrain/test;ซ่อมค่าขัดMagnus;เพิ่มsame-dayrainhistoryหลังCV;FSตามแต่ละโมเดลรวมเข้าtuning;เปรียบเทียบscopeผลจริง\n\nข้อจำกัด\n\nระบบเปิด และอยู่นอกวันผลกระทบพายุที่ระบุจากประกาศ KMA ล่วงหน้าสำหรับเขตเมืองหลวง\n\n1ปีเมืองเดียว อากาศที่วัดจริง ฝน/เทศกาลยังคลาด ไม่วัดforecasterrorหรือข้ามปี ต้องมีhistoryณเวลาใช้งาน\n\nหลักฐานส่ง\n\n02_modeling34codecellsRunAllครบ outputsเรียง1–34;ไฟล์splitเดิม รายงาน23หน้า สไลด์18หน้า บทพูด9นาที ภาพรวม28หน้า ไม่มีโมเดลใหม่"
+      },
+      {
+        "navigation": {
+          "home": 0,
+          "next": 1,
+          "back": 0
+        }
+      }
+    ],
+    "scenarios": []
+  },
+  {
+    "name": "speaker-script",
+    "slideCount": 0,
+    "errors": [],
+    "failed": [],
+    "slides": [],
+    "scenarios": []
+  },
+  {
+    "name": "report",
+    "missingImages": []
+  }
+]
