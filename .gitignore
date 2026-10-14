@@ -14,6 +14,7 @@ Thumbs.db
 
 # Model artifacts (ขนาดใหญ่ / สร้างใหม่ได้) — ถ้าต้องส่งให้ลบบรรทัดนี้แล้วเช็กขนาด < 100 MB
 *.joblib
+!bike-regression/app/model.joblib
 
 # Submission archives and disposable verification environments
 dist/
