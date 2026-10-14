@@ -7,6 +7,7 @@
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
@@ -31,10 +32,19 @@ def find_browser():
 
 
 def main():
-    subprocess.run([
-        find_browser(), "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
-        f"--print-to-pdf={PDF}", HTML.as_uri(),
-    ], check=True, capture_output=True)
+    # โปรไฟล์แยกช่วยให้ process รอจนเขียนไฟล์จบ ไม่ส่งงานให้ Edge ที่ผู้ใช้เปิดอยู่
+    with tempfile.TemporaryDirectory(prefix="seoul-bike-pdf-") as temp_dir:
+        temporary_pdf = Path(temp_dir) / "report.pdf"
+        subprocess.run([
+            find_browser(), "--headless=new", "--disable-gpu", "--no-pdf-header-footer",
+            f"--user-data-dir={Path(temp_dir) / 'profile'}",
+            f"--print-to-pdf={temporary_pdf}", HTML.as_uri(),
+        ], check=True, capture_output=True, timeout=60,
+            creationflags=subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0)
+        data = temporary_pdf.read_bytes()
+        if not data.startswith(b"%PDF-") or not data.rstrip().endswith(b"%%EOF"):
+            raise RuntimeError("browser ยังไม่ได้สร้าง PDF ที่สมบูรณ์")
+        PDF.write_bytes(data)
     print(f"สร้าง {PDF.relative_to(HERE.parent)} ({PDF.stat().st_size / 1e6:.2f} MB)")
 
 
