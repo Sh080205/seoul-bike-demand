@@ -7,6 +7,8 @@
 3. `notebooks/00_setup.ipynb`, `01_eda.ipynb`, `02_modeling.ipynb` — โค้ดพร้อม outputs จากการรันจริง
 4. `verification/submission-audit.md` — ตารางสอบทานและหลักฐานทดสอบ
 
+5. `bike-regression/app/app.py` — เว็บแอปทำนายจำนวนจักรยาน พร้อม `model.joblib` ที่ export จากโมเดล HGB ใน Notebook
+
 ข้อมูล raw, processed และรายการวัน train/test **แนบครบแล้ว** ไม่ต้องดาวน์โหลดเพิ่มเพื่อรัน Notebook. แตก ZIP ก่อนรัน; ภายในมีโฟลเดอร์ `seoul-bike-demand` ชั้นเดียว.
 
 ## สมาชิก
@@ -71,6 +73,10 @@ py -3.13 -m venv .venv
 
 ผู้ชนะ: `HistGradientBoostingRegressor(learning_rate=0.1, max_iter=200, max_leaf_nodes=63, min_samples_leaf=5, l2_regularization=1.0, random_state=42)`; hour raw, `SelectKBest(mutual_info_regression, k=36)` เก็บทั้งหมด 36/36. Pipeline รวม preprocessing/selector; สาธิต prediction ใน Notebook ไม่แนบโมเดลเก่า.
 
+## เปิดเว็บแอป
+
+ติดตั้งแพ็กเกจจาก `bike-regression/app/requirements.txt` ใน Python 3.13 แล้วรัน `python bike-regression/app/app.py` จากโฟลเดอร์โปรเจกต์ หรือเปิด [คู่มือแอป](bike-regression/app/README.md). โฟลเดอร์แอปมีโมเดลและไฟล์คะแนนครบ รันแยกจากโค้ดฝึกได้. หากต้องสร้างโมเดลซ้ำ ให้รัน `python scripts/export_app_model.py` ใน environment ที่ติดตั้ง requirements ของโปรเจกต์; สคริปต์จะตรวจคะแนนกับ `verification/results.json` ก่อนบันทึกไฟล์.
+
 ## เปิดเอกสารและสไลด์ offline
 
 - ดับเบิลคลิก `reports/report.pdf` หรือเปิด `reports/report.html` ใน Edge/Chrome. HTML ใช้รูปใน `figures/` ต้องเก็บโครงสร้างโฟลเดอร์ครบ.
@@ -108,4 +114,4 @@ CV/train MAE ใช้ค่าก่อน clip; test/sensitivity/สถาน�
 
 ## โครงสร้างชุดส่ง
 
-`config.py`, `requirements.txt`, `notebooks/`, `data/`, `scripts/`, `figures/`, `reports/`, `slides/`, `verification/` (ผลและหลักฐาน). ไม่รวม `.git`, `.venv`, worktrees, cache, ไฟล์ทดลอง หรือ `models/model.joblib` รุ่นเก่า.
+`config.py`, `requirements.txt`, `notebooks/`, `data/`, `scripts/`, `figures/`, `reports/`, `slides/`, `verification/` (ผลและหลักฐาน), `bike-regression/app/` (เว็บแอปและโมเดลที่ export). ไม่รวม `.git`, `.venv`, worktrees, cache, ไฟล์ทดลอง หรือ `models/model.joblib` รุ่นเก่า.
